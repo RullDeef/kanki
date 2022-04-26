@@ -1,5 +1,4 @@
 #include "tools/logger.hpp"
-#include "tools/token.hpp"
 #include "dbapi/modeladapter.hpp"
 #include "collectioncontroller.hpp"
 #include "collectionexporter.hpp"
@@ -16,10 +15,7 @@ CollectionController::CollectionController(ICollectionView* view, std::shared_pt
 
     tokenMap.clear();
     for (auto deck : *collection)
-    {
-        auto token = TokenGenerator::generate();
-        tokenMap[token] = deck;
-    }
+        tokenMap.insert(deck);
 
     view->showCollection(CollectionParams(*collection, tokenMap));
 }
@@ -42,10 +38,7 @@ void CollectionController::importCollection(const std::string& filename)
 
     tokenMap.clear();
     for (auto deck : collection)
-    {
-        auto token = TokenGenerator::generate();
-        tokenMap[token] = deck;
-    }
+        tokenMap.insert(deck);
 
     view->showCollection(CollectionParams(collection, tokenMap));
 }
@@ -66,9 +59,8 @@ std::string CollectionController::addDeck()
 {
     LOG_METHOD();
 
-    auto token = TokenGenerator::generate();
     auto collection = modelManager->getCollection();
-    tokenMap[token] = collection->addNewDeck();
+    auto token = tokenMap.insert(collection->addNewDeck());
 
     view->showCollection(CollectionParams(*collection, tokenMap));
 
@@ -80,8 +72,7 @@ void CollectionController::deleteDeck(const std::string& deckToken)
     LOG_METHOD();
 
     auto collection = modelManager->getCollection();
-    collection->removeDeck(tokenMap[deckToken]);
-    tokenMap.erase(deckToken);
+    collection->removeDeck(tokenMap.remove(deckToken));
 
     view->showCollection(CollectionParams(*collection, tokenMap));
 }
@@ -90,7 +81,7 @@ Deck& CollectionController::getDeck(const std::string& deckToken)
 {
     LOG_METHOD();
 
-    return *tokenMap[deckToken];
+    return *tokenMap.get(deckToken);
 }
 
 void CollectionController::confirmEditDeck()

@@ -5,7 +5,9 @@
 class Card
 {
 public:
-    Card(const std::wstring& symbol, const std::wstring& reading, const std::wstring& description);
+    Card(const std::wstring& symbol = L"symbol",
+        const std::wstring& reading = L"reading",
+        const std::wstring& description = L"description");
 
     const std::wstring& getSymbol() const;
     const std::wstring& getReading() const;
@@ -14,6 +16,8 @@ public:
     void setSymbol(const std::wstring& value);
     void setReading(const std::wstring& value);
     void setDescription(const std::wstring& value);
+
+    bool operator==(const Card& other) const;
 
 private:
     std::wstring symbol;

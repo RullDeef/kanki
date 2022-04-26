@@ -33,3 +33,10 @@ void Card::setDescription(const std::wstring& value)
 {
     description = value;
 }
+
+bool Card::operator==(const Card& other) const
+{
+    return symbol == other.symbol
+        && reading == other.reading
+        && description == other.description;
+}

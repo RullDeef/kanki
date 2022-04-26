@@ -1,7 +1,6 @@
 #pragma once
 
 #include <list>
-#include <string>
 #include "cardinfo.hpp"
 #include "deckinfo.hpp"
 #include "collectioninfo.hpp"

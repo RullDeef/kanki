@@ -53,15 +53,20 @@ FileCollectionRepository::FileCollectionRepository(const std::string& filename)
         decks.emplace(deckId, DeckInfo(deckId, collection.id, deck->getName()));
         for (const auto& card : *deck)
         {
-            cards.emplace(cardId, CardInfo(cardId, deckId, card.getSymbol(), card.getReading(), card.getDescription()));
+            cards.emplace(cardId, CardInfo(cardId, deckId,
+                card->getSymbol(),
+                card->getReading(),
+                card->getDescription()));
             cardId++;
         }
         deckId++;
     }
 }
 
-void FileCollectionRepository::saveCollection()
+FileCollectionRepository::~FileCollectionRepository()
 {
+    LOG_METHOD();
+
     std::wofstream file(filename);
 
     for (const auto& [deckId, deckInfo] : decks)

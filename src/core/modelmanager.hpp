@@ -1,24 +1,19 @@
 #pragma once
 
-#include <list>
-#include <memory>
-#include "model/card.hpp"
-#include "model/collection.hpp"
-#include "model/cardsnapshot.hpp"
-#include "model/session.hpp"
 #include "dbapi/irepofactory.hpp"
+#include "imodelmanager.hpp"
 
-class ModelManager
+class ModelManager : public IModelManager
 {
 public:
     explicit ModelManager(std::shared_ptr<IRepositoryFactory> repoFactory);
     ~ModelManager();
 
-    std::shared_ptr<Collection> getCollection();
-    std::shared_ptr<Session> getActiveSession();
-    std::list<CardSnapshot> getSnapshots(const Card& card);
+    virtual std::shared_ptr<Collection> getCollection() override;
+    virtual std::shared_ptr<Session> getActiveSession() override;
+    virtual std::list<CardSnapshot> getSnapshots(const Card& card) override;
 
-    void setCollection(const Collection& newCollection);
+    virtual void setCollection(const Collection& newCollection) override;
 
 private:
     std::shared_ptr<IRepositoryFactory> repoFactory;

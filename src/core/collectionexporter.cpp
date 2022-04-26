@@ -19,14 +19,16 @@ void CollectionExporter::exportCollection(const Collection& collection)
 
         for (int cardId = 0; const auto& card : *deck)
         {
-            auto cardInfo = CardInfo(cardId, deckId,
-                card.getSymbol(),
-                card.getReading(),
-                card.getDescription());
+            auto cardInfo = CardInfo(cardId++, deckId,
+                card->getSymbol(),
+                card->getReading(),
+                card->getDescription());
 
             collectionRepo->setCard(cardInfo);
         }
     }
+
+    ///BUG: collection is not exported
 }
 
 Collection CollectionExporter::importCollection()
@@ -57,7 +59,6 @@ Collection CollectionExporter::importCollection()
             deck->addCard(Card(symbol, reading, description));
         }
         file >> std::ws;
-        // collection.addDeck(std::move(deck));
     }
     while (!file.eof());
 

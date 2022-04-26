@@ -28,15 +28,14 @@ void DeckWindow::onShowDeck(const DeckParams& deckParams)
 {
     LOG_METHOD();
 
-    Logger::info("count: " + std::to_string(std::distance(deckParams.begin(), deckParams.end())));
-
     ui->deckNameEdit->setText(QString::fromStdString(deckParams.getName()));
 
     ui->cardListWidget->clear();
     for (const auto& cardParams : deckParams)
     {
         auto item = new QListWidgetItem(ui->cardListWidget);
-        auto cardView = new CardViewWidget(cardParams);
+        auto cardView = new CardViewWidget(cardParams.second);
+        item->setData(Qt::UserRole, QString::fromStdString(cardParams.first));
         item->setSizeHint(cardView->sizeHint());
         ui->cardListWidget->addItem(item);
         ui->cardListWidget->setItemWidget(item, cardView);
@@ -59,12 +58,12 @@ void DeckWindow::onDeleteCardButtonPressed()
     LOG_METHOD();
 
     auto selected = ui->cardListWidget->selectionModel()->selectedIndexes();
-    if (selected.size() == 0)
+    if (selected.empty())
         WARN_METHOD("nothing selected");
     else
     {
-        int cardIndex = selected.first().row();
-        controller->deleteCard(cardIndex);
+        auto cardToken = selected.first().data(Qt::UserRole).toString().toStdString();
+        controller->deleteCard(cardToken);
     }
 }
 

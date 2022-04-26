@@ -9,12 +9,6 @@ std::shared_ptr<Deck> Collection::addNewDeck()
 void Collection::removeDeck(const std::shared_ptr<Deck>& deck)
 {
     decks.remove(deck);
-
-    // decks.erase(
-    //     std::remove_if(decks.begin(), decks.end(),
-    //         [&deck](const stdDeck& d) { return &d == &deck; }),
-    //     decks.end()
-    // );
 }
 
 size_t Collection::size() const

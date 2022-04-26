@@ -13,7 +13,10 @@ DeckController::DeckController(IDeckView* view,
 {
     LOG_METHOD();
 
-    view->showDeck(DeckParams(initialDeck));
+    for (const auto& card : activeDeck)
+        tokenMap.insert(card);
+
+    view->showDeck(DeckParams(initialDeck, tokenMap));
 }
 
 DeckController::~DeckController()
@@ -21,29 +24,26 @@ DeckController::~DeckController()
     LOG_METHOD();
 }
 
-void DeckController::addCard()
+std::string DeckController::addCard()
+{
+    LOG_METHOD();
+
+    return tokenMap.insert(activeDeck.addNewCard());
+}
+
+void DeckController::editCard(const std::string& cardToken)
 {
     LOG_METHOD();
 }
 
-void DeckController::editCard(size_t cardIndex)
-{
-    LOG_METHOD();
-}
-
-void DeckController::deleteCard(size_t cardIndex)
+void DeckController::deleteCard(const std::string& cardToken)
 {
     LOG_METHOD();
 
-    try
-    {
-        activeDeck.deleteCard(cardIndex);
-        view->showDeck(DeckParams(activeDeck));
-    }
-    catch(const std::exception& e)
-    {
-        ERROR_METHOD(e.what());
-    }
+    TRY_METHOD(
+        activeDeck.deleteCard(tokenMap.remove(cardToken));
+        view->showDeck(DeckParams(activeDeck, tokenMap));
+    );
 }
 
 void DeckController::apply()
@@ -58,8 +58,7 @@ void DeckController::discard()
     LOG_METHOD();
 
     activeDeck = initialDeck;
-
-    view->showDeck(DeckParams(activeDeck));
+    view->showDeck(DeckParams(activeDeck, tokenMap));
 }
 
 void DeckController::setDeckName(const std::string& deckName)
@@ -67,8 +66,7 @@ void DeckController::setDeckName(const std::string& deckName)
     LOG_METHOD();
 
     activeDeck.setName(deckName);
-
-    view->showDeck(DeckParams(activeDeck));
+    view->showDeck(DeckParams(activeDeck, tokenMap));
 }
 
 
@@ -76,6 +74,5 @@ Card& DeckController::getCard(const std::string& cardToken)
 {
     LOG_METHOD();
 
-    ///TODO: implement
-    return *new Card(L"test1", L"test2", L"test3");
+    return *tokenMap.get(cardToken);
 }

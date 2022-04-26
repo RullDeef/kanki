@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "tools/tokenmap.hpp"
 #include "model/deck.hpp"
 #include "viewapi/ideckview.hpp"
 
@@ -17,9 +18,10 @@ public:
     DeckController& operator=(const DeckController&) = delete;
 
     void setDeckName(const std::string& deckName);
-    void addCard();
-    void editCard(size_t index);
-    void deleteCard(size_t index);
+    
+    std::string addCard();
+    void editCard(const std::string& cardToken);
+    void deleteCard(const std::string& cardToken);
 
     void apply();
     void discard();
@@ -32,6 +34,9 @@ private:
     IDeckView* view;
     std::shared_ptr<CollectionController> collectionController;
 
+    TokenMap<std::shared_ptr<Card>> tokenMap;
+
+    ///TODO: memento design pattern
     Deck& activeDeck;
     Deck initialDeck;
 };

@@ -14,7 +14,6 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS src/ui)
 set(TOOLS_SOURCE
     src/tools/logger.cpp
     src/tools/convertor.cpp
-    src/tools/token.cpp
 )
 
 set(MODEL_SOURCE
@@ -34,6 +33,8 @@ set(MODEL_SOURCE
     src/core/deckcontroller.cpp
     src/core/cardcontroller.cpp
     src/core/controllerprovider.cpp
+
+    src/core/spacedrepetionlearn.cpp
 )
 
 set(REPO_SOURCE
@@ -64,9 +65,18 @@ target_sources(kanki
     PRIVATE ${UI_SOURCE})
 target_link_libraries(kanki Qt5::Widgets)
 
-# add_executable(unit_tests unit_tests/main.cpp)
-# target_include_directories(unit_tests
-#     PRIVATE src/model)
-# target_sources(unit_tests
-#     PRIVATE ${TOOLS_SOURCE}
-#     PRIVATE ${MODEL_SOURCE})
+subdirs(vendor)
+
+enable_testing()
+add_executable(unit_tests unit_tests/main.cpp)
+target_include_directories(unit_tests
+    PRIVATE src
+    PRIVATE unit_tests)
+target_sources(unit_tests
+    PRIVATE ${TOOLS_SOURCE}
+    PRIVATE ${MODEL_SOURCE}
+    PRIVATE ${REPO_SOURCE}
+    unit_tests/core/spacedreptests.cpp)
+target_link_libraries(unit_tests gtest_main gmock_main)
+include(GoogleTest)
+gtest_discover_tests(unit_tests)

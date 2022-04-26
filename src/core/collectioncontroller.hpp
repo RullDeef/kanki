@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <map>
+#include "tools/tokenmap.hpp"
 #include "viewapi/icollectionview.hpp"
 #include "deckcontroller.hpp"
 #include "modelmanager.hpp"
@@ -33,5 +33,5 @@ private:
     ICollectionView* view;
 
     std::shared_ptr<ModelManager> modelManager;
-    std::map<std::string, std::shared_ptr<Deck>> tokenMap;
+    TokenMap<std::shared_ptr<Deck>> tokenMap;
 };

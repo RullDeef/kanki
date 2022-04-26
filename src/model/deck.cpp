@@ -16,7 +16,12 @@ void Deck::setName(const name_type& newName)
 
 void Deck::addCard(Card&& card)
 {
-    cards.push_back(card);
+    cards.push_back(std::make_shared<Card>(card));
+}
+
+std::shared_ptr<Card> Deck::addNewCard()
+{
+    return cards.emplace_back(std::make_shared<Card>());
 }
 
 void Deck::deleteCard(size_t index)
@@ -26,17 +31,22 @@ void Deck::deleteCard(size_t index)
     cards.erase(iter);
 }
 
+void Deck::deleteCard(const std::shared_ptr<Card>& card)
+{
+    cards.remove(card);
+}
+
 size_t Deck::size() const
 {
     return cards.size();
 }
 
-std::list<Card>::const_iterator Deck::begin() const
+std::list<std::shared_ptr<Card>>::const_iterator Deck::begin() const
 {
     return cards.begin();
 }
 
-std::list<Card>::const_iterator Deck::end() const
+std::list<std::shared_ptr<Card>>::const_iterator Deck::end() const
 {
     return cards.end();
 }

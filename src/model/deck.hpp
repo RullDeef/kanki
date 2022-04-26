@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <list>
 #include <string>
 #include "card.hpp"
@@ -15,14 +16,17 @@ public:
     void setName(const name_type& newName);
 
     void addCard(Card&& card);
+    std::shared_ptr<Card> addNewCard();
+    
     void deleteCard(size_t index);
+    void deleteCard(const std::shared_ptr<Card>& card);
 
     size_t size() const;
 
-    std::list<Card>::const_iterator begin() const;
-    std::list<Card>::const_iterator end() const;
+    std::list<std::shared_ptr<Card>>::const_iterator begin() const;
+    std::list<std::shared_ptr<Card>>::const_iterator end() const;
 
 private:
     name_type name;
-    std::list<Card> cards;
+    std::list<std::shared_ptr<Card>> cards;
 };

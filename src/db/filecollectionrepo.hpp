@@ -8,6 +8,7 @@ class FileCollectionRepository : public ICollectionRepository
 {
 public:
     explicit FileCollectionRepository(const std::string& filename);
+    ~FileCollectionRepository();
 
     virtual std::list<size_t> getCollectionIds() override;
     virtual std::list<size_t> getDeckIds(size_t collectionId) override;
