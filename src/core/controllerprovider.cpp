@@ -20,5 +20,5 @@ std::shared_ptr<DeckController> ControllerProvider::getDeckController(IDeckView*
 
 std::shared_ptr<CardController> ControllerProvider::getCardController(ICardView* view, const std::string& cardToken)
 {
-    return std::make_shared<CardController>(view, deckController->getCard(cardToken));
+    return std::make_shared<CardController>(view, deckController, deckController->getCard(cardToken));
 }

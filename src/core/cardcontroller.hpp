@@ -3,11 +3,14 @@
 #include <memory>
 #include "dbapi/icollectionrepo.hpp"
 #include "viewapi/icardview.hpp"
+#include "deckcontroller.hpp"
 
 class CardController
 {
 public:
-    CardController(ICardView* view, Card& card);
+    CardController(ICardView* view,
+        std::shared_ptr<DeckController> deckController,
+        Card& card);
 
     CardController(const CardController&) = delete;
     CardController& operator=(const CardController&) = delete;
@@ -21,6 +24,7 @@ public:
 
 private:
     ICardView* view;
+    std::shared_ptr<DeckController> deckController;
 
     Card& activeCard;
     Card initialCard;

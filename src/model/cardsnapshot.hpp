@@ -12,6 +12,7 @@ public:
     CardSnapshot(const Card& card, ParamType paramType, int knowledgeDegree = 0,
         std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::now());
 
+    const Card& getCard() const;
     ParamType getParamType() const;
     int getKnowledgeDegree() const;
 

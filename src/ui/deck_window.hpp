@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <QtWidgets/QDialog>
 #include "ui_deck_window.h"

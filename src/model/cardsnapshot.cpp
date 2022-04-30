@@ -5,6 +5,11 @@ CardSnapshot::CardSnapshot(const Card& card, ParamType paramType, int knowledgeD
     : card(card), paramType(paramType), knowledgeDegree(knowledgeDegree), timePoint(timePoint)
 {}
 
+const Card& CardSnapshot::getCard() const
+{
+    return card;
+}
+
 CardSnapshot::ParamType CardSnapshot::getParamType() const
 {
     return paramType;

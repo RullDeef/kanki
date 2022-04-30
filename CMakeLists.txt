@@ -44,11 +44,13 @@ set(REPO_SOURCE
 )
 
 set(UI_SOURCE
+    src/ui/qtcardview.cpp
     src/ui/qtdeckview.cpp
     src/ui/qtcollectionview.cpp
     
     src/ui/main_window.cpp
     src/ui/deck_window.cpp
+    src/ui/card_window.cpp
     src/ui/cardview_widget.cpp
 )
 

@@ -31,11 +31,6 @@ std::string DeckController::addCard()
     return tokenMap.insert(activeDeck.addNewCard());
 }
 
-void DeckController::editCard(const std::string& cardToken)
-{
-    LOG_METHOD();
-}
-
 void DeckController::deleteCard(const std::string& cardToken)
 {
     LOG_METHOD();
@@ -58,6 +53,18 @@ void DeckController::discard()
     LOG_METHOD();
 
     activeDeck = initialDeck;
+
+    tokenMap.clear();
+    for (const auto& card : activeDeck)
+        tokenMap.insert(card);
+
+    view->showDeck(DeckParams(activeDeck, tokenMap));
+}
+
+void DeckController::confirmEditCard()
+{
+    LOG_METHOD();
+
     view->showDeck(DeckParams(activeDeck, tokenMap));
 }
 

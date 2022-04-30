@@ -20,7 +20,6 @@ public:
     void setDeckName(const std::string& deckName);
     
     std::string addCard();
-    void editCard(const std::string& cardToken);
     void deleteCard(const std::string& cardToken);
 
     void apply();
@@ -29,7 +28,9 @@ public:
 private:
     ///TODO: avoid friendship
     friend class ControllerProvider;
+    friend class CardController;
     Card& getCard(const std::string& cardToken);
+    void confirmEditCard();
 
     IDeckView* view;
     std::shared_ptr<CollectionController> collectionController;

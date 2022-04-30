@@ -24,8 +24,6 @@ CardSnapshot SpacedRepetitionLearn::getNextForRepeat(const Deck& deck, CardSnaps
 {
     /* Получить следующую карту для повторения */
 
-    WARN_METHOD("implement");
-
     Card selectedCard;
     int level;
     int minInterval;

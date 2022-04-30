@@ -1,8 +1,9 @@
 #include "tools/logger.hpp"
 #include "cardcontroller.hpp"
 
-CardController::CardController(ICardView* view, Card& card)
-    : view(view), activeCard(card), initialCard(card)
+CardController::CardController(ICardView* view,
+        std::shared_ptr<DeckController> deckController, Card& card)
+    : view(view), deckController(deckController), activeCard(card), initialCard(card)
 {
     LOG_METHOD();
     
@@ -33,6 +34,8 @@ void CardController::setDescription(const std::wstring& value)
 void CardController::apply()
 {
     LOG_METHOD();
+
+    deckController->confirmEditCard();
 }
 
 void CardController::discard()
@@ -40,5 +43,7 @@ void CardController::discard()
     LOG_METHOD();
 
     activeCard = initialCard;
+
+    deckController->confirmEditCard();
 }
 
