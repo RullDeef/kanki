@@ -8,10 +8,10 @@
 
 ## Разбиение на компоненты
 
-![](diagrams/components.svg)
+![](diagrams/components_v2.svg)
 
 ---
 
 ## UML диаграмма классов
 
-![](diagrams/uml.svg)
+![](diagrams/uml_v2.svg)
