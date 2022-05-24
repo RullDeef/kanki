@@ -1,37 +1,122 @@
 #pragma once
 
-#include <map>
-#include "model/collection.hpp"
-#include "dbapi/icollectionrepo.hpp"
+#include <string>
+#include <fstream>
+#include "tools/logger.hpp"
+#include "tools/idgenerator.hpp"
+#include "core/icollectionrepository.hpp"
 
 class FileCollectionRepository : public ICollectionRepository
 {
 public:
-    explicit FileCollectionRepository(const std::string& filename);
-    ~FileCollectionRepository();
+    FileCollectionRepository(const std::string& filename)
+        : filename(filename)
+    {
+        try { load(); }
+        catch (const std::exception& e) {
+            ERROR_METHOD(e.what());
+        }
+    }
 
-    virtual std::list<size_t> getCollectionIds() override;
-    virtual std::list<size_t> getDeckIds(size_t collectionId) override;
-    virtual std::list<size_t> getCardIds(size_t deckId) override;
+    ~FileCollectionRepository() {
+        try { dump(); }
+        catch (const std::exception& e) {
+            ERROR_METHOD(e.what());
+        }
+    }
 
-    virtual CollectionInfo getCollection(size_t id) override;
-    virtual DeckInfo getDeck(size_t deckId) override;
-    virtual CardInfo getCard(size_t cardId) override;
+    // loads data from disk
+    void load() {
+        ///TODO: implement correctly
+        std::wifstream file(filename);
 
-    virtual void setCollection(const CollectionInfo& collectionInfo) override;
-    virtual void setDeck(const DeckInfo& deckInfo) override;
-    virtual void setCard(const CardInfo& cardInfo) override;
+        if (!file)
+            throw std::runtime_error("bad filename");
 
-    virtual void deleteCollection(size_t collectionId) override;
-    virtual void deleteDeck(size_t deckId) override;
-    virtual void deleteCard(size_t cardId) override;
+        IdGenerator idGenerator;
+        Collection collection(idGenerator());
+
+        do {
+            std::wstring deckName;
+            std::getline(file, deckName);
+
+            size_t deckSize;
+            file >> deckSize >> std::ws;
+
+            Deck deck(idGenerator(), deckName);
+            for (size_t i = 0; i < deckSize; i++) {
+                std::wstring symbol, reading, description;
+                std::getline(file, symbol);
+                std::getline(file, reading);
+                std::getline(file, description);
+
+                deck.addCard(Card(idGenerator(), symbol, reading, description));
+            }
+            file >> std::ws;
+            collection.addDeck(std::move(deck));
+        } while (!file.eof());
+
+        collections = { collection };
+    }
+
+    // writes data on disk
+    void dump() {
+        ///TODO: implement correctly
+        std::wofstream file(filename);
+
+        if (!file)
+            throw std::runtime_error("bad filename");
+
+        for (const auto& deck : collections.front())
+        {
+            file << deck.getName() << std::endl;
+            file << deck.size() << std::endl;
+
+            for (const auto& card : deck)
+            {
+                file << card.getSymbol() << std::endl;
+                file << card.getReading() << std::endl;
+                file << card.getDescription() << std::endl;
+            }
+        }
+    }
+
+    virtual std::list<Collection> getCollections() override {
+        return collections;
+    }
+
+    virtual Collection getCollectionById(size_t id) override {
+        LOG_METHOD();
+
+        auto iter = std::find_if(collections.begin(), collections.end(),
+            [id](const Collection& collection) { return collection.getId() == id; });
+        
+        if (iter == collections.end())
+            throw std::runtime_error("bad collection id");
+        return *iter;
+    }
+
+    virtual void removeCollection(size_t id) override {
+        LOG_METHOD();
+
+        std::remove_if(collections.begin(), collections.end(),
+            [id](const Collection& collection) { return collection.getId() == id; });
+    }
+
+    virtual void saveCollection(const Collection& collection) override {
+        LOG_METHOD();
+
+        size_t id = collection.getId();
+        auto iter = std::find_if(collections.begin(), collections.end(),
+            [id](const Collection& collection) { return collection.getId() == id; });
+        
+        if (iter != collections.end())
+            *iter = collection;
+        else
+            collections.push_back(collection);
+    }
 
 private:
-    void saveCollection();
-
     std::string filename;
-
-    CollectionInfo collection;
-    std::map<size_t, DeckInfo> decks;
-    std::map<size_t, CardInfo> cards;
+    std::list<Collection> collections;
 };

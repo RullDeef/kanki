@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <algorithm>
 #include <list>
 #include <string>
 #include "card.hpp"
@@ -8,25 +8,48 @@
 class Deck
 {
 public:
-    using name_type = std::string;
+    Deck(size_t id = 0, const std::wstring& name = L"new deck")
+        : id(id), name(name)
+    {}
 
-    explicit Deck(const name_type& name = "new Deck");
+    size_t getId() const { return id; }
+    const std::wstring& getName() const { return name; }
 
-    const name_type& getName() const;
-    void setName(const name_type& newName);
+    void setName(const std::wstring& newName) { name = newName; }
 
-    void addCard(Card&& card);
-    std::shared_ptr<Card> addNewCard();
-    
-    void deleteCard(size_t index);
-    void deleteCard(const std::shared_ptr<Card>& card);
+    size_t size() const { return cards.size(); }
 
-    size_t size() const;
+    void addCard(const Card& card) {
+        size_t id = card.getId();
+        auto iter = std::find_if(cards.begin(), cards.end(),
+            [id](const Card& card) { return card.getId() == id; });
+        
+        if (iter != cards.end())
+            *iter = card;
+        else
+            cards.push_back(card);
+    }
 
-    std::list<std::shared_ptr<Card>>::const_iterator begin() const;
-    std::list<std::shared_ptr<Card>>::const_iterator end() const;
+    const Card* getCardById(size_t id) {
+        auto iter = std::find_if(cards.begin(), cards.end(),
+            [id](const Card& card) { return card.getId() == id; });
+        
+        if (iter != cards.end())
+            return &*iter;
+        else
+            return nullptr;
+    }
+
+    void removeCardById(size_t id) {
+        std::remove_if(cards.begin(), cards.end(),
+            [id](const Card& card) { return card.getId() == id; });
+    }
+
+    std::list<Card>::const_iterator begin() const { return cards.begin(); }
+    std::list<Card>::const_iterator end() const { return cards.end(); }
 
 private:
-    name_type name;
-    std::list<std::shared_ptr<Card>> cards;
+    size_t id;
+    std::wstring name;
+    std::list<Card> cards;
 };

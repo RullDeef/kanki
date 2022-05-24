@@ -4,18 +4,17 @@
 #include <string>
 #include <QtWidgets/QDialog>
 #include "ui_deck_window.h"
-#include "core/controllerprovider.hpp"
-#include "viewapi/deckparams.hpp"
-#include "qtdeckview.hpp"
+#include "qteditorview.hpp"
+#include "core/editorcontroller.hpp"
 
 class DeckWindow : public QDialog
 {
 public:
-    DeckWindow(std::shared_ptr<ControllerProvider> controllerProvider, const std::string& deckToken);
+    DeckWindow(EditorController& controller, QtEditorView& view);
     ~DeckWindow();
 
 protected slots:
-    void onShowDeck(const DeckParams& deckParams);
+    void onShowDeck(const Deck& deck);
 
     void onAddCardButtonPressed();
     void onEditCardButtonPressed();
@@ -25,9 +24,7 @@ protected slots:
 
 private:
     Ui::DeckWindow *ui;
-    QtDeckView view;
+    QtEditorView& view;
 
-    std::string deckToken;
-    std::shared_ptr<DeckController> controller;
-    std::shared_ptr<ControllerProvider> controllerProvider;
+    EditorController& controller;
 };

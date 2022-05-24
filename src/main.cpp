@@ -1,9 +1,8 @@
-#include <iostream>
 #include <memory>
-#include <QWidget>
 #include <QApplication>
-#include "core/collectioncontroller.hpp"
-#include "db/filerepofactory.hpp"
+
+#include "core/editorcontroller.hpp"
+#include "db/filecollectionrepo.hpp"
 #include "ui/main_window.hpp"
 
 constexpr auto collectionFilename = "collection.txt";
@@ -13,10 +12,12 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    auto repoFactory = std::shared_ptr<IRepositoryFactory>(new FileRepositoryFactory(collectionFilename, sessionsFilename));
-    auto controllerProvider = std::make_shared<ControllerProvider>(repoFactory);
+    std::unique_ptr<ICollectionRepository> collectionRepo(
+        new FileCollectionRepository(collectionFilename));
 
-    auto mainWindow = MainWindow(controllerProvider);
+    EditorController editorController(collectionRepo.get());
+
+    auto mainWindow = MainWindow(editorController);
     mainWindow.show();
 
     return app.exec();

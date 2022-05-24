@@ -2,22 +2,27 @@
 
 #include <list>
 #include <chrono>
-#include "cardsnapshot.hpp"
+#include "snapshot.hpp"
 
 class Session
 {
 public:
-    Session();
+    Session(size_t id = 0)
+        : id(id), startTime(std::chrono::system_clock::now())
+    {}
 
-    void endSession();
+    size_t getId() const { return id; }
 
-    void addSnapshot(const CardSnapshot& snapshot);
+    void endSession() { endTime = std::chrono::system_clock::now(); }
 
-    std::list<CardSnapshot>::const_iterator begin() const;
-    std::list<CardSnapshot>::const_iterator end() const;
+    void addSnapshot(const Snapshot& snapshot) { snapshots.push_back(snapshot); }
+
+    std::list<Snapshot>::const_iterator begin() const { return snapshots.begin(); }
+    std::list<Snapshot>::const_iterator end() const { return snapshots.end(); }
 
 private:
-    std::list<CardSnapshot> snapshots;
+    size_t id;
+    std::list<Snapshot> snapshots;
     std::chrono::system_clock::time_point startTime;
     std::chrono::system_clock::time_point endTime;
 };

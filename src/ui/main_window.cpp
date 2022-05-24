@@ -1,16 +1,12 @@
 #include <QString>
 #include "tools/logger.hpp"
-#include "tools/convertor.hpp"
-#include "core/controllerprovider.hpp"
 #include "deck_window.hpp"
 #include "main_window.hpp"
 
-MainWindow::MainWindow(std::shared_ptr<ControllerProvider> controllerProvider)
-    : ui(new Ui::MainWindow), controllerProvider(controllerProvider)
+MainWindow::MainWindow(EditorController& controller)
+    : ui(new Ui::MainWindow), controller(controller)
 {
     ui->setupUi(this);
-
-    connect(&view, &QtCollectionView::showCollectionSignal, this, &MainWindow::onShowCollection);
 
     connect(ui->addDeckButton, &QPushButton::pressed, this, &MainWindow::onAddDeckButtonPressed);
     connect(ui->editDeckButton, &QPushButton::pressed, this, &MainWindow::onEditDeckButtonPressed);
@@ -18,7 +14,10 @@ MainWindow::MainWindow(std::shared_ptr<ControllerProvider> controllerProvider)
     connect(ui->repeatDeckButton, &QPushButton::pressed, this, &MainWindow::onRepeatDeckButtonPressed);
     connect(ui->deleteDeckButton, &QPushButton::pressed, this, &MainWindow::onDeleteDeckButtonPressed);
 
-    controller = controllerProvider->getCollectionController(&view);
+    controller.setView(&view);
+    connect(&view, &QtEditorView::showCollectionSignal, this, &MainWindow::onShowCollection);
+
+    controller.editCollection();
 }
 
 MainWindow::~MainWindow()
@@ -26,16 +25,20 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::onShowCollection(const CollectionParams& collectionParams)
+void MainWindow::onShowCollection(const Collection& collection)
 {
     LOG_METHOD();
 
     ui->decksList->clear();
-    for (auto [token, name] : collectionParams.getDeckListInfo())
+    for (auto deck : collection)
     {
+        auto id = deck.getId();
+        auto name = deck.getName();
+
         auto item = new QListWidgetItem();
-        item->setText(QString::fromStdString(name));
-        item->setData(Qt::UserRole, QVariant(QString::fromStdString(token)));
+        item->setText(QString::fromStdWString(name));
+        item->setData(Qt::UserRole, QVariant(qlonglong(id)));
+
         ui->decksList->addItem(item);
     }
 }
@@ -44,10 +47,11 @@ void MainWindow::onAddDeckButtonPressed()
 {
     LOG_METHOD();
 
-    auto deckToken = controller->addDeck();
-
-    auto deckWindow = DeckWindow(controllerProvider, deckToken);
+    auto deckWindow = DeckWindow(controller, view);
+    controller.addDeck();
     deckWindow.exec();
+
+    controller.saveActiveCollection();
 }
 
 void MainWindow::onEditDeckButtonPressed()
@@ -59,56 +63,42 @@ void MainWindow::onEditDeckButtonPressed()
         WARN_METHOD("selected empty");
     else
     {
-        auto deckToken = selected.first().data(Qt::UserRole).toString().toStdString();
-        ///TODO: controller->editDeck(deckIndex);
+        size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
 
-        auto deckWindow = DeckWindow(controllerProvider, deckToken);
+        auto deckWindow = DeckWindow(controller, view);
+        controller.editDeck(deckId);
         deckWindow.exec();
+        
+        controller.saveActiveCollection();
     }
 }
 
 void MainWindow::onLearnDeckButtonPressed()
 {
-    LOG_METHOD();
+    WARN_METHOD();
 
-    auto selected = ui->decksList->selectedItems();
-    if (selected.empty())
-        WARN_METHOD("selected empty");
-    else
-    {
-        auto selectedDeckName = selected.front()->text().toStdString();
-
-        // auto subview = std::unique_ptr<QtActivityView>(new QtDeckView);
-        // auto subcontroller = controller->editDeck(subview.get(), selectedDeckName);
-
-        // auto deckWindow = DeckWindow(subview.get(), subcontroller);
-
-        // subcontroller->initialize(DeckParams());
-        // deckWindow.exec();
-        ERROR_METHOD("implement");
-    }
+    // auto selected = ui->decksList->selectedItems();
+    // if (selected.empty())
+    //     WARN_METHOD("selected empty");
+    // else
+    // {
+    //     size_t deckId = selected.front()->text().toULongLong();
+    //     controller->learnDeck(deckId);
+    // }
 }
 
 void MainWindow::onRepeatDeckButtonPressed()
 {
-    LOG_METHOD();
+    WARN_METHOD();
 
-    auto selected = ui->decksList->selectionModel()->selectedIndexes();
-    if (selected.empty())
-        WARN_METHOD("selected empty");
-    else
-    {
-        auto deckToken = selected.first().data(Qt::UserRole).toString().toStdString();
-
-        // auto subview = std::unique_ptr<QtActivityView>(new QtDeckView);
-        // auto subcontroller = controller->editDeck(subview.get(), selectedDeckName);
-
-        // auto deckWindow = DeckWindow(subview.get(), subcontroller);
-
-        // subcontroller->initialize(DeckParams());
-        // deckWindow.exec();
-        ERROR_METHOD("implement");
-    }
+    // auto selected = ui->decksList->selectionModel()->selectedIndexes();
+    // if (selected.empty())
+    //     WARN_METHOD("selected empty");
+    // else
+    // {
+    //     size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
+    //     controller->repeatDeck(deckId);
+    // }
 }
 
 void MainWindow::onDeleteDeckButtonPressed()
@@ -120,7 +110,9 @@ void MainWindow::onDeleteDeckButtonPressed()
         WARN_METHOD("selected empty");
     else
     {
-        auto deckToken = selected.first().data(Qt::UserRole).toString().toStdString();
-        controller->deleteDeck(deckToken);
+        size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
+        
+        controller.removeDeck(deckId);
+        controller.saveActiveCollection();
     }
 }

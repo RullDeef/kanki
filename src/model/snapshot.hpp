@@ -3,13 +3,13 @@
 #include <chrono>
 #include "card.hpp"
 
-class CardSnapshot
+class Snapshot
 {
 public:
     enum class ParamType { READING, TRANSLATION };
 
     ///TODO: add time point to snapshot
-    CardSnapshot(const Card& card, ParamType paramType, int knowledgeDegree = 0,
+    Snapshot(const Card& card, ParamType paramType, int knowledgeDegree = 0,
         std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::now());
 
     const Card& getCard() const;

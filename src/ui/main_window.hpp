@@ -1,19 +1,18 @@
 #pragma once
 
 #include <QMainWindow>
-#include "core/controllerprovider.hpp"
-#include "qtcollectionview.hpp"
 #include "ui_main_window.h"
+#include "core/editorcontroller.hpp"
+#include "qteditorview.hpp"
 
 class MainWindow : public QMainWindow
 {
 public:
-    explicit MainWindow(std::shared_ptr<ControllerProvider> controllerProvider);
-
+    MainWindow(EditorController& controller);
     ~MainWindow();
 
 protected slots:
-    void onShowCollection(const CollectionParams& collectionParams);
+    void onShowCollection(const Collection& collection);
 
     void onAddDeckButtonPressed();
     void onEditDeckButtonPressed();
@@ -23,8 +22,7 @@ protected slots:
 
 private:
     Ui::MainWindow* ui;
-    QtCollectionView view;
 
-    std::shared_ptr<CollectionController> controller;
-    std::shared_ptr<ControllerProvider> controllerProvider;
+    QtEditorView view;
+    EditorController& controller;
 };

@@ -3,21 +3,19 @@
 #include "deck_window.hpp"
 #include "card_window.hpp"
 
-DeckWindow::DeckWindow(std::shared_ptr<ControllerProvider> controllerProvider, const std::string& deckToken)
-    : ui(new Ui::DeckWindow), controllerProvider(controllerProvider), deckToken(deckToken)
+DeckWindow::DeckWindow(EditorController& controller, QtEditorView& view)
+    : ui(new Ui::DeckWindow), controller(controller), view(view)
 {
     ui->setupUi(this);
     setModal(true);
 
-    connect(&view, &QtDeckView::onShowDeck, this, &DeckWindow::onShowDeck);
+    connect(&view, &QtEditorView::showDeckSignal, this, &DeckWindow::onShowDeck);
 
     connect(ui->addCardButton, &QPushButton::pressed, this, &DeckWindow::onAddCardButtonPressed);
     connect(ui->editCardButton, &QPushButton::pressed, this, &DeckWindow::onEditCardButtonPressed);
     connect(ui->deleteCardButton, &QPushButton::pressed, this, &DeckWindow::onDeleteCardButtonPressed);
     connect(ui->applyChangesButton, &QPushButton::pressed, this, &DeckWindow::onApplyChangesButtonPressed);
     connect(ui->discardChangesButton, &QPushButton::pressed, this, &DeckWindow::onDiscardButtonPressed);
-
-    controller = controllerProvider->getDeckController(&view, deckToken);
 }
 
 DeckWindow::~DeckWindow()
@@ -25,32 +23,33 @@ DeckWindow::~DeckWindow()
     delete ui;
 }
 
-void DeckWindow::onShowDeck(const DeckParams& deckParams)
+void DeckWindow::onShowDeck(const Deck& deck)
 {
     LOG_METHOD();
 
-    ui->deckNameEdit->setText(QString::fromStdString(deckParams.getName()));
+    ui->deckNameEdit->setText(QString::fromStdWString(deck.getName()));
 
     ui->cardListWidget->clear();
-    for (const auto& cardParams : deckParams)
+    for (const auto& card : deck)
     {
         auto item = new QListWidgetItem(ui->cardListWidget);
-        auto cardView = new CardViewWidget(cardParams.second);
-        item->setData(Qt::UserRole, QString::fromStdString(cardParams.first));
+        auto cardView = new CardViewWidget(card);
+        item->setData(Qt::UserRole, QVariant((qlonglong) card.getId()));
         item->setSizeHint(cardView->sizeHint());
         ui->cardListWidget->addItem(item);
         ui->cardListWidget->setItemWidget(item, cardView);
     }
 }
 
-
 void DeckWindow::onAddCardButtonPressed()
 {
     LOG_METHOD();
 
-    auto token = controller->addCard();
+    ///KOSTYLI prevents reset of deck name
+    controller.setDeckName(ui->deckNameEdit->text().toStdWString());
 
-    auto cardWindow = CardWindow(controllerProvider, token);
+    auto cardWindow = CardWindow(controller, view);
+    controller.addCard();
     cardWindow.exec();
 }
 
@@ -63,10 +62,13 @@ void DeckWindow::onEditCardButtonPressed()
         WARN_METHOD("selected empty");
     else
     {
-        auto cardToken = selected.first().data(Qt::UserRole).toString().toStdString();
-        ///TODO: controller->editCard(cardToken);
+        ///KOSTYLI prevents reset of deck name
+        controller.setDeckName(ui->deckNameEdit->text().toStdWString());
 
-        auto cardWindow = CardWindow(controllerProvider, cardToken);
+        auto cardId = selected.first().data(Qt::UserRole).toULongLong();
+
+        auto cardWindow = CardWindow(controller, view);
+        controller.editCard(cardId);
         cardWindow.exec();
     }
 }
@@ -80,8 +82,11 @@ void DeckWindow::onDeleteCardButtonPressed()
         WARN_METHOD("nothing selected");
     else
     {
-        auto cardToken = selected.first().data(Qt::UserRole).toString().toStdString();
-        controller->deleteCard(cardToken);
+        ///KOSTYLI prevents reset of deck name
+        controller.setDeckName(ui->deckNameEdit->text().toStdWString());
+
+        auto cardId = selected.first().data(Qt::UserRole).toULongLong();
+        controller.removeCard(cardId);
     }
 }
 
@@ -89,8 +94,8 @@ void DeckWindow::onApplyChangesButtonPressed()
 {
     LOG_METHOD();
 
-    controller->setDeckName(ui->deckNameEdit->text().toStdString());    
-    controller->apply();
+    controller.setDeckName(ui->deckNameEdit->text().toStdWString());
+    controller.saveActiveDeck();
     accept();
 }
 
@@ -98,7 +103,7 @@ void DeckWindow::onDiscardButtonPressed()
 {
     LOG_METHOD();
 
-    controller->discard();
+    controller.rejectActiveDeck();
     reject();
 }
 
