@@ -1,10 +1,11 @@
 #include <QString>
 #include "tools/logger.hpp"
-#include "deck_window.hpp"
-#include "main_window.hpp"
+#include "ui/editor/deck_window.hpp"
+#include "ui/learn/learn_window.hpp"
+#include "ui/main_window.hpp"
 
-MainWindow::MainWindow(EditorController& controller)
-    : ui(new Ui::MainWindow), controller(controller)
+MainWindow::MainWindow(EditorController& editorController, LearnerController& learnerController)
+    : ui(new Ui::MainWindow), editorController(editorController), learnerController(learnerController)
 {
     ui->setupUi(this);
 
@@ -14,10 +15,13 @@ MainWindow::MainWindow(EditorController& controller)
     connect(ui->repeatDeckButton, &QPushButton::pressed, this, &MainWindow::onRepeatDeckButtonPressed);
     connect(ui->deleteDeckButton, &QPushButton::pressed, this, &MainWindow::onDeleteDeckButtonPressed);
 
-    controller.setView(&view);
-    connect(&view, &QtEditorView::showCollectionSignal, this, &MainWindow::onShowCollection);
+    editorController.setView(&editorView);
+    connect(&editorView, &QtEditorView::showCollectionSignal, this, &MainWindow::onShowCollection);
 
-    controller.editCollection();
+    learnerController.setView(&learnerView);
+
+    ///KOSTYLI show starting collection to work with
+    editorController.editCollection();
 }
 
 MainWindow::~MainWindow()
@@ -47,11 +51,11 @@ void MainWindow::onAddDeckButtonPressed()
 {
     LOG_METHOD();
 
-    auto deckWindow = DeckWindow(controller, view);
-    controller.addDeck();
+    auto deckWindow = DeckWindow(editorController, editorView);
+    editorController.addDeck();
     deckWindow.exec();
 
-    controller.saveActiveCollection();
+    editorController.saveActiveCollection();
 }
 
 void MainWindow::onEditDeckButtonPressed()
@@ -65,26 +69,45 @@ void MainWindow::onEditDeckButtonPressed()
     {
         size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
 
-        auto deckWindow = DeckWindow(controller, view);
-        controller.editDeck(deckId);
+        auto deckWindow = DeckWindow(editorController, editorView);
+        editorController.editDeck(deckId);
         deckWindow.exec();
         
-        controller.saveActiveCollection();
+        editorController.saveActiveCollection();
+    }
+}
+
+void MainWindow::onDeleteDeckButtonPressed()
+{
+    LOG_METHOD();
+
+    auto selected = ui->decksList->selectionModel()->selectedIndexes();
+    if (selected.empty())
+        WARN_METHOD("selected empty");
+    else
+    {
+        size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
+        
+        editorController.removeDeck(deckId);
+        editorController.saveActiveCollection();
     }
 }
 
 void MainWindow::onLearnDeckButtonPressed()
 {
-    WARN_METHOD();
+    LOG_METHOD();
 
-    // auto selected = ui->decksList->selectedItems();
-    // if (selected.empty())
-    //     WARN_METHOD("selected empty");
-    // else
-    // {
-    //     size_t deckId = selected.front()->text().toULongLong();
-    //     controller->learnDeck(deckId);
-    // }
+    auto selected = ui->decksList->selectionModel()->selectedIndexes();
+    if (selected.empty())
+        WARN_METHOD("selected empty");
+    else
+    {
+        size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
+
+        LearnWindow learnWindow(learnerController, learnerView);
+        learnerController.learnNext(deckId);
+        learnWindow.exec();
+    }
 }
 
 void MainWindow::onRepeatDeckButtonPressed()
@@ -99,20 +122,4 @@ void MainWindow::onRepeatDeckButtonPressed()
     //     size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
     //     controller->repeatDeck(deckId);
     // }
-}
-
-void MainWindow::onDeleteDeckButtonPressed()
-{
-    LOG_METHOD();
-
-    auto selected = ui->decksList->selectionModel()->selectedIndexes();
-    if (selected.empty())
-        WARN_METHOD("selected empty");
-    else
-    {
-        size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
-        
-        controller.removeDeck(deckId);
-        controller.saveActiveCollection();
-    }
 }

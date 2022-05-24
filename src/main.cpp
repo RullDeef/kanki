@@ -1,8 +1,10 @@
-#include <memory>
 #include <QApplication>
-
 #include "core/editorcontroller.hpp"
+#include "core/learnercontroller.hpp"
+#include "core/spacedlearner.hpp"
+#include "core/spacedestimator.hpp"
 #include "db/filecollectionrepo.hpp"
+#include "db/filesessionrepo.hpp"
 #include "ui/main_window.hpp"
 
 constexpr auto collectionFilename = "collection.txt";
@@ -12,13 +14,29 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    std::unique_ptr<ICollectionRepository> collectionRepo(
-        new FileCollectionRepository(collectionFilename));
+    ICollectionRepository* collectionRepo = new FileCollectionRepository(collectionFilename);
+    ISessionRepository* sessionRepo = new FileSessionRepository(sessionsFilename);
 
-    EditorController editorController(collectionRepo.get());
+    CollectionManager collectionManager(collectionRepo);
+    SessionManager sessionManager(sessionRepo);
 
-    auto mainWindow = MainWindow(editorController);
+    EditorController editorController(collectionManager);
+
+    SpacedLearner spacedLearner(collectionManager, sessionManager);
+    SpacedEstimator spacedEstimator;
+
+    LearnerController learnerController(collectionManager, sessionManager);
+
+    learnerController.setLearner(&spacedLearner);
+    learnerController.setEstimator(&spacedEstimator);
+
+    auto mainWindow = MainWindow(editorController, learnerController);
     mainWindow.show();
 
-    return app.exec();
+    int res = app.exec();
+
+    delete collectionRepo;
+    delete sessionRepo;
+
+    return res;
 }

@@ -20,6 +20,11 @@ int Snapshot::getKnowledgeDegree() const
     return knowledgeDegree;
 }
 
+std::chrono::system_clock::time_point Snapshot::getTimePoint() const
+{
+    return timePoint;
+}
+
 std::chrono::system_clock::duration Snapshot::getTimeDelta() const
 {
     return std::chrono::system_clock::now() - timePoint;

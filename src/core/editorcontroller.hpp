@@ -12,8 +12,8 @@
 class EditorController
 {
 public:
-    EditorController(ICollectionRepository* collectionRepository)
-        : collectionManager(collectionRepository)
+    EditorController(CollectionManager& collectionManager)
+        : collectionManager(collectionManager)
     {}
 
     ~EditorController() {
@@ -189,6 +189,6 @@ private:
     Deck* activeDeck = nullptr;
     Card* activeCard = nullptr;
 
-    CollectionManager collectionManager;
+    CollectionManager& collectionManager;
     IdGenerator idGenerator;
 };

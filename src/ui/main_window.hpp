@@ -3,12 +3,14 @@
 #include <QMainWindow>
 #include "ui_main_window.h"
 #include "core/editorcontroller.hpp"
-#include "qteditorview.hpp"
+#include "core/learnercontroller.hpp"
+#include "ui/editor/qteditorview.hpp"
+#include "ui/learn/qtlearnerview.hpp"
 
 class MainWindow : public QMainWindow
 {
 public:
-    MainWindow(EditorController& controller);
+    MainWindow(EditorController& editorController, LearnerController& learnerController);
     ~MainWindow();
 
 protected slots:
@@ -16,13 +18,15 @@ protected slots:
 
     void onAddDeckButtonPressed();
     void onEditDeckButtonPressed();
+    void onDeleteDeckButtonPressed();
     void onLearnDeckButtonPressed();
     void onRepeatDeckButtonPressed();
-    void onDeleteDeckButtonPressed();
 
 private:
     Ui::MainWindow* ui;
 
-    QtEditorView view;
-    EditorController& controller;
+    QtEditorView editorView;
+    QtLearnerView learnerView;
+    EditorController& editorController;
+    LearnerController& learnerController;
 };

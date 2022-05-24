@@ -30,6 +30,25 @@ public:
         collectionRepository->removeCollection(id);
     }
 
+    Deck getDeckById(size_t deckId) {
+        for (auto collection : collectionRepository->getCollections())
+            for (auto deck : collection)
+                if (deck.getId() == deckId)
+                    return deck;
+
+        throw std::runtime_error("invalid deck id");
+    }
+
+    Card getCardById(size_t cardId) {
+        for (auto collection : collectionRepository->getCollections())
+            for (auto deck : collection)
+                for (auto card : deck)
+                    if (card.getId() == cardId)
+                        return card;
+
+        throw std::runtime_error("invalid card id");
+    }
+
 private:
     ICollectionRepository* collectionRepository;
 };

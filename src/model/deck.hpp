@@ -41,8 +41,10 @@ public:
     }
 
     void removeCardById(size_t id) {
-        std::remove_if(cards.begin(), cards.end(),
-            [id](const Card& card) { return card.getId() == id; });
+        cards.erase(
+            std::remove_if(cards.begin(), cards.end(),
+                [id](const Card& card) { return card.getId() == id; }),
+            cards.end());
     }
 
     std::list<Card>::const_iterator begin() const { return cards.begin(); }

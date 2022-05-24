@@ -48,8 +48,10 @@ public:
     }
 
     void removeDeckById(size_t id) {
-        std::remove_if(decks.begin(), decks.end(),
-            [id](const Deck& deck) { return deck.getId() == id; });
+        decks.erase(
+            std::remove_if(decks.begin(), decks.end(),
+                [id](const Deck& deck) { return deck.getId() == id; }),
+            decks.end());
     }
 
 private:

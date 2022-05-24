@@ -21,7 +21,10 @@ public:
     void setReading(const std::wstring& value) { reading = value; }
     void setDescription(const std::wstring& value) { description = value; }
 
-    // bool operator==(const Card& other) const;
+    bool operator==(const Card& other) const {
+        return symbol == other.symbol && reading == other.reading &&
+            description == other.description;
+    }
 
 private:
     size_t id;

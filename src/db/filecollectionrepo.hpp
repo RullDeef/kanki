@@ -99,8 +99,10 @@ public:
     virtual void removeCollection(size_t id) override {
         LOG_METHOD();
 
-        std::remove_if(collections.begin(), collections.end(),
-            [id](const Collection& collection) { return collection.getId() == id; });
+        collections.erase(
+            std::remove_if(collections.begin(), collections.end(),
+                [id](const Collection& collection) { return collection.getId() == id; }),
+            collections.end());
     }
 
     virtual void saveCollection(const Collection& collection) override {

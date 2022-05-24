@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_AUTOUIC_SEARCH_PATHS src/ui)
+set(CMAKE_AUTOUIC_SEARCH_PATHS src/ui src/ui/editor src/ui/learn)
 
 set(TOOLS_SOURCE
     src/tools/logger.cpp
@@ -32,12 +32,15 @@ set(REPO_SOURCE
 )
 
 set(UI_SOURCE
-    src/ui/qteditorview.cpp
+    src/ui/editor/qteditorview.cpp
+    src/ui/editor/deck_window.cpp
+    src/ui/editor/card_window.cpp
+    src/ui/editor/cardview_widget.cpp
+
+    src/ui/learn/qtlearnerview.cpp
+    src/ui/learn/learn_window.cpp
     
     src/ui/main_window.cpp
-    src/ui/deck_window.cpp
-    src/ui/card_window.cpp
-    src/ui/cardview_widget.cpp
 )
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)

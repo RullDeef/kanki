@@ -16,6 +16,10 @@ public:
     ParamType getParamType() const;
     int getKnowledgeDegree() const;
 
+    void setKnowledgeDegree(int degree) { knowledgeDegree = degree; }
+
+    std::chrono::system_clock::time_point getTimePoint() const;
+
     // возвращает время с момента создания снапшота
     std::chrono::system_clock::duration getTimeDelta() const;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>LearnWindow</class>
+ <widget class="QDialog" name="LearnWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -47,7 +47,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="symbolLabel">
        <property name="font">
         <font>
          <pointsize>24</pointsize>
@@ -66,7 +66,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="readingLabel">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -100,7 +100,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="descriptionLabel">
      <property name="font">
       <font>
        <pointsize>10</pointsize>
