@@ -35,13 +35,12 @@ TEST(SpacedLearner_getNextForLearn, NoNewCards)
     std::list<Snapshot> snapshots = {
         Snapshot(Card(13), Snapshot::ParamType::READING),
         Snapshot(Card(14), Snapshot::ParamType::READING),
-        Snapshot(Card(15), Snapshot::ParamType::READING)
-    };
+        Snapshot(Card(15), Snapshot::ParamType::READING)};
 
     EXPECT_CALL(collectionManager, getDeckById)
         .Times(1)
         .WillOnce(Return(oldDeck));
-    
+
     EXPECT_CALL(sessionManager, getAllCardSnapshots)
         .Times(3)
         .WillRepeatedly(Return(snapshots));
@@ -68,7 +67,7 @@ TEST(SpacedLearner_getNextForLearn, AllCardsNew)
     EXPECT_CALL(sessionManager, getAllCardSnapshots)
         .Times(1)
         .WillOnce(Return(std::list<Snapshot>()));
-    
+
     auto card = learner.getNextForLearn(2);
     EXPECT_EQ(card, firstCard);
 }
@@ -88,21 +87,19 @@ TEST(SpacedLearner_getNextForLearn, HasReadyForRepeat)
     std::list<Snapshot> snapshots1 = {
         Snapshot(Card(10), Snapshot::ParamType::READING),
         Snapshot(Card(10), Snapshot::ParamType::READING),
-        Snapshot(Card(10), Snapshot::ParamType::READING)
-    };
+        Snapshot(Card(10), Snapshot::ParamType::READING)};
 
     std::list<Snapshot> snapshots2 = {
         Snapshot(Card(11), Snapshot::ParamType::READING),
         Snapshot(Card(11), Snapshot::ParamType::READING),
-        Snapshot(Card(11), Snapshot::ParamType::READING)
-    };
+        Snapshot(Card(11), Snapshot::ParamType::READING)};
 
     std::list<Snapshot> snapshots3 = {};
 
     EXPECT_CALL(collectionManager, getDeckById)
         .Times(1)
         .WillOnce(Return(freshDeck));
-    
+
     EXPECT_CALL(sessionManager, getAllCardSnapshots)
         .Times(3)
         .WillOnce(Return(snapshots1))
@@ -165,20 +162,17 @@ TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
     std::list<Snapshot> snapshots1 = {
         Snapshot(Card(10), Snapshot::ParamType::READING),
         Snapshot(Card(10), Snapshot::ParamType::READING),
-        Snapshot(Card(10), Snapshot::ParamType::READING)
-    };
+        Snapshot(Card(10), Snapshot::ParamType::READING)};
 
     std::list<Snapshot> snapshots2 = {
         Snapshot(Card(11), Snapshot::ParamType::READING),
         Snapshot(Card(11), Snapshot::ParamType::READING),
-        Snapshot(Card(11), Snapshot::ParamType::READING)
-    };
+        Snapshot(Card(11), Snapshot::ParamType::READING)};
 
     std::list<Snapshot> snapshots3 = {
         Snapshot(Card(12), Snapshot::ParamType::READING),
         Snapshot(Card(12), Snapshot::ParamType::READING),
-        Snapshot(Card(12), Snapshot::ParamType::READING)
-    };
+        Snapshot(Card(12), Snapshot::ParamType::READING)};
 
     EXPECT_CALL(collectionManager, getDeckById)
         .Times(1)

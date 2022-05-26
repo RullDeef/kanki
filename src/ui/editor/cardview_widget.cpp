@@ -1,7 +1,7 @@
 #include "tools/logger.hpp"
 #include "cardview_widget.hpp"
 
-CardViewWidget::CardViewWidget(const Card& card)
+CardViewWidget::CardViewWidget(const Card &card)
     : ui(new Ui::CardViewWidget)
 {
     LOG_METHOD();

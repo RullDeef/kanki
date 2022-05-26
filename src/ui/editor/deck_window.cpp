@@ -3,7 +3,7 @@
 #include "deck_window.hpp"
 #include "card_window.hpp"
 
-DeckWindow::DeckWindow(EditorController& controller, QtEditorView& view)
+DeckWindow::DeckWindow(EditorController &controller, QtEditorView &view)
     : ui(new Ui::DeckWindow), controller(controller), view(view)
 {
     ui->setupUi(this);
@@ -23,18 +23,18 @@ DeckWindow::~DeckWindow()
     delete ui;
 }
 
-void DeckWindow::onShowDeck(const Deck& deck)
+void DeckWindow::onShowDeck(const Deck &deck)
 {
     LOG_METHOD();
 
     ui->deckNameEdit->setText(QString::fromStdWString(deck.getName()));
 
     ui->cardListWidget->clear();
-    for (const auto& card : deck)
+    for (const auto &card : deck)
     {
         auto item = new QListWidgetItem(ui->cardListWidget);
         auto cardView = new CardViewWidget(card);
-        item->setData(Qt::UserRole, QVariant((qlonglong) card.getId()));
+        item->setData(Qt::UserRole, QVariant((qlonglong)card.getId()));
         item->setSizeHint(cardView->sizeHint());
         ui->cardListWidget->addItem(item);
         ui->cardListWidget->setItemWidget(item, cardView);
@@ -45,7 +45,7 @@ void DeckWindow::onAddCardButtonPressed()
 {
     LOG_METHOD();
 
-    ///KOSTYLI prevents reset of deck name
+    /// KOSTYLI prevents reset of deck name
     controller.setDeckName(ui->deckNameEdit->text().toStdWString());
 
     auto cardWindow = CardWindow(controller, view);
@@ -62,7 +62,7 @@ void DeckWindow::onEditCardButtonPressed()
         WARN_METHOD("selected empty");
     else
     {
-        ///KOSTYLI prevents reset of deck name
+        /// KOSTYLI prevents reset of deck name
         controller.setDeckName(ui->deckNameEdit->text().toStdWString());
 
         auto cardId = selected.first().data(Qt::UserRole).toULongLong();
@@ -82,7 +82,7 @@ void DeckWindow::onDeleteCardButtonPressed()
         WARN_METHOD("nothing selected");
     else
     {
-        ///KOSTYLI prevents reset of deck name
+        /// KOSTYLI prevents reset of deck name
         controller.setDeckName(ui->deckNameEdit->text().toStdWString());
 
         auto cardId = selected.first().data(Qt::UserRole).toULongLong();
@@ -106,4 +106,3 @@ void DeckWindow::onDiscardButtonPressed()
     controller.rejectActiveDeck();
     reject();
 }
-

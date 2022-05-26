@@ -1,54 +1,25 @@
 #pragma once
 
-#include <algorithm>
-#include <list>
-#include <stdexcept>
 #include "core/icollectionrepository.hpp"
 #include "core/icollectionmanager.hpp"
 
 class CollectionManager : public ICollectionManager
 {
 public:
-    CollectionManager(ICollectionRepository* collectionRepository)
-        : collectionRepository(collectionRepository)
-    {}
+    CollectionManager(ICollectionRepository *collectionRepository);
 
-    virtual Collection getActiveCollection() override {
-        auto collections = collectionRepository->getCollections();
-        return collections.front();
-    }
+    virtual Collection getActiveCollection() override;
 
-    virtual void saveCollection(const Collection& collection) override {
-        collectionRepository->saveCollection(collection);
-    }
+    virtual void saveCollection(const Collection &collection) override;
 
-    virtual Collection getCollectionById(size_t id) override {
-        return collectionRepository->getCollectionById(id);
-    }
+    virtual Collection getCollectionById(size_t id) override;
 
-    virtual void deleteCollection(size_t id) override {
-        collectionRepository->removeCollection(id);
-    }
+    virtual void deleteCollection(size_t id) override;
 
-    virtual Deck getDeckById(size_t deckId) override {
-        for (auto collection : collectionRepository->getCollections())
-            for (auto deck : collection)
-                if (deck.getId() == deckId)
-                    return deck;
+    virtual Deck getDeckById(size_t deckId) override;
 
-        throw std::runtime_error("invalid deck id");
-    }
-
-    virtual Card getCardById(size_t cardId) override {
-        for (auto collection : collectionRepository->getCollections())
-            for (auto deck : collection)
-                for (auto card : deck)
-                    if (card.getId() == cardId)
-                        return card;
-
-        throw std::runtime_error("invalid card id");
-    }
+    virtual Card getCardById(size_t cardId) override;
 
 private:
-    ICollectionRepository* collectionRepository;
+    ICollectionRepository *collectionRepository;
 };

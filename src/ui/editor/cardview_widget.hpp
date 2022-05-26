@@ -7,7 +7,7 @@
 class CardViewWidget : public QWidget
 {
 public:
-    explicit CardViewWidget(const Card& card);
+    explicit CardViewWidget(const Card &card);
     ~CardViewWidget();
 
 private:

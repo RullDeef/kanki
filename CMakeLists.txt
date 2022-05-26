@@ -13,7 +13,6 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS src/ui src/ui/editor src/ui/learn)
 
 set(TOOLS_SOURCE
     src/tools/logger.cpp
-    # src/tools/convertor.cpp
 )
 
 set(MODEL_SOURCE
@@ -23,12 +22,17 @@ set(MODEL_SOURCE
     src/model/snapshot.cpp
     src/model/session.cpp
 
-    # src/core/collectionmanager.cpp
+    src/core/spacedlearner.cpp
+    src/core/spacedestimator.cpp
+    src/core/collectionmanager.cpp
+    src/core/sessionmanager.cpp
+    src/core/editorcontroller.cpp
+    src/core/learnercontroller.cpp
 )
 
 set(REPO_SOURCE
-    # src/db/filecollectionrepo.cpp
-    # src/db/filesessionrepo.cpp
+    src/db/filecollectionrepo.cpp
+    src/db/filesessionrepo.cpp
 )
 
 set(UI_SOURCE

@@ -10,7 +10,7 @@ void QtLearnerView::showCard(const Card &card)
 
 void QtLearnerView::askCard(const Card &card)
 {
-    emit showSnapshotSignal(card);
+    /// TODO:
 }
 
 void QtLearnerView::noCardsForLearn()

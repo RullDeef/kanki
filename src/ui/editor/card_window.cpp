@@ -1,7 +1,7 @@
 #include "tools/logger.hpp"
 #include "card_window.hpp"
 
-CardWindow::CardWindow(EditorController& controller, QtEditorView& view)
+CardWindow::CardWindow(EditorController &controller, QtEditorView &view)
     : ui(new Ui::CardWindow), controller(controller)
 {
     ui->setupUi(this);
@@ -18,7 +18,7 @@ CardWindow::~CardWindow()
     delete ui;
 }
 
-void CardWindow::onShowCard(const Card& card)
+void CardWindow::onShowCard(const Card &card)
 {
     LOG_METHOD();
 

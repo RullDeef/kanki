@@ -10,18 +10,18 @@
 class CardWindow : public QDialog
 {
 public:
-    CardWindow(EditorController& controller, QtEditorView& view);
+    CardWindow(EditorController &controller, QtEditorView &view);
     ~CardWindow();
 
 protected slots:
-    void onShowCard(const Card& cardParams);
+    void onShowCard(const Card &cardParams);
 
-    ///TODO: apply with ctrl+Enter
+    /// TODO: apply with ctrl+Enter
     void onApplyChangesButtonPressed();
     void onDiscardChangesBUttonPressed();
 
 private:
     Ui::CardWindow *ui;
 
-    EditorController& controller;
+    EditorController &controller;
 };

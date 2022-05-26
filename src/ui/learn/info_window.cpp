@@ -1,6 +1,6 @@
 #include "info_window.hpp"
 
-InfoWindow::InfoWindow(const char* message)
+InfoWindow::InfoWindow(const char *message)
     : ui(new Ui::InfoWindow)
 {
     ui->setupUi(this);

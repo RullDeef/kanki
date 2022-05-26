@@ -8,12 +8,12 @@ class InfoWindow : public QDialog
     Q_OBJECT
 
 public:
-    InfoWindow(const char* message);
+    InfoWindow(const char *message);
     ~InfoWindow();
 
 protected slots:
     void closeWindow();
 
 private:
-    Ui::InfoWindow* ui;
+    Ui::InfoWindow *ui;
 };

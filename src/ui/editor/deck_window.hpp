@@ -10,11 +10,11 @@
 class DeckWindow : public QDialog
 {
 public:
-    DeckWindow(EditorController& controller, QtEditorView& view);
+    DeckWindow(EditorController &controller, QtEditorView &view);
     ~DeckWindow();
 
 protected slots:
-    void onShowDeck(const Deck& deck);
+    void onShowDeck(const Deck &deck);
 
     void onAddCardButtonPressed();
     void onEditCardButtonPressed();
@@ -24,7 +24,7 @@ protected slots:
 
 private:
     Ui::DeckWindow *ui;
-    QtEditorView& view;
+    QtEditorView &view;
 
-    EditorController& controller;
+    EditorController &controller;
 };

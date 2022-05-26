@@ -6,16 +6,22 @@
 class Snapshot
 {
 public:
-    enum class ParamType { READING, TRANSLATION };
+    enum class ParamType
+    {
+        READING,
+        TRANSLATION
+    };
 
-    Snapshot(const Card& card, ParamType paramType, int knowledgeDegree = 0,
-        std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::now());
+    Snapshot(const Card &card,
+             ParamType paramType,
+             int knowledgeDegree = 0,
+             std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::now());
 
-    const Card& getCard() const;
+    const Card &getCard() const;
     ParamType getParamType() const;
     int getKnowledgeDegree() const;
 
-    void setKnowledgeDegree(int degree) { knowledgeDegree = degree; }
+    void setKnowledgeDegree(int degree);
 
     std::chrono::system_clock::time_point getTimePoint() const;
 
