@@ -10,11 +10,11 @@
 class MainWindow : public QMainWindow
 {
 public:
-    MainWindow(EditorController& editorController, LearnerController& learnerController);
+    MainWindow(EditorController &editorController, LearnerController &learnerController);
     ~MainWindow();
 
 protected slots:
-    void onShowCollection(const Collection& collection);
+    void onShowCollection(const Collection &collection);
 
     void onAddDeckButtonPressed();
     void onEditDeckButtonPressed();
@@ -23,10 +23,10 @@ protected slots:
     void onRepeatDeckButtonPressed();
 
 private:
-    Ui::MainWindow* ui;
+    Ui::MainWindow *ui;
 
     QtEditorView editorView;
     QtLearnerView learnerView;
-    EditorController& editorController;
-    LearnerController& learnerController;
+    EditorController &editorController;
+    LearnerController &learnerController;
 };

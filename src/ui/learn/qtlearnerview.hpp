@@ -3,6 +3,8 @@
 #include <QObject>
 #include "core/ilearnerview.hpp"
 
+class LearnerController;
+
 class QtLearnerView : public QObject, public ILearnerView
 {
     Q_OBJECT
@@ -14,10 +16,8 @@ public:
     virtual void noCardsForLearn() override;
     virtual void noCardsForRepeat() override;
 
-signals:
-    void showCardSignal(const Card& card);
-    void showSnapshotSignal(const Card& card);
+    void setController(LearnerController* newController);
 
-    void noCardsForLearnSignal();
-    void noCardsForRepeatSignal();
+private:
+    LearnerController* controller = nullptr;
 };

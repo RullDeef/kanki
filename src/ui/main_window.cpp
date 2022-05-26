@@ -2,6 +2,7 @@
 #include "tools/logger.hpp"
 #include "ui/editor/deck_window.hpp"
 #include "ui/learn/learn_window.hpp"
+#include "ui/learn/info_window.hpp"
 #include "ui/main_window.hpp"
 
 MainWindow::MainWindow(EditorController& editorController, LearnerController& learnerController)
@@ -18,7 +19,10 @@ MainWindow::MainWindow(EditorController& editorController, LearnerController& le
     editorController.setView(&editorView);
     connect(&editorView, &QtEditorView::showCollectionSignal, this, &MainWindow::onShowCollection);
 
-    learnerController.setView(&learnerView); /// TODO: connect noCards signals
+    learnerController.setView(&learnerView);
+    learnerView.setController(&learnerController);
+    // connect(&learnerView, &QtLearnerView::noCardsForLearnSignal, this, &MainWindow::showNoCardsForLearnWindow);
+    // connect(&learnerView, &QtLearnerView::noCardsForRepeatSignal, this, &MainWindow::showNoCardsForRepeatWindow);
 
     ///KOSTYLI show starting collection to work with
     editorController.editCollection();
@@ -46,6 +50,18 @@ void MainWindow::onShowCollection(const Collection& collection)
         ui->decksList->addItem(item);
     }
 }
+
+// void MainWindow::showNoCardsForLearnWindow()
+// {
+//     InfoWindow window("Все карточки в этой колоде<br>уже изучены");
+//     window.show();
+// }
+
+// void MainWindow::showNoCardsForRepeatWindow()
+// {
+//     InfoWindow window("Нет карточек<br>для повторения");
+//     window.show();
+// }
 
 void MainWindow::onAddDeckButtonPressed()
 {
@@ -103,10 +119,7 @@ void MainWindow::onLearnDeckButtonPressed()
     else
     {
         size_t deckId = selected.first().data(Qt::UserRole).toULongLong();
-
-        LearnWindow learnWindow(learnerController, learnerView);
         learnerController.learnNext(deckId);
-        learnWindow.exec();
     }
 }
 

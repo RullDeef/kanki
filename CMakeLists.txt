@@ -39,6 +39,7 @@ set(UI_SOURCE
 
     src/ui/learn/qtlearnerview.cpp
     src/ui/learn/learn_window.cpp
+    src/ui/learn/info_window.cpp
     
     src/ui/main_window.cpp
 )
