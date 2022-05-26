@@ -8,10 +8,10 @@
 #include "dto/deck.hpp"
 #include "dto/collection.hpp"
 
-class DTOParser
+class DTOCollectionParser
 {
 public:
-    DTOParser(const Collection &collection);
+    DTOCollectionParser(const Collection &collection);
 
     CollectionDTO getCollectionDTO() const;
     DeckDTO getDeckDTO(size_t id) const;

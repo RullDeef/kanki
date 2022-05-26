@@ -31,8 +31,10 @@ set(MODEL_SOURCE
 )
 
 set(REPO_SOURCE
-    src/dto/dtocollectionbuilder.cpp
-    src/dto/dtoparser.cpp
+    src/dto/collectionparser.cpp
+    src/dto/collectionbuilder.cpp
+    src/dto/sessionparser.cpp
+    src/dto/sessionbuilder.cpp
     
     src/db/filereader.cpp
     src/db/filewriter.cpp

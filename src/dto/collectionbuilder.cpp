@@ -1,5 +1,5 @@
 #include <stdexcept>
-#include "dto/dtocollectionbuilder.hpp"
+#include "dto/collectionbuilder.hpp"
 
 DTOCollectionBuilder::DTOCollectionBuilder(const CollectionDTO &collectionDTO)
     : collectionDTO(collectionDTO)

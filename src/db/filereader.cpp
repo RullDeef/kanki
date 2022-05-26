@@ -42,6 +42,30 @@ CollectionDTO FileReader::readCollectionDTO()
     return collection;
 }
 
+SnapshotDTO FileReader::readSnapshotDTO()
+{
+    SnapshotDTO snapshot;
+
+    stream >> snapshot.sessionId >> std::ws;
+    stream >> snapshot.cardId >> std::ws;
+    stream >> snapshot.param >> std::ws;
+    stream >> snapshot.knowledgeDegree >> std::ws;
+    stream >> snapshot.timePoint >> std::ws;
+
+    return snapshot;
+}
+
+SessionDTO FileReader::readSessionDTO()
+{
+    SessionDTO session;
+
+    stream >> session.id >> std::ws;
+    stream >> session.startTime >> std::ws;
+    stream >> session.endTime >> std::ws;
+
+    return session;
+}
+
 size_t FileReader::readCount()
 {
     size_t count;

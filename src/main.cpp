@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     ICollectionRepository* collectionRepo = new FileCollectionRepository(collectionFilename);
-    ISessionRepository* sessionRepo = new FileSessionRepository(sessionsFilename);
+    ISessionRepository* sessionRepo = new FileSessionRepository(collectionRepo, sessionsFilename);
 
     int res;
     {

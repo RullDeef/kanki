@@ -31,6 +31,22 @@ void FileWriter::writeCollectionDTO(const CollectionDTO &collection)
     stream << collection.name << std::endl;
 }
 
+void FileWriter::writeSnapshotDTO(const SnapshotDTO &snapshot)
+{
+    stream << snapshot.sessionId << std::endl;
+    stream << snapshot.cardId << std::endl;
+    stream << snapshot.param << std::endl;
+    stream << snapshot.knowledgeDegree << std::endl;
+    stream << snapshot.timePoint << std::endl;
+}
+
+void FileWriter::writeSessionDTO(const SessionDTO &session)
+{
+    stream << session.id << std::endl;
+    stream << session.startTime << std::endl;
+    stream << session.endTime << std::endl;
+}
+
 void FileWriter::writeCount(size_t count)
 {
     stream << count << std::endl;

@@ -3,10 +3,14 @@
 #include <stdexcept>
 #include "tools/logger.hpp"
 #include "tools/idgenerator.hpp"
+#include "dto/sessionbuilder.hpp"
+#include "dto/sessionparser.hpp"
+#include "db/filereader.hpp"
+#include "db/filewriter.hpp"
 #include "filesessionrepo.hpp"
 
-FileSessionRepository::FileSessionRepository(const std::string &filename)
-    : filename(filename)
+FileSessionRepository::FileSessionRepository(ICollectionRepository *collectionRepo, const std::string &filename)
+    : filename(filename), collectionRepo(collectionRepo)
 {
     try
     {
@@ -70,86 +74,71 @@ void FileSessionRepository::saveSession(const Session &session)
 
 void FileSessionRepository::load()
 {
-    /// TODO: implement correctly
-    std::wifstream file(filename);
-
-    if (!file)
-        throw std::runtime_error("bad filename");
-
     sessions.clear();
-    IdGenerator idGenerator;
 
-    do
+    std::wifstream file(filename);
+    FileReader reader(file);
+
+    size_t sessionsCount = reader.readCount();
+    for (size_t i = 0; i < sessionsCount; i++)
     {
-        size_t sessionId;
-        size_t snapshotsCount = 0;
+        auto sessionDTO = reader.readSessionDTO();
+        DTOSessionBuilder builder(sessionDTO);
 
-        time_t start_time_t, end_time_t;
-
-        file >> sessionId >> std::ws;
-        file >> start_time_t >> std::ws;
-        file >> end_time_t >> std::ws;
-        file >> snapshotsCount >> std::ws;
-
-        auto startTime = std::chrono::system_clock::from_time_t(start_time_t);
-        auto endTime = std::chrono::system_clock::from_time_t(end_time_t);
-
-        Session session(idGenerator(), startTime, endTime);
-        for (size_t i = 0; i < snapshotsCount; i++)
+        size_t snapshotsCount = reader.readCount();
+        for (size_t j = 0; j < snapshotsCount; j++)
         {
-            std::wstring symbol, reading, description;
-            std::getline(file, symbol);
-            std::getline(file, reading);
-            std::getline(file, description);
-
-            int paramTypeInt;
-            file >> paramTypeInt >> std::ws;
-            Snapshot::ParamType paramType = paramTypeInt == 0 ? Snapshot::ParamType::READING : Snapshot::ParamType::TRANSLATION;
-
-            int degree;
-            file >> degree >> std::ws;
-
-            time_t time_point_t;
-            file >> time_point_t >> std::ws;
-
-            auto timePoint = std::chrono::system_clock::from_time_t(time_point_t);
-
-            Card card(idGenerator(), symbol, reading, description);
-            session.addSnapshot(Snapshot(card, paramType, degree, timePoint));
+            auto snapshotDTO = reader.readSnapshotDTO();
+            builder.addSnapshotDTO(snapshotDTO);
         }
-        file >> std::ws;
-        sessions.push_back(std::move(session));
-    } while (!file.eof());
+
+        /// KOSTILY: updating snapshot cards with collection repository
+        auto session = updateSessionCards(builder.build());
+        sessions.push_back(session);
+    }
 }
 
 void FileSessionRepository::dump()
 {
-    /// TODO: implement correctly
     std::wofstream file(filename);
+    FileWriter writer(file);
 
-    if (!file)
-        throw std::runtime_error("bad filename");
-
-    for (const auto &session : sessions)
+    writer.writeCount(sessions.size());
+    for (auto session : sessions)
     {
-        file << session.getId() << std::endl;
-        file << std::chrono::system_clock::to_time_t(session.getStartTime()) << std::endl;
-        file << std::chrono::system_clock::to_time_t(session.getEndTime()) << std::endl;
-        file << session.size() << std::endl;
+        DTOSessionParser parser(session);
+        writer.writeSessionDTO(parser.getSessionDTO());
 
-        for (const auto &snapshot : session)
-        {
-            file << snapshot.getCard().getSymbol() << std::endl;
-            file << snapshot.getCard().getReading() << std::endl;
-            file << snapshot.getCard().getDescription() << std::endl;
+        auto snapshotDTOs = parser.getSnapshotDTOs();
+        writer.writeCount(snapshotDTOs.size());
 
-            if (snapshot.getParamType() == Snapshot::ParamType::READING)
-                file << 0 << std::endl;
-            else
-                file << 1 << std::endl;
-
-            file << snapshot.getKnowledgeDegree() << std::endl;
-            file << std::chrono::system_clock::to_time_t(snapshot.getTimePoint()) << std::endl;
-        }
+        for (auto snapshotDTO : snapshotDTOs)
+            writer.writeSnapshotDTO(snapshotDTO);
     }
+}
+
+Session FileSessionRepository::updateSessionCards(const Session& session)
+{
+    Session newSession(session.getId(), session.getStartTime(), session.getEndTime());
+
+    for (auto snapshot : session)
+        newSession.addSnapshot(Snapshot(findCardById(snapshot.getCard().getId()),
+                                        snapshot.getParamType(),
+                                        snapshot.getKnowledgeDegree(),
+                                        snapshot.getTimePoint()));
+
+    return std::move(newSession);
+}
+
+Card FileSessionRepository::findCardById(size_t cardId)
+{
+    auto collections = collectionRepo->getCollections();
+
+    for (auto collection : collections)
+        for (auto deck : collection)
+            for (auto card : deck)
+                if (card.getId() == cardId)
+                    return card;
+
+    throw std::runtime_error("could not find card with given id");
 }

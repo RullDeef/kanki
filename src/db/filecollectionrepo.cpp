@@ -1,8 +1,8 @@
 #include <fstream>
 #include "tools/logger.hpp"
 #include "tools/idgenerator.hpp"
-#include "dto/dtoparser.hpp"
-#include "dto/dtocollectionbuilder.hpp"
+#include "dto/collectionparser.hpp"
+#include "dto/collectionbuilder.hpp"
 #include "db/filereader.hpp"
 #include "db/filewriter.hpp"
 #include "db/filecollectionrepo.hpp"
@@ -76,7 +76,7 @@ void FileCollectionRepository::dump()
     writer.writeCount(collections.size());
     for (auto collection : collections)
     {
-        DTOParser parser(collection);
+        DTOCollectionParser parser(collection);
         writer.writeCollectionDTO(parser.getCollectionDTO());
 
         auto deckIds = parser.getDeckIds();

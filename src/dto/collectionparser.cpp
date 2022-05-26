@@ -1,8 +1,8 @@
 #include <stdexcept>
 #include <algorithm>
-#include "dto/dtoparser.hpp"
+#include "dto/collectionparser.hpp"
 
-DTOParser::DTOParser(const Collection &collection)
+DTOCollectionParser::DTOCollectionParser(const Collection &collection)
 {
     collectionDTO.id = collection.getId();
     collectionDTO.name = collection.getName();
@@ -11,12 +11,12 @@ DTOParser::DTOParser(const Collection &collection)
         decomposeDeck(deck);
 }
 
-CollectionDTO DTOParser::getCollectionDTO() const
+CollectionDTO DTOCollectionParser::getCollectionDTO() const
 {
     return collectionDTO;
 }
 
-DeckDTO DTOParser::getDeckDTO(size_t id) const
+DeckDTO DTOCollectionParser::getDeckDTO(size_t id) const
 {
     for (auto deckDTO : deckDTOs)
         if (deckDTO.id == id)
@@ -25,7 +25,7 @@ DeckDTO DTOParser::getDeckDTO(size_t id) const
     throw std::runtime_error("invalid deckDTO id");
 }
 
-CardDTO DTOParser::getCardDTO(size_t id) const
+CardDTO DTOCollectionParser::getCardDTO(size_t id) const
 {
     for (auto cardDTO : cardDTOs)
         if (cardDTO.id == id)
@@ -34,7 +34,7 @@ CardDTO DTOParser::getCardDTO(size_t id) const
     throw std::runtime_error("invalid cardDTO id");
 }
 
-std::list<size_t> DTOParser::getDeckIds() const
+std::list<size_t> DTOCollectionParser::getDeckIds() const
 {
     std::list<size_t> ids(deckDTOs.size());
 
@@ -45,7 +45,7 @@ std::list<size_t> DTOParser::getDeckIds() const
     return ids;
 }
 
-std::list<size_t> DTOParser::getCardIds(size_t deckId) const
+std::list<size_t> DTOCollectionParser::getCardIds(size_t deckId) const
 {
     std::list<size_t> ids;
 
@@ -56,7 +56,7 @@ std::list<size_t> DTOParser::getCardIds(size_t deckId) const
     return ids;
 }
 
-void DTOParser::decomposeDeck(const Deck &deck)
+void DTOCollectionParser::decomposeDeck(const Deck &deck)
 {
     DeckDTO deckDTO;
     deckDTO.id = deck.getId();
@@ -69,7 +69,7 @@ void DTOParser::decomposeDeck(const Deck &deck)
     deckDTOs.push_back(deckDTO);
 }
 
-void DTOParser::decomposeCard(size_t deckId, const Card &card)
+void DTOCollectionParser::decomposeCard(size_t deckId, const Card &card)
 {
     CardDTO cardDTO;
     cardDTO.id = card.getId();

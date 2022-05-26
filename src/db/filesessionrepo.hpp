@@ -2,12 +2,13 @@
 
 #include <list>
 #include <string>
+#include "core/icollectionrepository.hpp"
 #include "core/isessionrepository.hpp"
 
 class FileSessionRepository : public ISessionRepository
 {
 public:
-    FileSessionRepository(const std::string &filename);
+    FileSessionRepository(ICollectionRepository *collectionRepo, const std::string &filename);
     ~FileSessionRepository();
 
     virtual std::list<Session> getSessions() override;
@@ -15,11 +16,15 @@ public:
     virtual void removeSession(size_t id) override;
     virtual void saveSession(const Session &session) override;
 
-    /// WARNING: not tested at all
     void load();
     void dump();
 
 private:
+    Session updateSessionCards(const Session &session);
+    Card findCardById(size_t cardId);
+
     std::string filename;
     std::list<Session> sessions;
+
+    ICollectionRepository *collectionRepo;
 };
