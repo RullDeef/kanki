@@ -67,6 +67,7 @@ enable_testing()
 
 set(UNIT_SOURCE
     unit_tests/core/spacedlearner.cpp
+    unit_tests/core/spacedestimator.cpp
 )
 
 add_executable(unit_tests unit_tests/main.cpp)
