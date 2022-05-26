@@ -1,4 +1,6 @@
 #include <QApplication>
+#include "core/collectionmanager.hpp"
+#include "core/sessionmanager.hpp"
 #include "core/editorcontroller.hpp"
 #include "core/learnercontroller.hpp"
 #include "core/spacedlearner.hpp"
@@ -17,23 +19,26 @@ int main(int argc, char *argv[])
     ICollectionRepository* collectionRepo = new FileCollectionRepository(collectionFilename);
     ISessionRepository* sessionRepo = new FileSessionRepository(sessionsFilename);
 
-    CollectionManager collectionManager(collectionRepo);
-    SessionManager sessionManager(sessionRepo);
+    int res;
+    {
+        CollectionManager collectionManager(collectionRepo);
+        SessionManager sessionManager(sessionRepo);
 
-    EditorController editorController(collectionManager);
+        EditorController editorController(&collectionManager);
 
-    SpacedLearner spacedLearner(collectionManager, sessionManager);
-    SpacedEstimator spacedEstimator;
+        SpacedLearner spacedLearner(&collectionManager, &sessionManager);
+        SpacedEstimator spacedEstimator;
 
-    LearnerController learnerController(collectionManager, sessionManager);
+        LearnerController learnerController(&collectionManager, &sessionManager);
 
-    learnerController.setLearner(&spacedLearner);
-    learnerController.setEstimator(&spacedEstimator);
+        learnerController.setLearner(&spacedLearner);
+        learnerController.setEstimator(&spacedEstimator);
 
-    auto mainWindow = MainWindow(editorController, learnerController);
-    mainWindow.show();
+        auto mainWindow = MainWindow(editorController, learnerController);
+        mainWindow.show();
 
-    int res = app.exec();
+        res = app.exec();
+    }
 
     delete collectionRepo;
     delete sessionRepo;

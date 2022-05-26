@@ -7,13 +7,13 @@
 #include "core/ilearner.hpp"
 #include "core/iestimator.hpp"
 #include "core/ilearnerview.hpp"
-#include "core/collectionmanager.hpp"
-#include "core/sessionmanager.hpp"
+#include "core/icollectionmanager.hpp"
+#include "core/isessionmanager.hpp"
 
 class LearnerController
 {
 public:
-    LearnerController(CollectionManager& collectionManager, SessionManager& sessionManager)
+    LearnerController(ICollectionManager* collectionManager, ISessionManager* sessionManager)
         : collectionManager(collectionManager), sessionManager(sessionManager)
     {}
 
@@ -42,40 +42,40 @@ public:
     void confirmLearned(size_t cardId) {
         LOG_METHOD();
 
-        Card card = collectionManager.getCardById(cardId);
+        Card card = collectionManager->getCardById(cardId);
         Snapshot snapshot(card, Snapshot::ParamType::READING); ///TODO: implement param type
 
-        sessionManager.addSnapshot(snapshot);
+        sessionManager->addSnapshot(snapshot);
     }
 
     void markEasy(size_t cardId) {
         LOG_METHOD();
         
-        Card card = collectionManager.getCardById(cardId);
+        Card card = collectionManager->getCardById(cardId);
         Snapshot snapshot(card, Snapshot::ParamType::READING);
 
         estimator->markEasy(snapshot);
-        sessionManager.addSnapshot(snapshot);
+        sessionManager->addSnapshot(snapshot);
     }
 
     void markGood(size_t cardId) {
         LOG_METHOD();
         
-        Card card = collectionManager.getCardById(cardId);
+        Card card = collectionManager->getCardById(cardId);
         Snapshot snapshot(card, Snapshot::ParamType::READING);
 
         estimator->markGood(snapshot);
-        sessionManager.addSnapshot(snapshot);
+        sessionManager->addSnapshot(snapshot);
     }
 
     void markAgain(size_t cardId) {
         LOG_METHOD();
         
-        Card card = collectionManager.getCardById(cardId);
+        Card card = collectionManager->getCardById(cardId);
         Snapshot snapshot(card, Snapshot::ParamType::READING);
 
         estimator->markAgain(snapshot);
-        sessionManager.addSnapshot(snapshot);
+        sessionManager->addSnapshot(snapshot);
     }
 
 private:
@@ -85,6 +85,6 @@ private:
 
     IdGenerator idGenerator;
 
-    CollectionManager& collectionManager;
-    SessionManager& sessionManager;
+    ICollectionManager* collectionManager;
+    ISessionManager* sessionManager;
 };

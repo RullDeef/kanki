@@ -7,12 +7,12 @@
 #include "model/deck.hpp"
 #include "model/collection.hpp"
 #include "core/ieditorview.hpp"
-#include "core/collectionmanager.hpp"
+#include "core/icollectionmanager.hpp"
 
 class EditorController
 {
 public:
-    EditorController(CollectionManager& collectionManager)
+    EditorController(ICollectionManager* collectionManager)
         : collectionManager(collectionManager)
     {}
 
@@ -38,7 +38,7 @@ public:
         LOG_METHOD();
 
         delete activeCollection;
-        activeCollection = new Collection(collectionManager.getActiveCollection());
+        activeCollection = new Collection(collectionManager->getActiveCollection());
 
         if (view != nullptr)
             view->showCollection(*activeCollection);
@@ -48,7 +48,7 @@ public:
         LOG_METHOD();
 
         delete activeCollection;
-        activeCollection = new Collection(collectionManager.getCollectionById(id));
+        activeCollection = new Collection(collectionManager->getCollectionById(id));
 
         if (view != nullptr)
             view->showCollection(*activeCollection);
@@ -57,7 +57,7 @@ public:
     void saveActiveCollection() {
         LOG_METHOD();
 
-        collectionManager.saveCollection(*activeCollection);
+        collectionManager->saveCollection(*activeCollection);
         ///WARNING: WIGGLE WIGGLE THINGS
     }
 
@@ -87,8 +87,7 @@ public:
     }
 
     void addCard() {
-        if (activeCard != nullptr)
-            delete activeCard;
+        delete activeCard;
         activeCard = new Card(idGenerator());
 
         if (view != nullptr)
@@ -96,8 +95,7 @@ public:
     }
 
     void editCard(size_t cardId) {
-        if (activeCard != nullptr)
-            delete activeCard;
+        delete activeCard;
         
         ///TODO: exception handling
         activeCard = new Card(*activeDeck->getCardById(cardId));
@@ -189,6 +187,6 @@ private:
     Deck* activeDeck = nullptr;
     Card* activeCard = nullptr;
 
-    CollectionManager& collectionManager;
+    ICollectionManager* collectionManager = nullptr;
     IdGenerator idGenerator;
 };

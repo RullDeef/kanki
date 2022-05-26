@@ -3,34 +3,34 @@
 #include <algorithm>
 #include <list>
 #include <stdexcept>
-#include "model/collection.hpp"
 #include "core/icollectionrepository.hpp"
+#include "core/icollectionmanager.hpp"
 
-class CollectionManager
+class CollectionManager : public ICollectionManager
 {
 public:
     CollectionManager(ICollectionRepository* collectionRepository)
         : collectionRepository(collectionRepository)
     {}
 
-    Collection getActiveCollection() {
+    virtual Collection getActiveCollection() override {
         auto collections = collectionRepository->getCollections();
         return collections.front();
     }
 
-    void saveCollection(const Collection& collection) {
+    virtual void saveCollection(const Collection& collection) override {
         collectionRepository->saveCollection(collection);
     }
 
-    Collection getCollectionById(size_t id) {
+    virtual Collection getCollectionById(size_t id) override {
         return collectionRepository->getCollectionById(id);
     }
 
-    void deleteCollection(size_t id) {
+    virtual void deleteCollection(size_t id) override {
         collectionRepository->removeCollection(id);
     }
 
-    Deck getDeckById(size_t deckId) {
+    virtual Deck getDeckById(size_t deckId) override {
         for (auto collection : collectionRepository->getCollections())
             for (auto deck : collection)
                 if (deck.getId() == deckId)
@@ -39,7 +39,7 @@ public:
         throw std::runtime_error("invalid deck id");
     }
 
-    Card getCardById(size_t cardId) {
+    virtual Card getCardById(size_t cardId) override {
         for (auto collection : collectionRepository->getCollections())
             for (auto deck : collection)
                 for (auto card : deck)

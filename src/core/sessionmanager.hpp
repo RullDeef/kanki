@@ -7,8 +7,9 @@
 #include "model/snapshot.hpp"
 #include "model/session.hpp"
 #include "core/isessionrepository.hpp"
+#include "core/isessionmanager.hpp"
 
-class SessionManager
+class SessionManager : public ISessionManager
 {
 public:
     SessionManager(ISessionRepository* sessionRepository)
@@ -24,9 +25,9 @@ public:
         }
     }
 
-    const Session& getActiveSession() const { return activeSession; }
+    virtual const Session& getActiveSession() override { return activeSession; }
 
-    void addSnapshot(const Snapshot& snapshot) {
+    virtual void addSnapshot(const Snapshot& snapshot) override {
         LOG_METHOD();
 
         activeSession.addSnapshot(snapshot);
@@ -36,7 +37,7 @@ public:
         sessionRepository->saveSession(activeSession);
     }
 
-    std::list<Snapshot> getAllCardSnapshots(const Card& card) {
+    virtual std::list<Snapshot> getAllCardSnapshots(const Card& card) override {
         LOG_METHOD();
 
         std::list<Snapshot> result;
