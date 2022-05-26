@@ -24,19 +24,29 @@ public:
     void learnNext(size_t deckId) {
         LOG_METHOD();
 
-        auto card = learner->getNextForLearn(deckId);
+        try {
+            auto card = learner->getNextForLearn(deckId);
 
-        if (view != nullptr)
-            view->showCard(card);
+            if (view != nullptr)
+                view->showCard(card);
+        } catch (const std::exception& e) {
+            if (view != nullptr)
+                view->noCardsForLearn();
+        }
     }
 
     void repeatNext(size_t deckId) {
         LOG_METHOD();
 
-        auto card = learner->getNextForRepeat(deckId);
+        try {
+            auto card = learner->getNextForRepeat(deckId);
 
-        if (view != nullptr)
-            view->askCard(card);
+            if (view != nullptr)
+                view->askCard(card);
+        } catch (const std::exception& e) {
+            if (view != nullptr)
+                view->noCardsForRepeat();
+        }
     }
 
     void confirmLearned(size_t cardId) {

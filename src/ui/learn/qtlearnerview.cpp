@@ -7,3 +7,11 @@ void QtLearnerView::showCard(const Card& card) {
 void QtLearnerView::askCard(const Card& card) {
     emit showSnapshotSignal(card);
 }
+
+void QtLearnerView::noCardsForLearn() {
+    emit noCardsForLearnSignal();
+}
+
+void QtLearnerView::noCardsForRepeat() {
+    emit noCardsForRepeatSignal();
+}

@@ -21,14 +21,14 @@ public:
                 return card;
         }
 
-        return Card(0, L"", L"", L"все карты уже пересмотрены");
+        throw std::runtime_error("all cards viewed");
     }
 
     virtual Card getNextForRepeat(size_t deckId) override {
         auto targets = getTargets(deckId);
 
         if (targets.empty())
-            return Card(0, L"", L"", L"нет новых карт для повторения");
+            throw std::runtime_error("no cards for review");
 
         // выбрать карту из targets
         auto selectedSnapshot = targets.front();

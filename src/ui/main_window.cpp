@@ -18,7 +18,7 @@ MainWindow::MainWindow(EditorController& editorController, LearnerController& le
     editorController.setView(&editorView);
     connect(&editorView, &QtEditorView::showCollectionSignal, this, &MainWindow::onShowCollection);
 
-    learnerController.setView(&learnerView);
+    learnerController.setView(&learnerView); /// TODO: connect noCards signals
 
     ///KOSTYLI show starting collection to work with
     editorController.editCollection();
