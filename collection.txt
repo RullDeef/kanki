@@ -1,0 +1,42 @@
+1
+100
+basic collection
+2
+87394
+100
+new deck 1
+3
+37714
+87394
+symbol 1
+reading 1
+description 1
+73331
+87394
+symbol 2
+reading 2
+description 2
+49383
+87394
+symbol 3
+reading 3
+description 3
+57985
+100
+new deck 2
+3
+89516
+57985
+symbol 6
+reading 6
+description 6
+62077
+57985
+symbol 5
+reading 5
+description 5
+88710
+57985
+symbol 4
+reading 4
+description 4

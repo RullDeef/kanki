@@ -1,7 +1,11 @@
 #include <fstream>
 #include "tools/logger.hpp"
 #include "tools/idgenerator.hpp"
-#include "filecollectionrepo.hpp"
+#include "dto/dtoparser.hpp"
+#include "dto/dtocollectionbuilder.hpp"
+#include "db/filereader.hpp"
+#include "db/filewriter.hpp"
+#include "db/filecollectionrepo.hpp"
 
 FileCollectionRepository::FileCollectionRepository(const std::string &filename)
     : filename(filename)
@@ -12,6 +16,7 @@ FileCollectionRepository::FileCollectionRepository(const std::string &filename)
     }
     catch (const std::exception &e)
     {
+        /// TODO: create default collection on failure
         ERROR_METHOD(e.what());
     }
 }
@@ -30,58 +35,66 @@ FileCollectionRepository::~FileCollectionRepository()
 
 void FileCollectionRepository::load()
 {
-    /// TODO: implement correctly
+    LOG_METHOD();
+
+    collections.clear();
+
     std::wifstream file(filename);
+    FileReader reader(file);
 
-    if (!file)
-        throw std::runtime_error("bad filename");
-
-    IdGenerator idGenerator;
-    Collection collection(idGenerator());
-
-    do
+    size_t collectionsCount = reader.readCount();
+    for (size_t i = 0; i < collectionsCount; i++)
     {
-        std::wstring deckName;
-        std::getline(file, deckName);
+        auto collectionDTO = reader.readCollectionDTO();
+        size_t decksCount = reader.readCount();
+        DTOCollectionBuilder collector(collectionDTO);
 
-        size_t deckSize;
-        file >> deckSize >> std::ws;
-
-        Deck deck(idGenerator(), deckName);
-        for (size_t i = 0; i < deckSize; i++)
+        for (size_t j = 0; j < decksCount; j++)
         {
-            std::wstring symbol, reading, description;
-            std::getline(file, symbol);
-            std::getline(file, reading);
-            std::getline(file, description);
+            auto deckDTO = reader.readDeckDTO();
+            size_t cardsCount = reader.readCount();
+            collector.addDeckDTO(deckDTO);
 
-            deck.addCard(Card(idGenerator(), symbol, reading, description));
+            for (size_t k = 0; k < cardsCount; k++)
+            {
+                auto cardDTO = reader.readCardDTO();
+                collector.addCardDTO(cardDTO);
+            }
         }
-        file >> std::ws;
-        collection.addDeck(std::move(deck));
-    } while (!file.eof());
 
-    collections = {collection};
+        collections.push_back(collector.build());
+    }
 }
 
 void FileCollectionRepository::dump()
 {
-    /// TODO: implement correctly
+    LOG_METHOD();
+
     std::wofstream file(filename);
+    FileWriter writer(file);
 
-    if (!file)
-        throw std::runtime_error("bad filename");
-
-    for (const auto &deck : collections.front())
+    writer.writeCount(collections.size());
+    for (auto collection : collections)
     {
-        file << deck.getName() << std::endl;
-        file << deck.size() << std::endl;
+        DTOParser parser(collection);
+        writer.writeCollectionDTO(parser.getCollectionDTO());
 
-        for (const auto &card : deck)
+        auto deckIds = parser.getDeckIds();
+        writer.writeCount(deckIds.size());
+
+        for (size_t deckId : deckIds)
         {
-            file << card.getSymbol() << std::endl;
-            file << card.getReading() << std::endl;
-            file << card.getDescription() << std::endl;
+            auto deckDTO = parser.getDeckDTO(deckId);
+            writer.writeDeckDTO(deckDTO);
+
+            auto cardIds = parser.getCardIds(deckId);
+            writer.writeCount(cardIds.size());
+
+            for (size_t cardId : cardIds)
+            {
+                auto cardDTO = parser.getCardDTO(cardId);
+                writer.writeCardDTO(cardDTO);
+            }
         }
     }
 }
