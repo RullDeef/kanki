@@ -4,11 +4,12 @@
 #include <string>
 #include "core/icollectionrepository.hpp"
 #include "core/isessionrepository.hpp"
+#include "db/idtoiofactory.hpp"
 
 class FileSessionRepository : public ISessionRepository
 {
 public:
-    FileSessionRepository(ICollectionRepository *collectionRepo, const std::string &filename);
+    FileSessionRepository(ICollectionRepository *collectionRepo, IDTOIOFactory* ioFactory);
     ~FileSessionRepository();
 
     virtual std::list<Session> getSessions() override;
@@ -23,7 +24,7 @@ private:
     Session updateSessionCards(const Session &session);
     Card findCardById(size_t cardId);
 
-    std::string filename;
+    IDTOIOFactory* ioFactory;
     std::list<Session> sessions;
 
     ICollectionRepository *collectionRepo;

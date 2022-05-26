@@ -1,26 +1,23 @@
 #pragma once
 
+#include <string>
 #include <fstream>
-#include "dto/card.hpp"
-#include "dto/deck.hpp"
-#include "dto/collection.hpp"
-#include "dto/snapshot.hpp"
-#include "dto/session.hpp"
+#include "db/idtowriter.hpp"
 
-class FileWriter
+class FileWriter : public IDTOWriter
 {
 public:
-    FileWriter(std::wofstream &stream);
+    FileWriter(const std::string &filename);
 
-    void writeCardDTO(const CardDTO &card);
-    void writeDeckDTO(const DeckDTO &deck);
-    void writeCollectionDTO(const CollectionDTO &collection);
+    virtual void writeCardDTO(const CardDTO &card) override;
+    virtual void writeDeckDTO(const DeckDTO &deck) override;
+    virtual void writeCollectionDTO(const CollectionDTO &collection) override;
 
-    void writeSnapshotDTO(const SnapshotDTO &snapshot);
-    void writeSessionDTO(const SessionDTO &session);
+    virtual void writeSnapshotDTO(const SnapshotDTO &snapshot) override;
+    virtual void writeSessionDTO(const SessionDTO &session) override;
 
-    void writeCount(size_t count);
+    virtual void writeCount(size_t count) override;
 
 private:
-    std::wofstream &stream;
+    std::wofstream stream;
 };

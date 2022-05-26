@@ -9,8 +9,8 @@
 #include "db/filewriter.hpp"
 #include "filesessionrepo.hpp"
 
-FileSessionRepository::FileSessionRepository(ICollectionRepository *collectionRepo, const std::string &filename)
-    : filename(filename), collectionRepo(collectionRepo)
+FileSessionRepository::FileSessionRepository(ICollectionRepository *collectionRepo, IDTOIOFactory *ioFactory)
+    : ioFactory(ioFactory), collectionRepo(collectionRepo)
 {
     try
     {
@@ -76,19 +76,18 @@ void FileSessionRepository::load()
 {
     sessions.clear();
 
-    std::wifstream file(filename);
-    FileReader reader(file);
+    auto reader = ioFactory->createReader();
 
-    size_t sessionsCount = reader.readCount();
+    size_t sessionsCount = reader->readCount();
     for (size_t i = 0; i < sessionsCount; i++)
     {
-        auto sessionDTO = reader.readSessionDTO();
+        auto sessionDTO = reader->readSessionDTO();
         DTOSessionBuilder builder(sessionDTO);
 
-        size_t snapshotsCount = reader.readCount();
+        size_t snapshotsCount = reader->readCount();
         for (size_t j = 0; j < snapshotsCount; j++)
         {
-            auto snapshotDTO = reader.readSnapshotDTO();
+            auto snapshotDTO = reader->readSnapshotDTO();
             builder.addSnapshotDTO(snapshotDTO);
         }
 
@@ -100,24 +99,23 @@ void FileSessionRepository::load()
 
 void FileSessionRepository::dump()
 {
-    std::wofstream file(filename);
-    FileWriter writer(file);
+    auto writer = ioFactory->createWriter();
 
-    writer.writeCount(sessions.size());
+    writer->writeCount(sessions.size());
     for (auto session : sessions)
     {
         DTOSessionParser parser(session);
-        writer.writeSessionDTO(parser.getSessionDTO());
+        writer->writeSessionDTO(parser.getSessionDTO());
 
         auto snapshotDTOs = parser.getSnapshotDTOs();
-        writer.writeCount(snapshotDTOs.size());
+        writer->writeCount(snapshotDTOs.size());
 
         for (auto snapshotDTO : snapshotDTOs)
-            writer.writeSnapshotDTO(snapshotDTO);
+            writer->writeSnapshotDTO(snapshotDTO);
     }
 }
 
-Session FileSessionRepository::updateSessionCards(const Session& session)
+Session FileSessionRepository::updateSessionCards(const Session &session)
 {
     Session newSession(session.getId(), session.getStartTime(), session.getEndTime());
 

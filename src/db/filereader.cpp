@@ -1,8 +1,8 @@
 #include <iostream>
 #include "db/filereader.hpp"
 
-FileReader::FileReader(std::wifstream &stream)
-    : stream(stream)
+FileReader::FileReader(const std::string &filename)
+    : stream(filename)
 {
     if (!stream)
         throw std::runtime_error("bad file for reader");

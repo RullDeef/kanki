@@ -5,6 +5,7 @@
 #include "core/learnercontroller.hpp"
 #include "core/spacedlearner.hpp"
 #include "core/spacedestimator.hpp"
+#include "db/filedtoiofactory.hpp"
 #include "db/filecollectionrepo.hpp"
 #include "db/filesessionrepo.hpp"
 #include "ui/main_window.hpp"
@@ -16,8 +17,11 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    ICollectionRepository* collectionRepo = new FileCollectionRepository(collectionFilename);
-    ISessionRepository* sessionRepo = new FileSessionRepository(collectionRepo, sessionsFilename);
+    FileDTOIOFactory collectionIOFactory(collectionFilename);
+    FileDTOIOFactory sessionIOFactory(sessionsFilename);
+
+    ICollectionRepository *collectionRepo = new FileCollectionRepository(&collectionIOFactory);
+    ISessionRepository *sessionRepo = new FileSessionRepository(collectionRepo, &sessionIOFactory);
 
     int res;
     {

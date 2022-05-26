@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
 #include "core/icollectionrepository.hpp"
+#include "db/idtoiofactory.hpp"
 
 class FileCollectionRepository : public ICollectionRepository
 {
 public:
-    FileCollectionRepository(const std::string &filename);
+    FileCollectionRepository(IDTOIOFactory* ioFactory);
     ~FileCollectionRepository();
 
     // loads data from disk
@@ -23,6 +23,6 @@ public:
     virtual void saveCollection(const Collection &collection) override;
 
 private:
-    std::string filename;
+    IDTOIOFactory* ioFactory;
     std::list<Collection> collections;
 };

@@ -1,26 +1,23 @@
 #pragma once
 
+#include <string>
 #include <fstream>
-#include "dto/card.hpp"
-#include "dto/deck.hpp"
-#include "dto/collection.hpp"
-#include "dto/snapshot.hpp"
-#include "dto/session.hpp"
+#include "db/idtoreader.hpp"
 
-class FileReader
+class FileReader : public IDTOReader
 {
 public:
-    FileReader(std::wifstream& stream);
+    FileReader(const std::string &filename);
 
-    CardDTO readCardDTO();
-    DeckDTO readDeckDTO();
-    CollectionDTO readCollectionDTO();
+    virtual CardDTO readCardDTO() override;
+    virtual DeckDTO readDeckDTO() override;
+    virtual CollectionDTO readCollectionDTO() override;
 
-    SnapshotDTO readSnapshotDTO();
-    SessionDTO readSessionDTO();
+    virtual SnapshotDTO readSnapshotDTO() override;
+    virtual SessionDTO readSessionDTO() override;
 
-    size_t readCount();
+    virtual size_t readCount() override;
 
 private:
-    std::wifstream& stream;
+    std::wifstream stream;
 };

@@ -1,7 +1,7 @@
 #include "db/filewriter.hpp"
 
-FileWriter::FileWriter(std::wofstream &stream)
-    : stream(stream)
+FileWriter::FileWriter(const std::string &filename)
+    : stream(filename)
 {
     if (!stream)
         throw std::runtime_error("bad file for writer");
