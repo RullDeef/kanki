@@ -1,19 +1,14 @@
 #pragma once
 
 #include "core/icollectionrepository.hpp"
-#include "db/idtoiofactory.hpp"
+#include "db/idtoreader.hpp"
+#include "db/idtowriter.hpp"
 
 class FileCollectionRepository : public ICollectionRepository
 {
 public:
-    FileCollectionRepository(IDTOIOFactory* ioFactory);
-    ~FileCollectionRepository();
-
-    // loads data from disk
-    void load();
-
-    // writes data on disk
-    void dump();
+    void load(IDTOReader &reader);
+    void dump(IDTOWriter &writer);
 
     virtual std::list<Collection> getCollections() override;
 
@@ -23,6 +18,5 @@ public:
     virtual void saveCollection(const Collection &collection) override;
 
 private:
-    IDTOIOFactory* ioFactory;
     std::list<Collection> collections;
 };

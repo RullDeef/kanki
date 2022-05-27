@@ -7,55 +7,28 @@
 #include "db/filewriter.hpp"
 #include "db/filecollectionrepo.hpp"
 
-FileCollectionRepository::FileCollectionRepository(IDTOIOFactory* ioFactory)
-    : ioFactory(ioFactory)
-{
-    try
-    {
-        load();
-    }
-    catch (const std::exception &e)
-    {
-        /// TODO: create default collection on failure
-        ERROR_METHOD(e.what());
-    }
-}
-
-FileCollectionRepository::~FileCollectionRepository()
-{
-    try
-    {
-        dump();
-    }
-    catch (const std::exception &e)
-    {
-        ERROR_METHOD(e.what());
-    }
-}
-
-void FileCollectionRepository::load()
+void FileCollectionRepository::load(IDTOReader &reader)
 {
     LOG_METHOD();
 
     collections.clear();
-    auto reader = ioFactory->createReader();
 
-    size_t collectionsCount = reader->readCount();
+    size_t collectionsCount = reader.readCount();
     for (size_t i = 0; i < collectionsCount; i++)
     {
-        auto collectionDTO = reader->readCollectionDTO();
-        size_t decksCount = reader->readCount();
+        auto collectionDTO = reader.readCollectionDTO();
+        size_t decksCount = reader.readCount();
         DTOCollectionBuilder collector(collectionDTO);
 
         for (size_t j = 0; j < decksCount; j++)
         {
-            auto deckDTO = reader->readDeckDTO();
-            size_t cardsCount = reader->readCount();
+            auto deckDTO = reader.readDeckDTO();
+            size_t cardsCount = reader.readCount();
             collector.addDeckDTO(deckDTO);
 
             for (size_t k = 0; k < cardsCount; k++)
             {
-                auto cardDTO = reader->readCardDTO();
+                auto cardDTO = reader.readCardDTO();
                 collector.addCardDTO(cardDTO);
             }
         }
@@ -64,33 +37,31 @@ void FileCollectionRepository::load()
     }
 }
 
-void FileCollectionRepository::dump()
+void FileCollectionRepository::dump(IDTOWriter &writer)
 {
     LOG_METHOD();
 
-    auto writer = ioFactory->createWriter();
-
-    writer->writeCount(collections.size());
+    writer.writeCount(collections.size());
     for (auto collection : collections)
     {
         DTOCollectionParser parser(collection);
-        writer->writeCollectionDTO(parser.getCollectionDTO());
+        writer.writeCollectionDTO(parser.getCollectionDTO());
 
         auto deckIds = parser.getDeckIds();
-        writer->writeCount(deckIds.size());
+        writer.writeCount(deckIds.size());
 
         for (size_t deckId : deckIds)
         {
             auto deckDTO = parser.getDeckDTO(deckId);
-            writer->writeDeckDTO(deckDTO);
+            writer.writeDeckDTO(deckDTO);
 
             auto cardIds = parser.getCardIds(deckId);
-            writer->writeCount(cardIds.size());
+            writer.writeCount(cardIds.size());
 
             for (size_t cardId : cardIds)
             {
                 auto cardDTO = parser.getCardDTO(cardId);
-                writer->writeCardDTO(cardDTO);
+                writer.writeCardDTO(cardDTO);
             }
         }
     }

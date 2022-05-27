@@ -35,6 +35,10 @@ void FileWriter::writeSnapshotDTO(const SnapshotDTO &snapshot)
 {
     stream << snapshot.sessionId << std::endl;
     stream << snapshot.cardId << std::endl;
+    stream << snapshot.deckId << std::endl;
+    stream << snapshot.cardSymbol << std::endl;
+    stream << snapshot.cardReading << std::endl;
+    stream << snapshot.cardDescription << std::endl;
     stream << snapshot.param << std::endl;
     stream << snapshot.knowledgeDegree << std::endl;
     stream << snapshot.timePoint << std::endl;

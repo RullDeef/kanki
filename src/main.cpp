@@ -1,4 +1,5 @@
 #include <QApplication>
+#include "tools/logger.hpp"
 #include "core/collectionmanager.hpp"
 #include "core/sessionmanager.hpp"
 #include "core/editorcontroller.hpp"
@@ -20,8 +21,16 @@ int main(int argc, char *argv[])
     FileDTOIOFactory collectionIOFactory(collectionFilename);
     FileDTOIOFactory sessionIOFactory(sessionsFilename);
 
-    ICollectionRepository *collectionRepo = new FileCollectionRepository(&collectionIOFactory);
-    ISessionRepository *sessionRepo = new FileSessionRepository(collectionRepo, &sessionIOFactory);
+    auto collectionRepo = new FileCollectionRepository();
+    auto sessionRepo = new FileSessionRepository();
+
+    TRY_FUNC(
+        auto reader = collectionIOFactory.createReader();
+        collectionRepo->load(*reader.get()));
+
+    TRY_FUNC(
+        auto reader = sessionIOFactory.createReader();
+        sessionRepo->load(*reader.get()));
 
     int res;
     {
@@ -43,6 +52,14 @@ int main(int argc, char *argv[])
 
         res = app.exec();
     }
+
+    TRY_FUNC(
+        auto writer = collectionIOFactory.createWriter();
+        collectionRepo->dump(*writer.get()));
+
+    TRY_FUNC(
+        auto writer = sessionIOFactory.createWriter();
+        sessionRepo->dump(*writer.get()));
 
     delete collectionRepo;
     delete sessionRepo;

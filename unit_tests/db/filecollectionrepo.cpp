@@ -13,26 +13,15 @@ TEST(FileCollectionRepository_load, loadEmpty)
 {
     Logger::disableLogger();
 
-    MockDTOIOFactory ioFactory;
-    auto reader = new MockDTOReader();
-    auto writer = new MockDTOWriter();
+    MockDTOReader reader;
 
-    Mock::AllowLeak(reader);
-    EXPECT_CALL(*reader, readCount)
+    EXPECT_CALL(reader, readCount)
         .Times(1)
         .WillOnce(Return(0));
 
-    Mock::AllowLeak(writer);
-    EXPECT_CALL(*writer, writeCount).Times(1);
+    FileCollectionRepository repository;
 
-    EXPECT_CALL(ioFactory, createReaderProxy)
-        .Times(1)
-        .WillOnce(Return(reader));
-    EXPECT_CALL(ioFactory, createWriterProxy)
-        .Times(1)
-        .WillOnce(Return(writer));
-
-    FileCollectionRepository repository(&ioFactory);
+    EXPECT_NO_THROW(repository.load(reader));
 
     EXPECT_EQ(repository.getCollections().size(), 0);
 }
@@ -41,31 +30,20 @@ TEST(FileCollectionRepository_load, noDecks)
 {
     Logger::disableLogger();
 
-    MockDTOIOFactory ioFactory;
-    auto reader = new MockDTOReader();
-    auto writer = new MockDTOWriter();
+    MockDTOReader reader;
 
-    Mock::AllowLeak(reader);
-    EXPECT_CALL(*reader, readCount)
+    EXPECT_CALL(reader, readCount)
         .Times(2)
         .WillOnce(Return(1))
         .WillOnce(Return(0));
-    EXPECT_CALL(*reader, readCollectionDTO)
+    EXPECT_CALL(reader, readCollectionDTO)
         .Times(1)
         .WillOnce(Return(CollectionDTO{200, L"collection"}));
 
-    Mock::AllowLeak(writer);
-    EXPECT_CALL(*writer, writeCount).Times(2);
-    EXPECT_CALL(*writer, writeCollectionDTO).Times(1);
+    FileCollectionRepository repository;
 
-    EXPECT_CALL(ioFactory, createReaderProxy)
-        .Times(1)
-        .WillOnce(Return(reader));
-    EXPECT_CALL(ioFactory, createWriterProxy)
-        .Times(1)
-        .WillOnce(Return(writer));
+    EXPECT_NO_THROW(repository.load(reader));
 
-    FileCollectionRepository repository(&ioFactory);
     auto collections = repository.getCollections();
 
     EXPECT_EQ(collections.size(), 1);
@@ -77,36 +55,24 @@ TEST(FileCollectionRepository_load, noCards)
 {
     Logger::disableLogger();
 
-    MockDTOIOFactory ioFactory;
-    auto reader = new MockDTOReader();
-    auto writer = new MockDTOWriter();
+    MockDTOReader reader;
 
-    Mock::AllowLeak(reader);
-    EXPECT_CALL(*reader, readCount)
+    EXPECT_CALL(reader, readCount)
         .Times(3)
         .WillOnce(Return(1))
         .WillOnce(Return(1))
         .WillOnce(Return(0));
-    EXPECT_CALL(*reader, readCollectionDTO)
+    EXPECT_CALL(reader, readCollectionDTO)
         .Times(1)
         .WillOnce(Return(CollectionDTO{200, L"collection"}));
-    EXPECT_CALL(*reader, readDeckDTO)
+    EXPECT_CALL(reader, readDeckDTO)
         .Times(1)
         .WillOnce(Return(DeckDTO{30, 200, L"brandon"}));
 
-    Mock::AllowLeak(writer);
-    EXPECT_CALL(*writer, writeCount).Times(3);
-    EXPECT_CALL(*writer, writeCollectionDTO).Times(1);
-    EXPECT_CALL(*writer, writeDeckDTO).Times(1);
+    FileCollectionRepository repository;
 
-    EXPECT_CALL(ioFactory, createReaderProxy)
-        .Times(1)
-        .WillOnce(Return(reader));
-    EXPECT_CALL(ioFactory, createWriterProxy)
-        .Times(1)
-        .WillOnce(Return(writer));
+    EXPECT_NO_THROW(repository.load(reader));
 
-    FileCollectionRepository repository(&ioFactory);
     auto collections = repository.getCollections();
     auto collection = collections.front();
     auto deck = *collection.begin();

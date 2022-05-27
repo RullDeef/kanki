@@ -1,11 +1,17 @@
 #pragma once
 
+#include <string>
+
 class SnapshotDTO
 {
 public:
-    size_t cardId;
     size_t sessionId;
-    int knowledgeDegree;
+    size_t cardId;
+    size_t deckId;
+    std::wstring cardSymbol;
+    std::wstring cardReading;
+    std::wstring cardDescription;
     int param;
+    int knowledgeDegree;
     time_t timePoint;
 };

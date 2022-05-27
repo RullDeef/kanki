@@ -48,6 +48,10 @@ SnapshotDTO FileReader::readSnapshotDTO()
 
     stream >> snapshot.sessionId >> std::ws;
     stream >> snapshot.cardId >> std::ws;
+    stream >> snapshot.deckId >> std::ws;
+    std::getline(stream, snapshot.cardSymbol);
+    std::getline(stream, snapshot.cardReading);
+    std::getline(stream, snapshot.cardDescription);
     stream >> snapshot.param >> std::ws;
     stream >> snapshot.knowledgeDegree >> std::ws;
     stream >> snapshot.timePoint >> std::ws;

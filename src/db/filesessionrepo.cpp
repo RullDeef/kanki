@@ -9,31 +9,6 @@
 #include "db/filewriter.hpp"
 #include "filesessionrepo.hpp"
 
-FileSessionRepository::FileSessionRepository(ICollectionRepository *collectionRepo, IDTOIOFactory *ioFactory)
-    : ioFactory(ioFactory), collectionRepo(collectionRepo)
-{
-    try
-    {
-        load();
-    }
-    catch (const std::exception &e)
-    {
-        ERROR_METHOD(e.what());
-    }
-}
-
-FileSessionRepository::~FileSessionRepository()
-{
-    try
-    {
-        dump();
-    }
-    catch (const std::exception &e)
-    {
-        ERROR_METHOD(e.what());
-    }
-}
-
 std::list<Session> FileSessionRepository::getSessions()
 {
     return sessions;
@@ -72,71 +47,39 @@ void FileSessionRepository::saveSession(const Session &session)
         sessions.push_back(session);
 }
 
-void FileSessionRepository::load()
+void FileSessionRepository::load(IDTOReader &reader)
 {
     sessions.clear();
 
-    auto reader = ioFactory->createReader();
-
-    size_t sessionsCount = reader->readCount();
+    size_t sessionsCount = reader.readCount();
     for (size_t i = 0; i < sessionsCount; i++)
     {
-        auto sessionDTO = reader->readSessionDTO();
+        auto sessionDTO = reader.readSessionDTO();
         DTOSessionBuilder builder(sessionDTO);
 
-        size_t snapshotsCount = reader->readCount();
+        size_t snapshotsCount = reader.readCount();
         for (size_t j = 0; j < snapshotsCount; j++)
         {
-            auto snapshotDTO = reader->readSnapshotDTO();
+            auto snapshotDTO = reader.readSnapshotDTO();
             builder.addSnapshotDTO(snapshotDTO);
         }
 
-        /// KOSTILY: updating snapshot cards with collection repository
-        auto session = updateSessionCards(builder.build());
-        sessions.push_back(session);
+        sessions.push_back(builder.build());
     }
 }
 
-void FileSessionRepository::dump()
+void FileSessionRepository::dump(IDTOWriter &writer)
 {
-    auto writer = ioFactory->createWriter();
-
-    writer->writeCount(sessions.size());
+    writer.writeCount(sessions.size());
     for (auto session : sessions)
     {
         DTOSessionParser parser(session);
-        writer->writeSessionDTO(parser.getSessionDTO());
+        writer.writeSessionDTO(parser.getSessionDTO());
 
         auto snapshotDTOs = parser.getSnapshotDTOs();
-        writer->writeCount(snapshotDTOs.size());
+        writer.writeCount(snapshotDTOs.size());
 
         for (auto snapshotDTO : snapshotDTOs)
-            writer->writeSnapshotDTO(snapshotDTO);
+            writer.writeSnapshotDTO(snapshotDTO);
     }
-}
-
-Session FileSessionRepository::updateSessionCards(const Session &session)
-{
-    Session newSession(session.getId(), session.getStartTime(), session.getEndTime());
-
-    for (auto snapshot : session)
-        newSession.addSnapshot(Snapshot(findCardById(snapshot.getCard().getId()),
-                                        snapshot.getParamType(),
-                                        snapshot.getKnowledgeDegree(),
-                                        snapshot.getTimePoint()));
-
-    return std::move(newSession);
-}
-
-Card FileSessionRepository::findCardById(size_t cardId)
-{
-    auto collections = collectionRepo->getCollections();
-
-    for (auto collection : collections)
-        for (auto deck : collection)
-            for (auto card : deck)
-                if (card.getId() == cardId)
-                    return card;
-
-    throw std::runtime_error("could not find card with given id");
 }
