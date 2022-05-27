@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "mock/collectionmanager.hpp"
-#include "mock/sessionmanager.hpp"
+#include "mock/core/collectionmanager.hpp"
+#include "mock/core/sessionmanager.hpp"
 #include "core/spacedlearner.hpp"
 
 using ::testing::AtLeast;

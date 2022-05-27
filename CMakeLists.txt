@@ -38,6 +38,7 @@ set(REPO_SOURCE
     
     src/db/filereader.cpp
     src/db/filewriter.cpp
+    src/db/filedtoiofactory.cpp
     src/db/filecollectionrepo.cpp
     src/db/filesessionrepo.cpp
 )
@@ -75,6 +76,8 @@ enable_testing()
 set(UNIT_SOURCE
     unit_tests/core/spacedlearner.cpp
     unit_tests/core/spacedestimator.cpp
+
+    unit_tests/db/filecollectionrepo.cpp
 )
 
 add_executable(unit_tests unit_tests/main.cpp)

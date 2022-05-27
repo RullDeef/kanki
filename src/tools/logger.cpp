@@ -19,6 +19,8 @@
 #define BOLDCYAN    "\033[1m\033[36m"   /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"   /* Bold White */
 
+bool Logger::enabled = true;
+
 void Logger::info(const std::string& message)
 {
     log(LogLevel::INFO, message);
@@ -32,6 +34,11 @@ void Logger::warn(const std::string& message)
 void Logger::error(const std::string& message)
 {
     log(LogLevel::ERROR, message);
+}
+
+void Logger::disableLogger()
+{
+    enabled = false;
 }
 
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
@@ -48,6 +55,9 @@ static char* currentDateTime() {
 
 void Logger::log(LogLevel level, const std::string& message)
 {
+    if (!enabled)
+        return;
+
     switch (level)
     {
         case LogLevel::INFO: std::cout << CYAN; break;

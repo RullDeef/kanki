@@ -21,8 +21,11 @@ public:
     static void warn(const std::string& message);
     static void error(const std::string& message);
 
+    static void disableLogger();
+
 private:
     enum class LogLevel { INFO, WARN, ERROR };
+    static bool enabled;
 
     static void log(LogLevel level, const std::string& message);
 };
