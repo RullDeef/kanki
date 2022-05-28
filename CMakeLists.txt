@@ -55,6 +55,7 @@ target_include_directories(unit_tests
 target_sources(unit_tests
     PRIVATE ${TOOLS_SOURCE}
     PRIVATE ${MODEL_SOURCE}
+    PRIVATE ${REPO_SOURCE}
     PRIVATE ${UNIT_SOURCE})
 target_link_libraries(unit_tests gtest_main gmock_main)
 include(GoogleTest)

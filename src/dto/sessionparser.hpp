@@ -16,6 +16,7 @@ public:
 
 private:
     void decomposeSnapshot(const Snapshot &snapshot);
+    void decomposeCard(SnapshotDTO &dst, const Card &card);
 
     SessionDTO sessionDTO;
     std::list<SnapshotDTO> snapshotDTOs;
