@@ -1,21 +1,22 @@
 #pragma once
 
-#include <chrono>
+#include "tools/time.hpp"
 #include "card.hpp"
 
 class Snapshot
 {
 public:
-    enum class ParamType
+    enum ParamType
     {
-        READING,
-        TRANSLATION
+        NONE = 0,
+        READING = 1,
+        TRANSLATION = 2,
     };
 
     Snapshot(const Card &card,
-             ParamType paramType,
+             ParamType paramType = ParamType::NONE,
              int knowledgeDegree = 0,
-             std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::now());
+             time_point timePoint = clock_spec::now());
 
     const Card &getCard() const;
     ParamType getParamType() const;
@@ -23,15 +24,14 @@ public:
 
     void setKnowledgeDegree(int degree);
 
-    std::chrono::system_clock::time_point getTimePoint() const;
+    time_point getTimePoint() const;
 
-    // возвращает время с момента создания снапшота
-    std::chrono::system_clock::duration getTimeDelta() const;
+    // returns duration from creation time till now
+    duration getTimeDelta() const;
 
 private:
     Card card;
     ParamType paramType;
     int knowledgeDegree;
-
-    std::chrono::system_clock::time_point timePoint;
+    time_point timePoint;
 };

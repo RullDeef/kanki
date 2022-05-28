@@ -24,8 +24,7 @@ size_t Collection::size() const
 std::list<std::wstring> Collection::getDeckNames() const
 {
     std::list<std::wstring> names(size());
-    std::transform(begin(), end(), names.begin(),
-                   [](const Deck &d)
+    std::transform(begin(), end(), names.begin(), [](const Deck &d)
                    { return d.getName(); });
     return names;
 }
@@ -33,8 +32,7 @@ std::list<std::wstring> Collection::getDeckNames() const
 void Collection::addDeck(const Deck &deck)
 {
     size_t id = deck.getId();
-    auto iter = std::find_if(decks.begin(), decks.end(),
-                             [id](const Deck &deck)
+    auto iter = std::find_if(decks.begin(), decks.end(), [id](const Deck &deck)
                              { return deck.getId() == id; });
 
     if (iter != decks.end())
@@ -43,12 +41,12 @@ void Collection::addDeck(const Deck &deck)
         decks.push_back(deck);
 }
 
-std::list<Deck>::const_iterator Collection::begin() const
+Collection::ConstIterator Collection::begin() const
 {
     return decks.begin();
 }
 
-std::list<Deck>::const_iterator Collection::end() const
+Collection::ConstIterator Collection::end() const
 {
     return decks.end();
 }
@@ -66,8 +64,7 @@ const Deck *Collection::getDeckById(size_t id) const
 void Collection::removeDeckById(size_t id)
 {
     decks.erase(
-        std::remove_if(decks.begin(), decks.end(),
-                       [id](const Deck &deck)
+        std::remove_if(decks.begin(), decks.end(), [id](const Deck &deck)
                        { return deck.getId() == id; }),
         decks.end());
 }

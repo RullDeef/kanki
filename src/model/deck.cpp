@@ -29,8 +29,7 @@ size_t Deck::size() const
 void Deck::addCard(const Card &card)
 {
     size_t id = card.getId();
-    auto iter = std::find_if(cards.begin(), cards.end(),
-                             [id](const Card &card)
+    auto iter = std::find_if(cards.begin(), cards.end(), [id](const Card &card)
                              { return card.getId() == id; });
 
     if (iter != cards.end())
@@ -41,8 +40,7 @@ void Deck::addCard(const Card &card)
 
 const Card *Deck::getCardById(size_t id) const
 {
-    auto iter = std::find_if(cards.begin(), cards.end(),
-                             [id](const Card &card)
+    auto iter = std::find_if(cards.begin(), cards.end(), [id](const Card &card)
                              { return card.getId() == id; });
 
     if (iter != cards.end())
@@ -54,13 +52,12 @@ const Card *Deck::getCardById(size_t id) const
 void Deck::removeCardById(size_t id)
 {
     cards.erase(
-        std::remove_if(cards.begin(), cards.end(),
-                       [id](const Card &card)
+        std::remove_if(cards.begin(), cards.end(), [id](const Card &card)
                        { return card.getId() == id; }),
         cards.end());
 }
 
-std::list<Card>::const_iterator Deck::begin() const
+Deck::ConstIterator Deck::begin() const
 {
     return cards.begin();
 }

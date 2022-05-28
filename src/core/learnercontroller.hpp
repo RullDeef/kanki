@@ -23,16 +23,19 @@ public:
 
     void confirmLearned(size_t cardId);
 
-    void markEasy(size_t cardId);
-    void markGood(size_t cardId);
-    void markAgain(size_t cardId);
+    void markEasy(size_t cardId, int paramType);
+    void markGood(size_t cardId, int paramType);
+    void markAgain(size_t cardId, int paramType);
 
 private:
+    bool getNextCardFor(size_t deckId, Card& card, int paramType);
+
     ILearnerView *view = nullptr;
     ILearner *learner = nullptr;
     IEstimator *estimator = nullptr;
 
     IdGenerator idGenerator;
+    int cardParam = Snapshot::ParamType::READING;
 
     ICollectionManager *collectionManager;
     ISessionManager *sessionManager;
