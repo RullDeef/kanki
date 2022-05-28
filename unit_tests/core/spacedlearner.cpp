@@ -84,24 +84,25 @@ TEST(SpacedLearner_getNextForLearn, HasReadyForRepeat)
     freshDeck.addCard(Card(11));
     freshDeck.addCard(lastCard);
 
+    auto tme = [](time_t t)
+    { return clock_spec::from_time_t(t); };
+
     std::list<Snapshot> snapshots1 = {
-        Snapshot(Card(10), Snapshot::ParamType::READING),
-        Snapshot(Card(10), Snapshot::ParamType::READING),
-        Snapshot(Card(10), Snapshot::ParamType::READING)};
+        Snapshot(Card(10), Snapshot::ParamType::NONE, 0, tme(100)),
+        Snapshot(Card(10), Snapshot::ParamType::READING, 1, tme(120)),
+        Snapshot(Card(10), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
 
     std::list<Snapshot> snapshots2 = {
-        Snapshot(Card(11), Snapshot::ParamType::READING),
-        Snapshot(Card(11), Snapshot::ParamType::READING),
-        Snapshot(Card(11), Snapshot::ParamType::READING)};
+        Snapshot(Card(11), Snapshot::ParamType::NONE, 0, tme(200)),
+        Snapshot(Card(11), Snapshot::ParamType::READING, 1, tme(280)),
+        Snapshot(Card(11), Snapshot::ParamType::READING, 3, tme(320))};
 
     std::list<Snapshot> snapshots3 = {};
 
     EXPECT_CALL(collectionManager, getDeckById)
-        .Times(1)
         .WillOnce(Return(freshDeck));
 
     EXPECT_CALL(sessionManager, getAllCardSnapshots)
-        .Times(3)
         .WillOnce(Return(snapshots1))
         .WillOnce(Return(snapshots2))
         .WillOnce(Return(snapshots3));
@@ -119,10 +120,9 @@ TEST(SpacedLearner_getNextForRepeat, EmptyDeck)
     Deck emptyDeck(1, L"deck name");
 
     EXPECT_CALL(collectionManager, getDeckById)
-        .Times(1)
         .WillOnce(Return(emptyDeck));
 
-    EXPECT_ANY_THROW(learner.getNextForRepeat(1));
+    EXPECT_ANY_THROW(learner.getNextForRepeat(1, Snapshot::ParamType::READING));
 }
 
 TEST(SpacedLearner_getNextForRepeat, AllNewCards)
@@ -137,14 +137,13 @@ TEST(SpacedLearner_getNextForRepeat, AllNewCards)
     newDeck.addCard(Card(12));
 
     EXPECT_CALL(collectionManager, getDeckById)
-        .Times(1)
         .WillOnce(Return(newDeck));
 
     EXPECT_CALL(sessionManager, getAllCardSnapshots)
         .Times(3)
         .WillRepeatedly(Return(std::list<Snapshot>()));
 
-    EXPECT_ANY_THROW(learner.getNextForRepeat(2));
+    EXPECT_ANY_THROW(learner.getNextForRepeat(2, Snapshot::ParamType::READING));
 }
 
 TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
@@ -158,32 +157,32 @@ TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
     freshDeck.addCard(Card(11));
     freshDeck.addCard(Card(12));
 
-    /// TODO: add time point to snapshots
+    auto tme = [](time_t t)
+    { return clock_spec::from_time_t(t); };
+
     std::list<Snapshot> snapshots1 = {
-        Snapshot(Card(10), Snapshot::ParamType::READING),
-        Snapshot(Card(10), Snapshot::ParamType::READING),
-        Snapshot(Card(10), Snapshot::ParamType::READING)};
+        Snapshot(Card(10), Snapshot::ParamType::NONE, 0, tme(100)),
+        Snapshot(Card(10), Snapshot::ParamType::READING, 1, tme(120)),
+        Snapshot(Card(10), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
 
     std::list<Snapshot> snapshots2 = {
-        Snapshot(Card(11), Snapshot::ParamType::READING),
-        Snapshot(Card(11), Snapshot::ParamType::READING),
-        Snapshot(Card(11), Snapshot::ParamType::READING)};
+        Snapshot(Card(11), Snapshot::ParamType::NONE, 0, tme(200)),
+        Snapshot(Card(11), Snapshot::ParamType::READING, 1, tme(280)),
+        Snapshot(Card(11), Snapshot::ParamType::READING, 3, tme(320))};
 
     std::list<Snapshot> snapshots3 = {
-        Snapshot(Card(12), Snapshot::ParamType::READING),
-        Snapshot(Card(12), Snapshot::ParamType::READING),
-        Snapshot(Card(12), Snapshot::ParamType::READING)};
+        Snapshot(Card(12), Snapshot::ParamType::NONE, 0, tme(400)),
+        Snapshot(Card(12), Snapshot::ParamType::TRANSLATION, 2, tme(425)),
+        Snapshot(Card(12), Snapshot::ParamType::TRANSLATION, 3, tme(480))};
 
     EXPECT_CALL(collectionManager, getDeckById)
-        .Times(1)
         .WillOnce(Return(freshDeck));
 
     EXPECT_CALL(sessionManager, getAllCardSnapshots)
-        .Times(3)
         .WillOnce(Return(snapshots1))
         .WillOnce(Return(snapshots2))
         .WillOnce(Return(snapshots3));
 
-    auto card = learner.getNextForRepeat(4);
+    auto card = learner.getNextForRepeat(4, Snapshot::ParamType::READING);
     EXPECT_EQ(card, Card(10));
 }

@@ -24,7 +24,7 @@ set(MODEL_SOURCE
     src/core/learnercontroller.cpp
 )
 
-subdirs(vendor)
+subdirs(vendor/gtest)
 
 enable_testing()
 
@@ -33,7 +33,7 @@ set(UNIT_SOURCE
     unit_tests/core/spacedestimator.cpp
 )
 
-add_executable(unit_tests unit_tests/main.cpp)
+add_executable(unit_tests)
 target_include_directories(unit_tests
     PRIVATE src
     PRIVATE unit_tests)
