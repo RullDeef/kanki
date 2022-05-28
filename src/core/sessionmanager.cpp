@@ -30,9 +30,6 @@ void SessionManager::addSnapshot(const Snapshot &snapshot)
     LOG_METHOD();
 
     activeSession.addSnapshot(snapshot);
-
-    /// KOSTYLI: preserve active session in repository
-    activeSession.endSession();
     sessionRepository->saveSession(activeSession);
 }
 
