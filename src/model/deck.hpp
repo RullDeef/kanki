@@ -7,6 +7,8 @@
 class Deck
 {
 public:
+    using ConstIterator = std::list<Card>::const_iterator;
+
     Deck(size_t id = 0, const std::wstring &name = L"new deck");
 
     size_t getId() const;
@@ -19,8 +21,8 @@ public:
     const Card *getCardById(size_t id) const;
     void removeCardById(size_t id);
 
-    std::list<Card>::const_iterator begin() const;
-    std::list<Card>::const_iterator end() const;
+    ConstIterator begin() const;
+    ConstIterator end() const;
 
 private:
     size_t id;

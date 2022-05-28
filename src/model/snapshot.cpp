@@ -1,9 +1,6 @@
 #include "snapshot.hpp"
 
-Snapshot::Snapshot(const Card &card,
-                   ParamType paramType,
-                   int knowledgeDegree,
-                   std::chrono::system_clock::time_point timePoint)
+Snapshot::Snapshot(const Card &card, ParamType paramType, int knowledgeDegree, time_point timePoint)
     : card(card), paramType(paramType), knowledgeDegree(knowledgeDegree), timePoint(timePoint)
 {
 }
@@ -28,12 +25,12 @@ void Snapshot::setKnowledgeDegree(int degree)
     knowledgeDegree = degree;
 }
 
-std::chrono::system_clock::time_point Snapshot::getTimePoint() const
+time_point Snapshot::getTimePoint() const
 {
     return timePoint;
 }
 
-std::chrono::system_clock::duration Snapshot::getTimeDelta() const
+duration Snapshot::getTimeDelta() const
 {
-    return std::chrono::system_clock::now() - timePoint;
+    return clock_spec::now() - timePoint;
 }

@@ -13,8 +13,8 @@ void DTOSessionBuilder::addSnapshotDTO(const SnapshotDTO &snapshotDTO)
 Session DTOSessionBuilder::build()
 {
     Session session(sessionDTO.id,
-                    std::chrono::system_clock::from_time_t(sessionDTO.startTime),
-                    std::chrono::system_clock::from_time_t(sessionDTO.endTime));
+                    clock_spec::from_time_t(sessionDTO.startTime),
+                    clock_spec::from_time_t(sessionDTO.endTime));
 
     for (auto snapshotDTO : snapshotDTOs)
         session.addSnapshot(buildSnapshot(snapshotDTO));
@@ -24,13 +24,16 @@ Session DTOSessionBuilder::build()
 
 Snapshot DTOSessionBuilder::buildSnapshot(const SnapshotDTO &snapshotDTO)
 {
-    /// QUESTION: where to get card?
-    /// TODO: get card somewhere
+    Card card(snapshotDTO.cardId,
+              snapshotDTO.cardSymbol,
+              snapshotDTO.cardReading,
+              snapshotDTO.cardDescription);
+
     Snapshot snapshot(
-        Card(snapshotDTO.cardId),
-        snapshotDTO.param == 0 ? Snapshot::ParamType::READING : Snapshot::ParamType::TRANSLATION,
+        card,
+        Snapshot::ParamType(snapshotDTO.param),
         snapshotDTO.knowledgeDegree,
-        std::chrono::system_clock::from_time_t(snapshotDTO.timePoint));
+        clock_spec::from_time_t(snapshotDTO.timePoint));
 
     return snapshot;
 }

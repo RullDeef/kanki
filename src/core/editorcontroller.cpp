@@ -21,6 +21,8 @@ void EditorController::setView(IEditorView *newView)
 
 void EditorController::addCollection()
 {
+    LOG_METHOD();
+
     delete activeCollection;
     activeCollection = new Collection(idGenerator());
 
@@ -55,7 +57,6 @@ void EditorController::saveActiveCollection()
     LOG_METHOD();
 
     collectionManager->saveCollection(*activeCollection);
-    /// WARNING: WIGGLE WIGGLE THINGS
 }
 
 void EditorController::rejectActiveCollection()
@@ -68,6 +69,8 @@ void EditorController::rejectActiveCollection()
 
 void EditorController::addDeck()
 {
+    LOG_METHOD();
+
     delete activeDeck;
     activeDeck = new Deck(idGenerator());
 
@@ -77,17 +80,28 @@ void EditorController::addDeck()
 
 void EditorController::editDeck(size_t deckId)
 {
-    delete activeDeck;
+    LOG_METHOD();
 
-    /// TODO: exception handling
-    activeDeck = new Deck(*activeCollection->getDeckById(deckId));
+    try
+    {
+        auto deck = activeCollection->getDeckById(deckId);
 
-    if (view != nullptr)
-        view->showDeck(*activeDeck);
+        delete activeDeck;
+        activeDeck = new Deck(*deck);
+
+        if (view != nullptr)
+            view->showDeck(*activeDeck);
+    }
+    catch (const std::exception& e)
+    {
+        ERROR_METHOD("invalid deck id");
+    }
 }
 
 void EditorController::addCard()
 {
+    LOG_METHOD();
+
     delete activeCard;
     activeCard = new Card(idGenerator());
 
@@ -97,13 +111,21 @@ void EditorController::addCard()
 
 void EditorController::editCard(size_t cardId)
 {
-    delete activeCard;
+    LOG_METHOD();
 
-    /// TODO: exception handling
-    activeCard = new Card(*activeDeck->getCardById(cardId));
+    try
+    {
+        auto card = activeDeck->getCardById(cardId);
+        delete activeCard;
+        activeCard = new Card(*card);
 
-    if (view != nullptr)
-        view->showCard(*activeCard);
+        if (view != nullptr)
+            view->showCard(*activeCard);        
+    }
+    catch(const std::exception& e)
+    {
+        ERROR_METHOD("invalid card id");
+    }
 }
 
 void EditorController::saveActiveDeck()
@@ -131,6 +153,8 @@ void EditorController::rejectActiveDeck()
 
 void EditorController::removeDeck(size_t deckId)
 {
+    LOG_METHOD();
+
     activeCollection->removeDeckById(deckId);
 
     if (view != nullptr)
@@ -139,6 +163,8 @@ void EditorController::removeDeck(size_t deckId)
 
 void EditorController::removeCard(size_t cardId)
 {
+    LOG_METHOD();
+
     activeDeck->removeCardById(cardId);
 
     if (view != nullptr)
@@ -147,24 +173,32 @@ void EditorController::removeCard(size_t cardId)
 
 void EditorController::setDeckName(const std::wstring &newName)
 {
+    LOG_METHOD();
+
     if (activeDeck != nullptr)
         activeDeck->setName(newName);
 }
 
 void EditorController::setCardSymbol(const std::wstring &value)
 {
+    LOG_METHOD();
+
     if (activeCard != nullptr)
         activeCard->setSymbol(value);
 }
 
 void EditorController::setCardReading(const std::wstring &value)
 {
+    LOG_METHOD();
+
     if (activeCard != nullptr)
         activeCard->setReading(value);
 }
 
 void EditorController::setCardDescription(const std::wstring &value)
 {
+    LOG_METHOD();
+
     if (activeCard != nullptr)
         activeCard->setDescription(value);
 }
@@ -174,6 +208,7 @@ void EditorController::saveActiveCard()
     LOG_METHOD();
 
     activeDeck->addCard(*activeCard);
+
     delete activeCard;
     activeCard = nullptr;
 

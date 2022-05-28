@@ -1,4 +1,6 @@
+#include <cmath>
 #include <stdexcept>
+#include "tools/time.hpp"
 #include "spacedlearner.hpp"
 
 SpacedLearner::SpacedLearner(ICollectionManager *collectionManager, ISessionManager *sessionManager)
@@ -21,30 +23,23 @@ Card SpacedLearner::getNextForLearn(size_t deckId)
     throw std::runtime_error("all cards viewed");
 }
 
-Card SpacedLearner::getNextForRepeat(size_t deckId)
+Card SpacedLearner::getNextForRepeat(size_t deckId, int paramType)
 {
-    auto targets = getTargets(deckId);
+    auto targets = getTargets(deckId, paramType);
 
-    if (targets.empty())
-        throw std::runtime_error("no cards for review");
-
-    // выбрать карту из targets
-    auto selectedSnapshot = targets.front();
-    std::chrono::system_clock::duration maxDuration = selectedSnapshot.getTimeDelta();
     for (const auto snapshot : targets)
     {
-        /// TODO: должно быть не время старта, а время до момента повторения
-        if (snapshot.getTimeDelta() > maxDuration)
-        {
-            selectedSnapshot = snapshot;
-            maxDuration = snapshot.getTimeDelta();
-        }
+        time_t periodValue = learningPeriod(snapshot.getKnowledgeDegree());
+        auto timeDelta = clock_spec::from_time_t(periodValue).time_since_epoch();
+        
+        if (snapshot.getTimeDelta() > timeDelta)
+            return snapshot.getCard();
     }
 
-    return selectedSnapshot.getCard();
+    throw std::runtime_error("no cards for review");
 }
 
-std::list<Snapshot> SpacedLearner::getTargets(size_t deckId)
+std::list<Snapshot> SpacedLearner::getTargets(size_t deckId, int paramType)
 {
     std::list<Snapshot> result;
     auto deck = collectionManager->getDeckById(deckId);
@@ -56,13 +51,24 @@ std::list<Snapshot> SpacedLearner::getTargets(size_t deckId)
         if (snapshots.size() == 0)
             continue;
 
-        Snapshot recentSnapshot = snapshots.front();
-        for (auto snapshot : snapshots)
-            if (snapshot.getTimePoint() > recentSnapshot.getTimePoint())
-                recentSnapshot = snapshot;
+        Snapshot *recentSnapshot = nullptr;
+        for (auto& snapshot : snapshots)
+        {
+            if (snapshot.getParamType() != paramType)
+                continue;
+            
+            if (recentSnapshot == nullptr || snapshot.getTimePoint() > recentSnapshot->getTimePoint())
+                recentSnapshot = &snapshot;
+        }
 
-        result.push_back(recentSnapshot);
+        if (recentSnapshot != nullptr)
+            result.push_back(*recentSnapshot);
     }
 
     return result;
+}
+
+time_t SpacedLearner::learningPeriod(int knowledgeDegree)
+{
+    return std::floor(std::exp(knowledgeDegree / 1.42) - 1);
 }

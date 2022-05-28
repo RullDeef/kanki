@@ -1,30 +1,32 @@
 #pragma once
 
 #include <list>
-#include <chrono>
+#include "tools/time.hpp"
 #include "snapshot.hpp"
 
 class Session
 {
 public:
+    using ConstIterator = std::list<Snapshot>::const_iterator;
+
     Session(size_t id = 0,
-            std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now(),
-            std::chrono::system_clock::time_point endTime = std::chrono::system_clock::now());
+            time_point startTime = clock_spec::now(),
+            time_point endTime = clock_spec::now());
 
     size_t getId() const;
     size_t size() const;
-    std::chrono::system_clock::time_point getStartTime() const;
-    std::chrono::system_clock::time_point getEndTime() const;
+    time_point getStartTime() const;
+    time_point getEndTime() const;
 
     void endSession();
     void addSnapshot(const Snapshot &snapshot);
 
-    std::list<Snapshot>::const_iterator begin() const;
-    std::list<Snapshot>::const_iterator end() const;
+    ConstIterator begin() const;
+    ConstIterator end() const;
 
 private:
     size_t id;
     std::list<Snapshot> snapshots;
-    std::chrono::system_clock::time_point startTime;
-    std::chrono::system_clock::time_point endTime;
+    time_point startTime;
+    time_point endTime;
 };
