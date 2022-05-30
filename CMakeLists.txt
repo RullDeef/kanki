@@ -22,6 +22,22 @@ set(MODEL_SOURCE
     src/core/sessionmanager.cpp
     src/core/editorcontroller.cpp
     src/core/learnercontroller.cpp
+    src/core/iocontroller.cpp
+)
+
+set(REPO_SOURCE
+    src/dto/collectionparser.cpp
+    src/dto/collectionbuilder.cpp
+    src/dto/sessionparser.cpp
+    src/dto/sessionbuilder.cpp
+    
+    src/db/filereader.cpp
+    src/db/filewriter.cpp
+    src/db/filedtoiofactory.cpp
+    src/db/filecollectionrepo.cpp
+    src/db/filesessionrepo.cpp
+    src/db/fileexporter.cpp
+    src/db/fileimporter.cpp
 )
 
 subdirs(vendor/gtest)
@@ -31,6 +47,8 @@ enable_testing()
 set(UNIT_SOURCE
     unit_tests/core/spacedlearner.cpp
     unit_tests/core/spacedestimator.cpp
+
+    unit_tests/db/filecollectionrepo.cpp
 )
 
 add_executable(unit_tests)
@@ -40,6 +58,7 @@ target_include_directories(unit_tests
 target_sources(unit_tests
     PRIVATE ${TOOLS_SOURCE}
     PRIVATE ${MODEL_SOURCE}
+    PRIVATE ${REPO_SOURCE}
     PRIVATE ${UNIT_SOURCE})
 target_link_libraries(unit_tests gtest_main gmock_main)
 include(GoogleTest)
