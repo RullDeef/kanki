@@ -23,6 +23,7 @@ set(MODEL_SOURCE
     src/core/sessionmanager.cpp
     src/core/editorcontroller.cpp
     src/core/learnercontroller.cpp
+    src/core/iocontroller.cpp
 )
 
 set(REPO_SOURCE
@@ -36,6 +37,8 @@ set(REPO_SOURCE
     src/db/filedtoiofactory.cpp
     src/db/filecollectionrepo.cpp
     src/db/filesessionrepo.cpp
+    src/db/fileexporter.cpp
+    src/db/fileimporter.cpp
 )
 
 set(VIEW_SOURCE
