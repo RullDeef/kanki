@@ -92,7 +92,7 @@ void EditorController::editDeck(size_t deckId)
         if (view != nullptr)
             view->showDeck(*activeDeck);
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         ERROR_METHOD("invalid deck id");
     }
@@ -120,9 +120,9 @@ void EditorController::editCard(size_t cardId)
         activeCard = new Card(*card);
 
         if (view != nullptr)
-            view->showCard(*activeCard);        
+            view->showCard(*activeCard);
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         ERROR_METHOD("invalid card id");
     }
@@ -176,7 +176,12 @@ void EditorController::setDeckName(const std::wstring &newName)
     LOG_METHOD();
 
     if (activeDeck != nullptr)
+    {
         activeDeck->setName(newName);
+
+        if (view != nullptr)
+            view->showDeck(*activeDeck);
+    }
 }
 
 void EditorController::setCardSymbol(const std::wstring &value)
@@ -184,7 +189,12 @@ void EditorController::setCardSymbol(const std::wstring &value)
     LOG_METHOD();
 
     if (activeCard != nullptr)
+    {
         activeCard->setSymbol(value);
+
+        if (view != nullptr)
+            view->showCard(*activeCard);
+    }
 }
 
 void EditorController::setCardReading(const std::wstring &value)
@@ -192,7 +202,12 @@ void EditorController::setCardReading(const std::wstring &value)
     LOG_METHOD();
 
     if (activeCard != nullptr)
+    {
         activeCard->setReading(value);
+
+        if (view != nullptr)
+            view->showCard(*activeCard);
+    }
 }
 
 void EditorController::setCardDescription(const std::wstring &value)
@@ -200,7 +215,12 @@ void EditorController::setCardDescription(const std::wstring &value)
     LOG_METHOD();
 
     if (activeCard != nullptr)
+    {
         activeCard->setDescription(value);
+
+        if (view != nullptr)
+            view->showCard(*activeCard);
+    }
 }
 
 void EditorController::saveActiveCard()

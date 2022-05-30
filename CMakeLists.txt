@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(TOOLS_SOURCE
+    src/tools/convertor.cpp
     src/tools/logger.cpp
 )
 
@@ -40,6 +41,21 @@ set(REPO_SOURCE
     src/db/fileimporter.cpp
 )
 
+set(VIEW_SOURCE
+    src/view/convertor.cpp
+    src/view/editoradapter.cpp
+    src/view/learneradapter.cpp
+    src/view/ioviewadapter.cpp
+)
+
+set(CLI_SOURCE
+    src/cli/view/editorview.cpp
+    src/cli/view/learnerview.cpp
+    src/cli/view/ioview.cpp
+    src/cli/menu.cpp
+    src/cli/application.cpp
+)
+
 subdirs(vendor/gtest)
 
 enable_testing()
@@ -63,3 +79,13 @@ target_sources(unit_tests
 target_link_libraries(unit_tests gtest_main gmock_main)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
+
+add_executable(kanki_cli src/main.cpp)
+target_include_directories(kanki_cli PRIVATE src)
+target_sources(kanki_cli
+    PRIVATE ${TOOLS_SOURCE}
+    PRIVATE ${MODEL_SOURCE}
+    PRIVATE ${REPO_SOURCE}
+    PRIVATE ${VIEW_SOURCE}
+    PRIVATE ${CLI_SOURCE}
+)

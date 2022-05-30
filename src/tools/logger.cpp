@@ -61,15 +61,15 @@ void Logger::log(LogLevel level, const std::string &message)
     switch (level)
     {
     case LogLevel::INFO:
-        std::cout << CYAN;
+        std::cerr << CYAN;
         break;
     case LogLevel::WARN:
-        std::cout << YELLOW;
+        std::cerr << YELLOW;
         break;
     case LogLevel::ERROR:
-        std::cout << BOLDRED;
+        std::cerr << BOLDRED;
         break;
     }
 
-    std::cout << "[" << currentDateTime() << "]: " << message << RESET << std::endl;
+    std::cerr << "[" << currentDateTime() << "]: " << message << RESET << std::endl;
 }
