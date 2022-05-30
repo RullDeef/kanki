@@ -45,11 +45,13 @@ set(VIEW_SOURCE
     src/view/convertor.cpp
     src/view/editoradapter.cpp
     src/view/learneradapter.cpp
+    src/view/ioviewadapter.cpp
 )
 
 set(CLI_SOURCE
     src/cli/view/editorview.cpp
     src/cli/view/learnerview.cpp
+    src/cli/view/ioview.cpp
     src/cli/menu.cpp
     src/cli/application.cpp
 )

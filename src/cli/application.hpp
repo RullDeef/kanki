@@ -2,10 +2,13 @@
 
 #include "core/editorcontroller.hpp"
 #include "core/learnercontroller.hpp"
+#include "core/iocontroller.hpp"
 #include "cli/view/editorview.hpp"
 #include "cli/view/learnerview.hpp"
+#include "cli/view/ioview.hpp"
 #include "view/editordapter.hpp"
 #include "view/learneradapter.hpp"
+#include "view/ioviewadapter.hpp"
 
 namespace cli
 {
@@ -17,6 +20,7 @@ namespace cli
 
         void setEditorController(EditorController &controller);
         void setLearnerController(LearnerController &controller);
+        void setIOController(IOController &controller);
 
         int run();
 
@@ -28,5 +32,9 @@ namespace cli
         LearnerController *learnerController = nullptr;
         LearnerViewAdapter *learnerViewAdapter;
         LearnerView learnerView;
+
+        IOController *ioController = nullptr;
+        IOViewAdapter *ioViewAdapter;
+        IOView ioView;
     };
 } // namespace cli

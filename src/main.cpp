@@ -8,6 +8,8 @@
 #include "db/filedtoiofactory.hpp"
 #include "db/filecollectionrepo.hpp"
 #include "db/filesessionrepo.hpp"
+#include "db/fileexporter.hpp"
+#include "db/fileimporter.hpp"
 
 #define UI_CLI true
 
@@ -18,23 +20,24 @@
     #include "ui/main_window.hpp"
 #endif
 
-
 constexpr auto collectionFilename = "collection.txt";
 constexpr auto sessionsFilename = "sessions.txt";
 
-int ui_solution(int argc, char *argv[], EditorController& editorController, LearnerController& learnerController)
+int ui_solution(int argc, char *argv[],
+                EditorController &editorController,
+                LearnerController &learnerController,
+                IOController &ioController)
 {
 #if UI_CLI
     cli::Application app;
     app.setEditorController(editorController);
     app.setLearnerController(learnerController);
-
+    app.setIOController(ioController);
     return app.run();
 #else
     QApplication app(argc, argv);
     auto mainWindow = MainWindow(editorController, learnerController);
     mainWindow.show();
-
     return app.exec();
 #endif
 }
@@ -43,6 +46,9 @@ int main(int argc, char *argv[])
 {
     FileDTOIOFactory collectionIOFactory(collectionFilename);
     FileDTOIOFactory sessionIOFactory(sessionsFilename);
+
+    FileImporter importer;
+    FileExporter exporter;
 
     auto collectionRepo = new FileCollectionRepository();
     auto sessionRepo = new FileSessionRepository();
@@ -70,7 +76,12 @@ int main(int argc, char *argv[])
         learnerController.setLearner(&spacedLearner);
         learnerController.setEstimator(&spacedEstimator);
 
-        res = ui_solution(argc, argv, editorController, learnerController);
+        IOController ioController(&collectionManager, &sessionManager);
+
+        ioController.setImporter(&importer);
+        ioController.setExporter(&exporter);
+
+        res = ui_solution(argc, argv, editorController, learnerController, ioController);
     }
 
     TRY_FUNC(
