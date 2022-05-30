@@ -36,6 +36,8 @@ set(REPO_SOURCE
     src/db/filedtoiofactory.cpp
     src/db/filecollectionrepo.cpp
     src/db/filesessionrepo.cpp
+    src/db/fileexporter.cpp
+    src/db/fileimporter.cpp
 )
 
 subdirs(vendor/gtest)
