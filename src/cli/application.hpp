@@ -3,7 +3,9 @@
 #include "core/editorcontroller.hpp"
 #include "core/learnercontroller.hpp"
 #include "cli/view/editorview.hpp"
+#include "cli/view/learnerview.hpp"
 #include "view/editordapter.hpp"
+#include "view/learneradapter.hpp"
 
 namespace cli
 {
@@ -20,9 +22,11 @@ namespace cli
 
     private:
         EditorController *editorController = nullptr;
-        LearnerController *learnerController = nullptr;
-
-        EditorViewAdapter* editorViewAdapter;
+        EditorViewAdapter *editorViewAdapter;
         EditorView editorView;
+
+        LearnerController *learnerController = nullptr;
+        LearnerViewAdapter *learnerViewAdapter;
+        LearnerView learnerView;
     };
 } // namespace cli

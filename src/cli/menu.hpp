@@ -17,10 +17,13 @@ namespace cli
 
         void addOption(const std::string &label, Action action);
 
+        void exit();
         void run(bool infinite = false);
 
     private:
         std::string title;
         std::map<int, Option> optionMap;
+
+        bool running = false;
     };
 } // namespace cli

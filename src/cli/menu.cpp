@@ -16,9 +16,15 @@ void cli::Menu::addOption(const std::string &label, Action action)
     optionMap[id] = Option{label, action};
 }
 
+void cli::Menu::exit()
+{
+    running = false;
+}
+
 void cli::Menu::run(bool infinite)
 {
-    while (true)
+    running = true;
+    while (running)
     {
         std::cout << title;
         for (auto [id, option] : optionMap)
@@ -31,7 +37,7 @@ void cli::Menu::run(bool infinite)
         std::cin >> id;
         std::cin.get();
 
-        if (id == 0)
+        if (infinite && id == 0)
             break;
         else if (optionMap.count(id) == 0)
             std::cout << "Неверная опция. Повторите попытку\n";

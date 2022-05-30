@@ -41,10 +41,12 @@ set(REPO_SOURCE
 set(VIEW_SOURCE
     src/view/convertor.cpp
     src/view/editoradapter.cpp
+    src/view/learneradapter.cpp
 )
 
 set(CLI_SOURCE
     src/cli/view/editorview.cpp
+    src/cli/view/learnerview.cpp
     src/cli/menu.cpp
     src/cli/application.cpp
 )
