@@ -22,6 +22,7 @@ set(MODEL_SOURCE
     src/core/sessionmanager.cpp
     src/core/editorcontroller.cpp
     src/core/learnercontroller.cpp
+    src/core/iocontroller.cpp
 )
 
 set(REPO_SOURCE

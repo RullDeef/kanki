@@ -31,7 +31,7 @@ Card SpacedLearner::getNextForRepeat(size_t deckId, int paramType)
     {
         time_t periodValue = learningPeriod(snapshot.getKnowledgeDegree());
         auto timeDelta = clock_spec::from_time_t(periodValue).time_since_epoch();
-        
+
         if (snapshot.getTimeDelta() > timeDelta)
             return snapshot.getCard();
     }
@@ -47,19 +47,14 @@ std::list<Snapshot> SpacedLearner::getTargets(size_t deckId, int paramType)
     for (auto card : deck)
     {
         auto snapshots = sessionManager->getAllCardSnapshots(card);
-
         if (snapshots.size() == 0)
             continue;
 
         Snapshot *recentSnapshot = nullptr;
-        for (auto& snapshot : snapshots)
-        {
-            if (snapshot.getParamType() != paramType)
-                continue;
-            
-            if (recentSnapshot == nullptr || snapshot.getTimePoint() > recentSnapshot->getTimePoint())
-                recentSnapshot = &snapshot;
-        }
+        for (auto &snapshot : snapshots)
+            if ((snapshot.getParamType() == paramType || snapshot.getParamType() == Snapshot::ParamType::NONE)
+                && (recentSnapshot == nullptr || snapshot.getTimePoint() > recentSnapshot->getTimePoint()))
+                    recentSnapshot = &snapshot;
 
         if (recentSnapshot != nullptr)
             result.push_back(*recentSnapshot);
