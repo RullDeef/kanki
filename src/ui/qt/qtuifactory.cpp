@@ -5,7 +5,7 @@
 int QtUIFactory::runApplication(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    MainWindow window(getEditorController(), getLearnerController());
+    MainWindow window(getEditorController(), getLearnerController(), getIoController());
     window.show();
     return app.exec();
 }

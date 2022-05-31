@@ -1,4 +1,5 @@
 #include "learn_window.hpp"
+#include "repeat_window.hpp"
 #include "info_window.hpp"
 #include "qtlearnerview.hpp"
 
@@ -10,7 +11,8 @@ void QtLearnerView::showCard(const CardParams &card)
 
 void QtLearnerView::askCard(const CardParams &card, int paramType)
 {
-    /// TODO: implement
+    RepeatWindow window(controller, *this, card, paramType);
+    window.exec();
 }
 
 void QtLearnerView::noCardsForLearn()

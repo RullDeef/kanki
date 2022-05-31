@@ -1,4 +1,5 @@
 #include <QString>
+#include <QFileDialog>
 #include "tools/logger.hpp"
 #include "editor/deck_window.hpp"
 #include "learn/learn_window.hpp"
@@ -7,8 +8,12 @@
 
 MainWindow::MainWindow(
     std::shared_ptr<EditorController> editorController,
-    std::shared_ptr<LearnerController> learnerController)
-    : ui(new Ui::MainWindow), editorController(editorController), learnerController(learnerController)
+    std::shared_ptr<LearnerController> learnerController,
+    std::shared_ptr<IOController> ioController)
+    : ui(new Ui::MainWindow),
+      editorController(editorController),
+      learnerController(learnerController),
+      ioController(ioController)
 {
     ui->setupUi(this);
 
@@ -18,6 +23,9 @@ MainWindow::MainWindow(
     connect(ui->repeatDeckButton, &QPushButton::pressed, this, &MainWindow::onRepeatDeckButtonPressed);
     connect(ui->deleteDeckButton, &QPushButton::pressed, this, &MainWindow::onDeleteDeckButtonPressed);
 
+    connect(ui->importAction, &QAction::triggered, this, &MainWindow::onImportAction);
+    connect(ui->exportAction, &QAction::triggered, this, &MainWindow::onExportAction);
+
     editorViewAdapter = new EditorViewAdapter(editorView);
     editorController->setView(editorViewAdapter);
     connect(&editorView, &QtEditorView::showCollectionSignal, this, &MainWindow::onShowCollection);
@@ -25,6 +33,10 @@ MainWindow::MainWindow(
     learnerViewAdapter = new LearnerViewAdapter(learnerView);
     learnerController->setView(learnerViewAdapter);
     learnerView.setController(learnerController);
+
+    ioViewAdapter = new IOViewAdapter(ioView);
+    ioController->setView(ioViewAdapter);
+    ioView.setEditorController(editorController);
 
     /// KOSTYLI show starting collection to work with
     editorController->editCollection();
@@ -129,4 +141,22 @@ void MainWindow::onRepeatDeckButtonPressed()
 
         learnerController->repeatNext(deckId);
     }
+}
+
+void MainWindow::onImportAction()
+{
+    auto filename = QFileDialog::getOpenFileName(this,
+        tr("Import collection"), NULL, tr("Text Files (*.txt)")).toStdString();
+
+    if (!filename.empty())
+        ioController->importCollection(filename);
+}
+
+void MainWindow::onExportAction()
+{
+    auto filename = QFileDialog::getSaveFileName(this,
+        tr("Import collection"), NULL, tr("Text Files (*.txt)")).toStdString();
+
+    if (!filename.empty())
+        ioController->exportCollection(filename);
 }

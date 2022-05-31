@@ -4,15 +4,20 @@
 #include "ui_main_window.h"
 #include "core/editorcontroller.hpp"
 #include "core/learnercontroller.hpp"
+#include "core/iocontroller.hpp"
 #include "ui/model/editordapter.hpp"
 #include "ui/model/learneradapter.hpp"
+#include "ui/model/ioviewadapter.hpp"
 #include "ui/qt/editor/qteditorview.hpp"
 #include "ui/qt/learn/qtlearnerview.hpp"
+#include "ui/qt/qtioview.hpp"
 
 class MainWindow : public QMainWindow
 {
 public:
-    MainWindow(std::shared_ptr<EditorController> editorController, std::shared_ptr<LearnerController> learnerController);
+    MainWindow(std::shared_ptr<EditorController> editorController,
+        std::shared_ptr<LearnerController> learnerController,
+        std::shared_ptr<IOController> ioController);
     ~MainWindow();
 
 protected slots:
@@ -24,6 +29,9 @@ protected slots:
     void onLearnDeckButtonPressed();
     void onRepeatDeckButtonPressed();
 
+    void onImportAction();
+    void onExportAction();
+
 private:
     Ui::MainWindow *ui;
 
@@ -34,4 +42,8 @@ private:
     std::shared_ptr<LearnerController> learnerController;
     LearnerViewAdapter *learnerViewAdapter;
     QtLearnerView learnerView;
+
+    std::shared_ptr<IOController> ioController;
+    IOViewAdapter *ioViewAdapter;
+    QtIOView ioView;
 };

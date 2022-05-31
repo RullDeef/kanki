@@ -73,6 +73,7 @@ set(CLI_SOURCE
 set(QT_SOURCE
     src/ui/qt/qtuifactory.cpp
     src/ui/qt/main_window.cpp
+    src/ui/qt/qtioview.cpp
 
     src/ui/qt/editor/card_window.cpp
     src/ui/qt/editor/cardview_widget.cpp
@@ -81,6 +82,7 @@ set(QT_SOURCE
 
     src/ui/qt/learn/info_window.cpp
     src/ui/qt/learn/learn_window.cpp
+    src/ui/qt/learn/repeat_window.cpp
     src/ui/qt/learn/qtlearnerview.cpp
 )
 
