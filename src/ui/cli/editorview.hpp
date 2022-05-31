@@ -2,7 +2,7 @@
 
 #include <map>
 #include "core/editorcontroller.hpp"
-#include "view/uieditorview.hpp"
+#include "ui/model/uieditorview.hpp"
 
 namespace cli
 {

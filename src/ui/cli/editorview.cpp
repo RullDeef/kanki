@@ -1,6 +1,6 @@
 #include <iostream>
 #include "tools/convertor.hpp"
-#include "cli/menu.hpp"
+#include "menu.hpp"
 #include "editorview.hpp"
 
 void cli::EditorView::setEditorController(EditorController &newController)

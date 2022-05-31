@@ -14,7 +14,7 @@
 #define UI_CLI true
 
 #if UI_CLI
-    #include "cli/application.hpp"
+    #include "ui/cli/application.hpp"
 #else
     #include <QApplication>
     #include "ui/main_window.hpp"

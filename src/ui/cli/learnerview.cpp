@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include "tools/convertor.hpp"
 #include "learnerview.hpp"
-#include "cli/menu.hpp"
+#include "menu.hpp"
 
 void cli::LearnerView::setLearnerController(LearnerController &newController)
 {

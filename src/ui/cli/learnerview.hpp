@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/learnercontroller.hpp"
-#include "view/uilearnerview.hpp"
+#include "ui/model/uilearnerview.hpp"
 
 namespace cli
 {

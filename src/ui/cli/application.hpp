@@ -3,12 +3,12 @@
 #include "core/editorcontroller.hpp"
 #include "core/learnercontroller.hpp"
 #include "core/iocontroller.hpp"
-#include "cli/view/editorview.hpp"
-#include "cli/view/learnerview.hpp"
-#include "cli/view/ioview.hpp"
-#include "view/editordapter.hpp"
-#include "view/learneradapter.hpp"
-#include "view/ioviewadapter.hpp"
+#include "ui/model/editordapter.hpp"
+#include "ui/model/learneradapter.hpp"
+#include "ui/model/ioviewadapter.hpp"
+#include "editorview.hpp"
+#include "learnerview.hpp"
+#include "ioview.hpp"
 
 namespace cli
 {

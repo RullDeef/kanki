@@ -1,6 +1,6 @@
 #pragma once
 
-#include "view/uiioview.hpp"
+#include "ui/model/uiioview.hpp"
 
 namespace cli
 {

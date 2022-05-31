@@ -45,18 +45,18 @@ set(REPO_SOURCE
 )
 
 set(VIEW_SOURCE
-    src/view/convertor.cpp
-    src/view/editoradapter.cpp
-    src/view/learneradapter.cpp
-    src/view/ioviewadapter.cpp
+    src/ui/model/convertor.cpp
+    src/ui/model/editoradapter.cpp
+    src/ui/model/learneradapter.cpp
+    src/ui/model/ioviewadapter.cpp
 )
 
 set(CLI_SOURCE
-    src/cli/view/editorview.cpp
-    src/cli/view/learnerview.cpp
-    src/cli/view/ioview.cpp
-    src/cli/menu.cpp
-    src/cli/application.cpp
+    src/ui/cli/editorview.cpp
+    src/ui/cli/learnerview.cpp
+    src/ui/cli/ioview.cpp
+    src/ui/cli/menu.cpp
+    src/ui/cli/application.cpp
 )
 
 subdirs(vendor/gtest)
