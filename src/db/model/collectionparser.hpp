@@ -8,10 +8,10 @@
 #include "db/model/deck.hpp"
 #include "db/model/collection.hpp"
 
-class DTOCollectionParser
+class DBCollectionParser
 {
 public:
-    DTOCollectionParser(const DeckCollection &collection);
+    DBCollectionParser(const DeckCollection &collection);
 
     DBDeckCollection getCollectionDTO() const;
     DBDeck getDeckDTO(UUID id) const;
@@ -24,7 +24,7 @@ private:
     void decomposeDeck(const Deck &deck);
     void decomposeCard(uuids::uuid deckId, const Card &card);
 
-    DBDeckCollection collectionDTO;
-    std::list<DBDeck> deckDTOs;
-    std::list<DBCard> cardDTOs;
+    DBDeckCollection dbCollection;
+    std::list<DBDeck> dbDecks;
+    std::list<DBCard> dbCards;
 };

@@ -2,7 +2,7 @@
 
 #include "tools/uuid.hpp"
 
-class SessionDTO
+class DBSession
 {
 public:
     UUID id;

@@ -59,9 +59,9 @@ DBSnapshot FileReader::readSnapshotDTO()
     return snapshot;
 }
 
-SessionDTO FileReader::readSessionDTO()
+DBSession FileReader::readSessionDTO()
 {
-    SessionDTO session;
+    DBSession session;
 
     stream >> session.id >> std::ws;
     stream >> session.startTime >> std::ws;

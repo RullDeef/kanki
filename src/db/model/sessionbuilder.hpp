@@ -5,10 +5,10 @@
 #include "db/model/snapshot.hpp"
 #include "db/model/session.hpp"
 
-class DTOSessionBuilder
+class DBSessionBuilder
 {
 public:
-    DTOSessionBuilder(const SessionDTO& sessionDTO);
+    DBSessionBuilder(const DBSession& dbSession);
 
     void addSnapshotDTO(const DBSnapshot& snapshotDTO);
 
@@ -17,6 +17,6 @@ public:
 private:
     Snapshot buildSnapshot(const DBSnapshot& snapshotDTO);
 
-    SessionDTO sessionDTO;
-    std::list<DBSnapshot> snapshotDTOs;
+    DBSession dbSession;
+    std::list<DBSnapshot> dbSnapshots;
 };

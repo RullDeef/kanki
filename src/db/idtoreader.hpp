@@ -16,7 +16,7 @@ public:
     virtual DBDeckCollection readCollectionDTO() = 0;
 
     virtual DBSnapshot readSnapshotDTO() = 0;
-    virtual SessionDTO readSessionDTO() = 0;
+    virtual DBSession readSessionDTO() = 0;
 
     virtual size_t readCount() = 0;
 };

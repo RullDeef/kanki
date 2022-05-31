@@ -5,21 +5,21 @@
 #include "db/model/deck.hpp"
 #include "db/model/collection.hpp"
 
-class DTOCollectionBuilder
+class DBCollectionBuilder
 {
 public:
-    DTOCollectionBuilder(const DBDeckCollection &collectionDTO);
+    DBCollectionBuilder(const DBDeckCollection &collection);
 
-    void addDeckDTO(const DBDeck &deckDTO);
-    void addCardDTO(const DBCard &cardDTO);
+    void addDeck(const DBDeck &deck);
+    void addCard(const DBCard &card);
 
     DeckCollection build();
 
 private:
-    Deck buildDeck(const DBDeck &deckDTO);
-    Card buildCard(const DBCard &cardDTO);
+    Deck buildDeck(const DBDeck &deck);
+    Card buildCard(const DBCard &card);
 
-    DBDeckCollection collectionDTO;
-    std::list<DBDeck> deckDTOs;
-    std::list<DBCard> cardDTOs;
+    DBDeckCollection dbCollection;
+    std::list<DBDeck> dbDecks;
+    std::list<DBCard> dbCards;
 };

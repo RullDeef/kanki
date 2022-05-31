@@ -9,7 +9,7 @@ void FileExporter::exportCollection(const std::string &filename, const DeckColle
 
     auto writer = FileWriter(filename);
 
-    DTOCollectionParser parser(collection);
+    DBCollectionParser parser(collection);
     writer.writeCollectionDTO(parser.getCollectionDTO());
 
     auto deckIds = parser.getDeckIds();

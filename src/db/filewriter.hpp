@@ -14,7 +14,7 @@ public:
     virtual void writeCollectionDTO(const DBDeckCollection &collection) override;
 
     virtual void writeSnapshotDTO(const DBSnapshot &snapshot) override;
-    virtual void writeSessionDTO(const SessionDTO &session) override;
+    virtual void writeSessionDTO(const DBSession &session) override;
 
     virtual void writeCount(size_t count) override;
 

@@ -10,6 +10,6 @@ public:
     MOCK_METHOD(DBDeck, readDeckDTO, (), (override));
     MOCK_METHOD(DBDeckCollection, readCollectionDTO, (), (override));
     MOCK_METHOD(DBSnapshot, readSnapshotDTO, (), (override));
-    MOCK_METHOD(SessionDTO, readSessionDTO, (), (override));
+    MOCK_METHOD(DBSession, readSessionDTO, (), (override));
     MOCK_METHOD(size_t, readCount, (), (override));
 };

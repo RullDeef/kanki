@@ -14,7 +14,7 @@ public:
     virtual DBDeckCollection readCollectionDTO() override;
 
     virtual DBSnapshot readSnapshotDTO() override;
-    virtual SessionDTO readSessionDTO() override;
+    virtual DBSession readSessionDTO() override;
 
     virtual size_t readCount() override;
 

@@ -16,7 +16,7 @@ public:
     virtual void writeCollectionDTO(const DBDeckCollection &collection) = 0;
 
     virtual void writeSnapshotDTO(const DBSnapshot &snapshot) = 0;
-    virtual void writeSessionDTO(const SessionDTO &session) = 0;
+    virtual void writeSessionDTO(const DBSession &session) = 0;
 
     virtual void writeCount(size_t count) = 0;
 };

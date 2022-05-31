@@ -6,18 +6,18 @@
 #include "db/model/snapshot.hpp"
 #include "db/model/session.hpp"
 
-class DTOSessionParser
+class DBSessionParser
 {
 public:
-    DTOSessionParser(const Session &session);
+    DBSessionParser(const Session &session);
 
-    SessionDTO getSessionDTO() const;
-    std::list<DBSnapshot> getSnapshotDTOs() const;
+    DBSession getSession() const;
+    std::list<DBSnapshot> getSnapshots() const;
 
 private:
     void decomposeSnapshot(const Snapshot &snapshot);
     void decomposeCard(DBSnapshot &dst, const Card &card);
 
-    SessionDTO sessionDTO;
-    std::list<DBSnapshot> snapshotDTOs;
+    DBSession dbSession;
+    std::list<DBSnapshot> dbSnapshots;
 };

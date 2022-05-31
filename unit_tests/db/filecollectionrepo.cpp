@@ -164,19 +164,19 @@ TEST(FileCollectionRepository_dump, noDecks)
     MockDTOReader reader;
     MockDTOWriter writer;
 
-    DBDeckCollection collectionDTO{getId(1), L"col"};
+    DBDeckCollection dbCollection{getId(1), L"col"};
 
     EXPECT_CALL(reader, readCount)
         .WillOnce(Return(1))
         .WillOnce(Return(0));
     EXPECT_CALL(reader, readCollectionDTO)
-        .WillOnce(Return(collectionDTO));
+        .WillOnce(Return(dbCollection));
 
     Sequence s;
 
     EXPECT_CALL(writer, writeCount(1))
         .InSequence(s);
-    EXPECT_CALL(writer, writeCollectionDTO(collectionDTO))
+    EXPECT_CALL(writer, writeCollectionDTO(dbCollection))
         .InSequence(s);
     EXPECT_CALL(writer, writeCount(0))
         .InSequence(s);
@@ -194,7 +194,7 @@ TEST(FileCollectionRepository_dump, noCards)
     MockDTOReader reader;
     MockDTOWriter writer;
 
-    DBDeckCollection collectionDTO{getId(200), L"collection"};
+    DBDeckCollection dbCollection{getId(200), L"collection"};
     DBDeck deckDTO{getId(30), getId(200), L"brandon"};
 
     EXPECT_CALL(reader, readCount)
@@ -202,7 +202,7 @@ TEST(FileCollectionRepository_dump, noCards)
         .WillOnce(Return(1))
         .WillOnce(Return(0));
     EXPECT_CALL(reader, readCollectionDTO)
-        .WillOnce(Return(collectionDTO));
+        .WillOnce(Return(dbCollection));
     EXPECT_CALL(reader, readDeckDTO)
         .WillOnce(Return(deckDTO));
 
@@ -215,7 +215,7 @@ TEST(FileCollectionRepository_dump, noCards)
     EXPECT_CALL(writer, writeCount(0))
         .InSequence(cntS);
 
-    EXPECT_CALL(writer, writeCollectionDTO(collectionDTO));
+    EXPECT_CALL(writer, writeCollectionDTO(dbCollection));
     EXPECT_CALL(writer, writeDeckDTO(deckDTO));
 
     FileCollectionRepository repository;

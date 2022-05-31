@@ -2,54 +2,54 @@
 #include "tools/logger.hpp"
 #include "db/model/collectionbuilder.hpp"
 
-DTOCollectionBuilder::DTOCollectionBuilder(const DBDeckCollection &collectionDTO)
-    : collectionDTO(collectionDTO)
+DBCollectionBuilder::DBCollectionBuilder(const DBDeckCollection &collection)
+    : dbCollection(dbCollection)
 {
 }
 
-void DTOCollectionBuilder::addDeckDTO(const DBDeck &deckDTO)
+void DBCollectionBuilder::addDeck(const DBDeck &dbDeck)
 {
-    deckDTOs.push_back(deckDTO);
+    dbDecks.push_back(dbDeck);
 }
 
-void DTOCollectionBuilder::addCardDTO(const DBCard &cardDTO)
+void DBCollectionBuilder::addCard(const DBCard &dbCard)
 {
-    cardDTOs.push_back(cardDTO);
+    dbCards.push_back(dbCard);
 }
 
-DeckCollection DTOCollectionBuilder::build()
+DeckCollection DBCollectionBuilder::build()
 {
-    DeckCollection collection(collectionDTO.id, collectionDTO.name);
+    DeckCollection collection(dbCollection.id, dbCollection.name);
 
-    for (auto deckDTO : deckDTOs)
+    for (auto dbDeck : dbDecks)
     {
-        if (deckDTO.collectionId != collectionDTO.id)
+        if (dbDeck.collectionId != dbCollection.id)
         {
-            ERROR_METHOD("bad deckDTO.collectionId");
-            throw std::runtime_error("bad deckDTO.collectionId");
+            ERROR_METHOD("bad dbDeck.collectionId");
+            throw std::runtime_error("bad dbDeck.collectionId");
         }
 
-        collection.addDeck(buildDeck(deckDTO));
+        collection.addDeck(buildDeck(dbDeck));
     }
 
     return collection;
 }
 
-Deck DTOCollectionBuilder::buildDeck(const DBDeck &deckDTO)
+Deck DBCollectionBuilder::buildDeck(const DBDeck &dbDeck)
 {
-    Deck deck(deckDTO.id, deckDTO.name);
+    Deck deck(dbDeck.id, dbDeck.name);
 
-    for (auto cardDTO : cardDTOs)
-        if (cardDTO.deckId == deckDTO.id)
-            deck.addCard(buildCard(cardDTO));
+    for (auto dbCard : dbCards)
+        if (dbCard.deckId == dbDeck.id)
+            deck.addCard(buildCard(dbCard));
 
     return deck;
 }
 
-Card DTOCollectionBuilder::buildCard(const DBCard &cardDTO)
+Card DBCollectionBuilder::buildCard(const DBCard &dbCard)
 {
-    return Card(cardDTO.id,
-                cardDTO.symbol,
-                cardDTO.reading,
-                cardDTO.description);
+    return Card(dbCard.id,
+                dbCard.symbol,
+                dbCard.reading,
+                dbCard.description);
 }

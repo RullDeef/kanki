@@ -2,82 +2,82 @@
 #include <algorithm>
 #include "db/model/collectionparser.hpp"
 
-DTOCollectionParser::DTOCollectionParser(const DeckCollection &collection)
+DBCollectionParser::DBCollectionParser(const DeckCollection &collection)
 {
-    collectionDTO.id = collection.getId();
-    collectionDTO.name = collection.getName();
+    dbCollection.id = collection.getId();
+    dbCollection.name = collection.getName();
 
     for (auto deck : collection)
         decomposeDeck(deck);
 }
 
-DBDeckCollection DTOCollectionParser::getCollectionDTO() const
+DBDeckCollection DBCollectionParser::getCollectionDTO() const
 {
-    return collectionDTO;
+    return dbCollection;
 }
 
-DBDeck DTOCollectionParser::getDeckDTO(UUID id) const
+DBDeck DBCollectionParser::getDeckDTO(UUID id) const
 {
-    for (auto deckDTO : deckDTOs)
-        if (deckDTO.id == id)
-            return deckDTO;
+    for (auto dbDeck : dbDecks)
+        if (dbDeck.id == id)
+            return dbDeck;
 
-    throw std::runtime_error("invalid deckDTO id");
+    throw std::runtime_error("invalid dbDeck id");
 }
 
-DBCard DTOCollectionParser::getCardDTO(UUID id) const
+DBCard DBCollectionParser::getCardDTO(UUID id) const
 {
-    for (auto cardDTO : cardDTOs)
-        if (cardDTO.id == id)
-            return cardDTO;
+    for (auto dbCard : dbCards)
+        if (dbCard.id == id)
+            return dbCard;
 
-    throw std::runtime_error("invalid cardDTO id");
+    throw std::runtime_error("invalid dbCard id");
 }
 
-std::list<UUID> DTOCollectionParser::getDeckIds() const
+std::list<UUID> DBCollectionParser::getDeckIds() const
 {
-    std::list<UUID> ids(deckDTOs.size());
+    std::list<UUID> ids(dbDecks.size());
 
-    std::transform(deckDTOs.begin(), deckDTOs.end(), ids.begin(),
-                   [](const DBDeck &deckDTO)
-                   { return deckDTO.id; });
+    std::transform(dbDecks.begin(), dbDecks.end(), ids.begin(),
+                   [](const DBDeck &dbDeck)
+                   { return dbDeck.id; });
 
     return ids;
 }
 
-std::list<UUID> DTOCollectionParser::getCardIds(UUID deckId) const
+std::list<UUID> DBCollectionParser::getCardIds(UUID deckId) const
 {
     std::list<UUID> ids;
 
-    for (auto cardDTO : cardDTOs)
-        if (cardDTO.deckId == deckId)
-            ids.push_back(cardDTO.id);
+    for (auto dbCard : dbCards)
+        if (dbCard.deckId == deckId)
+            ids.push_back(dbCard.id);
 
     return ids;
 }
 
-void DTOCollectionParser::decomposeDeck(const Deck &deck)
+void DBCollectionParser::decomposeDeck(const Deck &deck)
 {
-    DBDeck deckDTO;
-    deckDTO.id = deck.getId();
-    deckDTO.collectionId = collectionDTO.id;
-    deckDTO.name = deck.getName();
+    DBDeck dbDeck;
+    dbDeck.id = deck.getId();
+    dbDeck.collectionId = dbCollection.id;
+    dbDeck.name = deck.getName();
 
     for (auto card : deck)
-        decomposeCard(deckDTO.id, card);
+        decomposeCard(dbDeck.id, card);
 
-    deckDTOs.push_back(deckDTO);
+    dbDecks.push_back(dbDeck);
 }
 
-void DTOCollectionParser::decomposeCard(UUID deckId, const Card &card)
+void DBCollectionParser::decomposeCard(UUID deckId, const Card &card)
 {
-    DBCard cardDTO;
-    cardDTO.id = card.getId();
-    cardDTO.deckId = deckId;
+    DBCard dbCard;
+    dbCard.id = card.getId();
+    dbCard.deckId = deckId;
 
-    cardDTO.symbol = card.getSymbol();
-    cardDTO.reading = card.getReading();
-    cardDTO.description = card.getDescription();
+    dbCard.symbol = card.getSymbol();
+    dbCard.reading = card.getReading();
+    dbCard.description = card.getDescription();
 
-    cardDTOs.push_back(cardDTO);
+    dbCards.push_back(dbCard);
 }

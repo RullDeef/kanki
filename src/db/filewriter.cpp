@@ -43,7 +43,7 @@ void FileWriter::writeSnapshotDTO(const DBSnapshot &snapshot)
     stream << snapshot.timePoint << std::endl;
 }
 
-void FileWriter::writeSessionDTO(const SessionDTO &session)
+void FileWriter::writeSessionDTO(const DBSession &session)
 {
     stream << session.id << std::endl;
     stream << session.startTime << std::endl;

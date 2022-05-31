@@ -1,28 +1,28 @@
 #include "db/model/sessionbuilder.hpp"
 
-DTOSessionBuilder::DTOSessionBuilder(const SessionDTO &sessionDTO)
-    : sessionDTO(sessionDTO)
+DBSessionBuilder::DBSessionBuilder(const DBSession &dbSession)
+    : dbSession(dbSession)
 {
 }
 
-void DTOSessionBuilder::addSnapshotDTO(const DBSnapshot &snapshotDTO)
+void DBSessionBuilder::addSnapshotDTO(const DBSnapshot &snapshotDTO)
 {
-    snapshotDTOs.push_back(snapshotDTO);
+    dbSnapshots.push_back(snapshotDTO);
 }
 
-Session DTOSessionBuilder::build()
+Session DBSessionBuilder::build()
 {
-    Session session(sessionDTO.id,
-                    clock_spec::from_time_t(sessionDTO.startTime),
-                    clock_spec::from_time_t(sessionDTO.endTime));
+    Session session(dbSession.id,
+                    clock_spec::from_time_t(dbSession.startTime),
+                    clock_spec::from_time_t(dbSession.endTime));
 
-    for (auto snapshotDTO : snapshotDTOs)
+    for (auto snapshotDTO : dbSnapshots)
         session.addSnapshot(buildSnapshot(snapshotDTO));
 
     return session;
 }
 
-Snapshot DTOSessionBuilder::buildSnapshot(const DBSnapshot &snapshotDTO)
+Snapshot DBSessionBuilder::buildSnapshot(const DBSnapshot &snapshotDTO)
 {
     Card card(snapshotDTO.cardId,
               snapshotDTO.cardSymbol,
