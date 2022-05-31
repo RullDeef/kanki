@@ -3,9 +3,14 @@
 #include "tools/time.hpp"
 #include "spacedlearner.hpp"
 
-SpacedLearner::SpacedLearner(ICollectionManager *collectionManager, ISessionManager *sessionManager)
-    : collectionManager(collectionManager), sessionManager(sessionManager)
+void SpacedLearner::useCollectionManager(std::shared_ptr<ICollectionManager> manager)
 {
+    collectionManager = manager;
+}
+
+void SpacedLearner::useSessionManager(std::shared_ptr<ISessionManager> manager)
+{
+    sessionManager = manager;
 }
 
 Card SpacedLearner::getNextForLearn(UUID deckId)

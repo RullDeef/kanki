@@ -9,6 +9,74 @@
 #include "db/filewriter.hpp"
 #include "filesessionrepo.hpp"
 
+FileSessionRepository::FileSessionRepository(std::shared_ptr<IDTOIOFactory> ioFactory)
+    : ioFactory(ioFactory)
+{
+    if (ioFactory)
+        load();
+}
+
+FileSessionRepository::~FileSessionRepository()
+{
+    try
+    {
+        dump();
+    }
+    catch (const std::exception &e)
+    {
+        ERROR_METHOD(e.what());
+    }
+}
+
+void FileSessionRepository::load()
+{
+    auto reader = ioFactory->createReader();
+    load(*reader);
+}
+
+void FileSessionRepository::load(IDTOReader &reader)
+{
+    sessions.clear();
+
+    size_t sessionsCount = reader.readCount();
+    for (size_t i = 0; i < sessionsCount; i++)
+    {
+        auto sessionDTO = reader.readSessionDTO();
+        DTOSessionBuilder builder(sessionDTO);
+
+        size_t snapshotsCount = reader.readCount();
+        for (size_t j = 0; j < snapshotsCount; j++)
+        {
+            auto snapshotDTO = reader.readSnapshotDTO();
+            builder.addSnapshotDTO(snapshotDTO);
+        }
+
+        sessions.push_back(builder.build());
+    }
+}
+
+void FileSessionRepository::dump()
+{
+    auto writer = ioFactory->createWriter();
+    dump(*writer);
+}
+
+void FileSessionRepository::dump(IDTOWriter &writer)
+{
+    writer.writeCount(sessions.size());
+    for (auto session : sessions)
+    {
+        DTOSessionParser parser(session);
+        writer.writeSessionDTO(parser.getSessionDTO());
+
+        auto snapshotDTOs = parser.getSnapshotDTOs();
+        writer.writeCount(snapshotDTOs.size());
+
+        for (auto snapshotDTO : snapshotDTOs)
+            writer.writeSnapshotDTO(snapshotDTO);
+    }
+}
+
 std::list<Session> FileSessionRepository::getSessions()
 {
     return sessions;
@@ -45,41 +113,4 @@ void FileSessionRepository::saveSession(const Session &session)
         *iter = session;
     else
         sessions.push_back(session);
-}
-
-void FileSessionRepository::load(IDTOReader &reader)
-{
-    sessions.clear();
-
-    size_t sessionsCount = reader.readCount();
-    for (size_t i = 0; i < sessionsCount; i++)
-    {
-        auto sessionDTO = reader.readSessionDTO();
-        DTOSessionBuilder builder(sessionDTO);
-
-        size_t snapshotsCount = reader.readCount();
-        for (size_t j = 0; j < snapshotsCount; j++)
-        {
-            auto snapshotDTO = reader.readSnapshotDTO();
-            builder.addSnapshotDTO(snapshotDTO);
-        }
-
-        sessions.push_back(builder.build());
-    }
-}
-
-void FileSessionRepository::dump(IDTOWriter &writer)
-{
-    writer.writeCount(sessions.size());
-    for (auto session : sessions)
-    {
-        DTOSessionParser parser(session);
-        writer.writeSessionDTO(parser.getSessionDTO());
-
-        auto snapshotDTOs = parser.getSnapshotDTOs();
-        writer.writeCount(snapshotDTOs.size());
-
-        for (auto snapshotDTO : snapshotDTOs)
-            writer.writeSnapshotDTO(snapshotDTO);
-    }
 }

@@ -16,26 +16,26 @@ cli::Application::~Application()
     delete ioViewAdapter;
 }
 
-void cli::Application::setEditorController(EditorController &controller)
+void cli::Application::setEditorController(std::shared_ptr<EditorController> controller)
 {
-    editorController = &controller;
-    controller.setView(editorViewAdapter);
+    editorController = controller;
+    controller->setView(editorViewAdapter);
 
     editorView.setEditorController(controller);
 }
 
-void cli::Application::setLearnerController(LearnerController &controller)
+void cli::Application::setLearnerController(std::shared_ptr<LearnerController> controller)
 {
-    learnerController = &controller;
-    controller.setView(learnerViewAdapter);
+    learnerController = controller;
+    controller->setView(learnerViewAdapter);
 
     learnerView.setLearnerController(controller);
 }
 
-void cli::Application::setIOController(IOController &controller)
+void cli::Application::setIOController(std::shared_ptr<IOController> controller)
 {
-    ioController = &controller;
-    controller.setView(ioViewAdapter);
+    ioController = controller;
+    controller->setView(ioViewAdapter);
 }
 
 int cli::Application::run()

@@ -7,6 +7,31 @@
 #include "db/filewriter.hpp"
 #include "db/filecollectionrepo.hpp"
 
+FileCollectionRepository::FileCollectionRepository(std::shared_ptr<IDTOIOFactory> ioFactory)
+    : ioFactory(ioFactory)
+{
+    if (ioFactory)
+        load();
+}
+
+FileCollectionRepository::~FileCollectionRepository()
+{
+    try
+    {
+        dump();
+    }
+    catch (const std::exception &e)
+    {
+        ERROR_METHOD(e.what());
+    }
+}
+
+void FileCollectionRepository::load()
+{
+    auto reader = ioFactory->createReader();
+    load(*reader);
+}
+
 void FileCollectionRepository::load(IDTOReader &reader)
 {
     LOG_METHOD();
@@ -35,6 +60,12 @@ void FileCollectionRepository::load(IDTOReader &reader)
 
         collections.push_back(collector.build());
     }
+}
+
+void FileCollectionRepository::dump()
+{
+    auto writer = ioFactory->createWriter();
+    dump(*writer);
 }
 
 void FileCollectionRepository::dump(IDTOWriter &writer)

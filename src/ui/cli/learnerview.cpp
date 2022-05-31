@@ -4,9 +4,9 @@
 #include "learnerview.hpp"
 #include "menu.hpp"
 
-void cli::LearnerView::setLearnerController(LearnerController &newController)
+void cli::LearnerView::setLearnerController(std::shared_ptr<LearnerController> newController)
 {
-    controller = &newController;
+    controller = newController;
 }
 
 void cli::LearnerView::showCard(const CardParams &params)

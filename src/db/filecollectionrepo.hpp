@@ -1,13 +1,19 @@
 #pragma once
 
+#include <memory>
 #include "core/icollectionrepository.hpp"
-#include "db/idtoreader.hpp"
-#include "db/idtowriter.hpp"
+#include "db/idtoiofactory.hpp"
 
 class FileCollectionRepository : public ICollectionRepository
 {
 public:
+    FileCollectionRepository(std::shared_ptr<IDTOIOFactory> ioFactory = nullptr);
+    ~FileCollectionRepository();
+
+    void load();
     void load(IDTOReader &reader);
+
+    void dump();
     void dump(IDTOWriter &writer);
 
     virtual std::list<DeckCollection> getCollections() override;
@@ -19,4 +25,5 @@ public:
 
 private:
     std::list<DeckCollection> collections;
+    std::shared_ptr<IDTOIOFactory> ioFactory;
 };

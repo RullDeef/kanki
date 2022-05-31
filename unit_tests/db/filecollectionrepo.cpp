@@ -25,6 +25,7 @@ TEST(FileCollectionRepository_load, empty)
     Logger::disableLogger();
 
     MockDTOReader reader;
+    MockDTOIOFactory factory;
 
     EXPECT_CALL(reader, readCount)
         .WillOnce(Return(0));

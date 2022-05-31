@@ -8,7 +8,7 @@ namespace cli
     class LearnerView : public UILearnerView
     {
     public:
-        void setLearnerController(LearnerController &newController);
+        void setLearnerController(std::shared_ptr<LearnerController> newController);
 
         virtual void showCard(const CardParams &params) override;
         virtual void askCard(const CardParams &card, int paramType) override;
@@ -17,6 +17,6 @@ namespace cli
         virtual void noCardsForRepeat() override;
 
     private:
-        LearnerController *controller = nullptr;
+        std::shared_ptr<LearnerController> controller;
     };
 } // namespace cli

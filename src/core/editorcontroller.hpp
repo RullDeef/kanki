@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "tools/idgenerator.hpp"
 #include "model/card.hpp"
 #include "model/deck.hpp"
@@ -10,7 +11,7 @@
 class EditorController
 {
 public:
-    EditorController(ICollectionManager *collectionManager);
+    EditorController(std::shared_ptr<ICollectionManager> collectionManager);
     ~EditorController();
 
     void setView(IEditorView *newView);
@@ -49,6 +50,6 @@ private:
     Deck *activeDeck = nullptr;
     Card *activeCard = nullptr;
 
-    ICollectionManager *collectionManager = nullptr;
+    std::shared_ptr<ICollectionManager> collectionManager;
     IdGenerator idGenerator;
 };

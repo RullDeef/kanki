@@ -13,11 +13,11 @@
 class LearnerController
 {
 public:
-    LearnerController(ICollectionManager *collectionManager, ISessionManager *sessionManager);
+    LearnerController(std::shared_ptr<ICollectionManager> collectionManager, std::shared_ptr<ISessionManager> sessionManager);
 
     void setView(ILearnerView *newView);
-    void setLearner(ILearner *newLearner);
-    void setEstimator(IEstimator *newEstimator);
+    void setLearner(std::shared_ptr<ILearner> newLearner);
+    void setEstimator(std::shared_ptr<IEstimator> newEstimator);
 
     void learnNext(UUID deckId);
     void repeatNext(UUID deckId);
@@ -32,12 +32,12 @@ private:
     std::unique_ptr<Card> getNextCardFor(UUID deckId, int paramType);
 
     ILearnerView *view = nullptr;
-    ILearner *learner = nullptr;
-    IEstimator *estimator = nullptr;
+    std::shared_ptr<ILearner> learner;
+    std::shared_ptr<IEstimator> estimator;
 
     IdGenerator idGenerator;
     int cardParam = Snapshot::ParamType::READING;
 
-    ICollectionManager *collectionManager;
-    ISessionManager *sessionManager;
+    std::shared_ptr<ICollectionManager> collectionManager;
+    std::shared_ptr<ISessionManager> sessionManager;
 };

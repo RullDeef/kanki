@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "core/editorcontroller.hpp"
 #include "core/learnercontroller.hpp"
 #include "core/iocontroller.hpp"
@@ -18,22 +19,22 @@ namespace cli
         Application();
         ~Application();
 
-        void setEditorController(EditorController &controller);
-        void setLearnerController(LearnerController &controller);
-        void setIOController(IOController &controller);
+        void setEditorController(std::shared_ptr<EditorController> controller);
+        void setLearnerController(std::shared_ptr<LearnerController> controller);
+        void setIOController(std::shared_ptr<IOController> controller);
 
         int run();
 
     private:
-        EditorController *editorController = nullptr;
+        std::shared_ptr<EditorController> editorController;
         EditorViewAdapter *editorViewAdapter;
         EditorView editorView;
 
-        LearnerController *learnerController = nullptr;
+        std::shared_ptr<LearnerController> learnerController;
         LearnerViewAdapter *learnerViewAdapter;
         LearnerView learnerView;
 
-        IOController *ioController = nullptr;
+        std::shared_ptr<IOController> ioController;
         IOViewAdapter *ioViewAdapter;
         IOView ioView;
     };

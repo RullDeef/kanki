@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "core/icollectionmanager.hpp"
 #include "core/isessionmanager.hpp"
 #include "core/iimporter.hpp"
@@ -9,12 +10,12 @@
 class IOController
 {
 public:
-    IOController(ICollectionManager *collectionManager, ISessionManager *sessionManager);
+    IOController(std::shared_ptr<ICollectionManager> collectionManager, std::shared_ptr<ISessionManager> sessionManager);
 
     void setView(IIOView *newView);
 
-    void setImporter(IImporter *newImporter);
-    void setExporter(IExporter *newExporter);
+    void setImporter(std::shared_ptr<IImporter> newImporter);
+    void setExporter(std::shared_ptr<IExporter> newExporter);
 
     void exportCollection(const std::string &filename);
     void importCollection(const std::string &filename);
@@ -22,9 +23,9 @@ public:
 private:
     IIOView *view = nullptr;
 
-    IImporter *importer = nullptr;
-    IExporter *exporter = nullptr;
+    std::shared_ptr<IImporter> importer;
+    std::shared_ptr<IExporter> exporter;
 
-    ICollectionManager *collectionManager;
-    ISessionManager *sessionManager;
+    std::shared_ptr<ICollectionManager> collectionManager;
+    std::shared_ptr<ISessionManager> sessionManager;
 };

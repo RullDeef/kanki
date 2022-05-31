@@ -1,12 +1,13 @@
 #pragma once
 
+#include <memory>
 #include "core/icollectionrepository.hpp"
 #include "core/icollectionmanager.hpp"
 
 class CollectionManager : public ICollectionManager
 {
 public:
-    CollectionManager(ICollectionRepository *collectionRepository);
+    CollectionManager(std::shared_ptr<ICollectionRepository> collectionRepository);
 
     virtual DeckCollection getActiveCollection() override;
 
@@ -21,5 +22,5 @@ public:
     virtual Card getCardById(UUID cardId) override;
 
 private:
-    ICollectionRepository *collectionRepository;
+    std::shared_ptr<ICollectionRepository> collectionRepository;
 };

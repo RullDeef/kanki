@@ -1,7 +1,7 @@
 #include "tools/logger.hpp"
 #include "iocontroller.hpp"
 
-IOController::IOController(ICollectionManager *collectionManager, ISessionManager *sessionManager)
+IOController::IOController(std::shared_ptr<ICollectionManager> collectionManager, std::shared_ptr<ISessionManager> sessionManager)
     : collectionManager(collectionManager), sessionManager(sessionManager)
 {
 }
@@ -11,12 +11,12 @@ void IOController::setView(IIOView *newView)
     view = newView;
 }
 
-void IOController::setImporter(IImporter *newImporter)
+void IOController::setImporter(std::shared_ptr<IImporter> newImporter)
 {
     importer = newImporter;
 }
 
-void IOController::setExporter(IExporter *newExporter)
+void IOController::setExporter(std::shared_ptr<IExporter> newExporter)
 {
     exporter = newExporter;
 }

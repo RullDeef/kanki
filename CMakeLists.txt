@@ -8,6 +8,14 @@ project(kanki VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+set(AUTOUIC_SEARCH_PATHS src/ui/qt)
+
 set(TOOLS_SOURCE
     src/tools/convertor.cpp
     src/tools/logger.cpp
@@ -49,6 +57,8 @@ set(VIEW_SOURCE
     src/ui/model/editoradapter.cpp
     src/ui/model/learneradapter.cpp
     src/ui/model/ioviewadapter.cpp
+    
+    src/ui/iuifactory.cpp
 )
 
 set(CLI_SOURCE
@@ -57,6 +67,26 @@ set(CLI_SOURCE
     src/ui/cli/ioview.cpp
     src/ui/cli/menu.cpp
     src/ui/cli/application.cpp
+    src/ui/cli/uifactory.cpp
+)
+
+set(QT_SOURCE
+    src/ui/qt/qtuifactory.cpp
+    src/ui/qt/main_window.cpp
+
+    src/ui/qt/editor/card_window.cpp
+    src/ui/qt/editor/cardview_widget.cpp
+    src/ui/qt/editor/deck_window.cpp
+    src/ui/qt/editor/qteditorview.cpp
+
+    src/ui/qt/learn/info_window.cpp
+    src/ui/qt/learn/learn_window.cpp
+    src/ui/qt/learn/qtlearnerview.cpp
+)
+
+set(SOLUTION_SOURCE
+    src/solution/solution.cpp
+    src/solution/cfgsolution.cpp
 )
 
 subdirs(vendor/gtest)
@@ -84,14 +114,17 @@ target_link_libraries(unit_tests gtest_main gmock_main stduuid)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
-add_executable(kanki_cli src/main.cpp)
-target_include_directories(kanki_cli
+add_executable(kanki src/main.cpp)
+target_link_libraries(kanki stduuid Qt5::Core Qt5::Widgets)
+target_include_directories(kanki
     PRIVATE vendor/stduuid/include
     PRIVATE src)
-target_sources(kanki_cli
+target_sources(kanki
     PRIVATE ${TOOLS_SOURCE}
     PRIVATE ${MODEL_SOURCE}
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${VIEW_SOURCE}
     PRIVATE ${CLI_SOURCE}
+    PRIVATE ${QT_SOURCE}
+    PRIVATE ${SOLUTION_SOURCE}
 )

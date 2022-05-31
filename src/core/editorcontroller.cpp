@@ -2,7 +2,7 @@
 #include "tools/logger.hpp"
 #include "editorcontroller.hpp"
 
-EditorController::EditorController(ICollectionManager *collectionManager)
+EditorController::EditorController(std::shared_ptr<ICollectionManager> collectionManager)
     : collectionManager(collectionManager)
 {
 }

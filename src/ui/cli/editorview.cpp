@@ -3,9 +3,9 @@
 #include "menu.hpp"
 #include "editorview.hpp"
 
-void cli::EditorView::setEditorController(EditorController &newController)
+void cli::EditorView::setEditorController(std::shared_ptr<EditorController> newController)
 {
-    controller = &newController;
+    controller = newController;
 }
 
 void cli::EditorView::showCollection(const CollectionParams &collection)

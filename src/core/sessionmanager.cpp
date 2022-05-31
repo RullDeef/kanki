@@ -2,7 +2,7 @@
 #include "tools/idgenerator.hpp"
 #include "sessionmanager.hpp"
 
-SessionManager::SessionManager(ISessionRepository *sessionRepository)
+SessionManager::SessionManager(std::shared_ptr<ISessionRepository> sessionRepository)
     : sessionRepository(sessionRepository), activeSession(IdGenerator()())
 {
 }

@@ -2,7 +2,7 @@
 #include "tools/logger.hpp"
 #include "collectionmanager.hpp"
 
-CollectionManager::CollectionManager(ICollectionRepository *collectionRepository)
+CollectionManager::CollectionManager(std::shared_ptr<ICollectionRepository> collectionRepository)
     : collectionRepository(collectionRepository)
 {
 }

@@ -1,7 +1,8 @@
 #include "tools/logger.hpp"
 #include "learnercontroller.hpp"
 
-LearnerController::LearnerController(ICollectionManager *collectionManager, ISessionManager *sessionManager)
+LearnerController::LearnerController(std::shared_ptr<ICollectionManager> collectionManager,
+                                     std::shared_ptr<ISessionManager> sessionManager)
     : collectionManager(collectionManager), sessionManager(sessionManager)
 {
 }
@@ -11,12 +12,12 @@ void LearnerController::setView(ILearnerView *newView)
     view = newView;
 }
 
-void LearnerController::setLearner(ILearner *newLearner)
+void LearnerController::setLearner(std::shared_ptr<ILearner> newLearner)
 {
     learner = newLearner;
 }
 
-void LearnerController::setEstimator(IEstimator *newEstimator)
+void LearnerController::setEstimator(std::shared_ptr<IEstimator> newEstimator)
 {
     estimator = newEstimator;
 }
@@ -27,6 +28,9 @@ void LearnerController::learnNext(UUID deckId)
 
     try
     {
+        learner->useCollectionManager(collectionManager);
+        learner->useSessionManager(sessionManager);
+
         auto card = learner->getNextForLearn(deckId);
 
         if (view != nullptr)
@@ -114,6 +118,10 @@ std::unique_ptr<Card> LearnerController::getNextCardFor(UUID deckId, int paramTy
 {
     try
     {
+        learner->useCollectionManager(collectionManager);
+        learner->useSessionManager(sessionManager);
+
+        /// TODO: change method signature to return unique_ptr
         return std::make_unique<Card>(learner->getNextForRepeat(deckId, paramType));
     }
     catch (const std::exception &e)
