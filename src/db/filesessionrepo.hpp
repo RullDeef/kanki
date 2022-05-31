@@ -10,8 +10,8 @@ class FileSessionRepository : public ISessionRepository
 {
 public:
     virtual std::list<Session> getSessions() override;
-    virtual Session getSession(size_t id) override;
-    virtual void removeSession(size_t id) override;
+    virtual Session getSession(UUID id) override;
+    virtual void removeSession(UUID id) override;
     virtual void saveSession(const Session &session) override;
 
     void load(IDTOReader &reader);

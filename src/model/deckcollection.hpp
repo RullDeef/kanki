@@ -3,14 +3,14 @@
 #include <list>
 #include "deck.hpp"
 
-class Collection
+class DeckCollection
 {
 public:
     using ConstIterator = std::list<Deck>::const_iterator;
 
-    Collection(size_t id = 0, const std::wstring &name = L"new collection");
+    DeckCollection(UUID id, const std::wstring &name);
 
-    size_t getId() const;
+    UUID getId() const;
     size_t size() const;
 
     const std::wstring &getName() const;
@@ -22,12 +22,12 @@ public:
     ConstIterator begin() const;
     ConstIterator end() const;
 
-    const Deck *getDeckById(size_t id) const;
+    const Deck *getDeckById(UUID id) const;
 
-    void removeDeckById(size_t id);
+    void removeDeckById(UUID id);
 
 private:
-    size_t id;
+    UUID id;
     std::wstring name;
     std::list<Deck> decks;
 };

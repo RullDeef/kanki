@@ -6,7 +6,7 @@ EditorViewAdapter::EditorViewAdapter(UIEditorView &adaptee)
 {
 }
 
-void EditorViewAdapter::showCollection(const Collection &collection)
+void EditorViewAdapter::showCollection(const DeckCollection &collection)
 {
     auto params = ParamsConvertor().toCollectionParams(collection);
     adaptee.showCollection(params);

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <string>
+#include "tools/uuid.hpp"
 
-class SnapshotDTO
+class DBSnapshot
 {
 public:
-    size_t sessionId;
-    size_t cardId;
-    size_t deckId;
+    UUID sessionId;
+    UUID cardId;
     std::wstring cardSymbol;
     std::wstring cardReading;
     std::wstring cardDescription;

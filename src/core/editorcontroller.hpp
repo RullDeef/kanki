@@ -3,7 +3,7 @@
 #include "tools/idgenerator.hpp"
 #include "model/card.hpp"
 #include "model/deck.hpp"
-#include "model/collection.hpp"
+#include "model/deckcollection.hpp"
 #include "core/ieditorview.hpp"
 #include "core/icollectionmanager.hpp"
 
@@ -17,14 +17,14 @@ public:
 
     void addCollection();
     void editCollection();
-    void editCollection(size_t id);
+    void editCollection(UUID id);
 
     void saveActiveCollection();
     void rejectActiveCollection();
 
     void addDeck();
-    void editDeck(size_t deckId);
-    void removeDeck(size_t deckId);
+    void editDeck(UUID deckId);
+    void removeDeck(UUID deckId);
 
     void setDeckName(const std::wstring &newName);
 
@@ -32,8 +32,8 @@ public:
     void rejectActiveDeck();
 
     void addCard();
-    void editCard(size_t cardId);
-    void removeCard(size_t cardId);
+    void editCard(UUID cardId);
+    void removeCard(UUID cardId);
 
     void setCardSymbol(const std::wstring &value);
     void setCardReading(const std::wstring &value);
@@ -45,7 +45,7 @@ public:
 private:
     IEditorView *view = nullptr;
 
-    Collection *activeCollection = nullptr;
+    DeckCollection *activeCollection = nullptr;
     Deck *activeDeck = nullptr;
     Card *activeCard = nullptr;
 

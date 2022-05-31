@@ -42,12 +42,14 @@ int cli::Application::run()
 {
     cli::Menu mainMenu("=== Главное меню ===");
 
-    auto getDeckIdFunc = []() -> size_t
+    auto editorViewPtr = &editorView;
+
+    auto getDeckIdFunc = [editorViewPtr]() -> UUID
     {
         size_t deckId;
-        std::cout << "Введите идентификатор колоды: ";
+        std::cout << "Введите номер колоды: ";
         std::cin >> deckId;
-        return deckId;
+        return editorViewPtr->getDeckIdMapping().at(deckId);
     };
 
     auto getFilenameFucn = []() -> std::string
@@ -70,11 +72,11 @@ int cli::Application::run()
         learnerController->repeatNext(getDeckIdFunc());
     });
 
-    mainMenu.addOption("Экспортировать колоду", [this, getFilenameFucn]() {
+    mainMenu.addOption("Экспортировать коллекцию", [this, getFilenameFucn]() {
         ioController->exportCollection(getFilenameFucn());
     });
 
-    mainMenu.addOption("Импортировать колоду", [this, getFilenameFucn]() {
+    mainMenu.addOption("Импортировать коллекцию", [this, getFilenameFucn]() {
         ioController->importCollection(getFilenameFucn());
     });
 

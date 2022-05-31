@@ -1,4 +1,4 @@
-#include "dto/sessionparser.hpp"
+#include "db/model/sessionparser.hpp"
 
 DTOSessionParser::DTOSessionParser(const Session &session)
 {
@@ -15,14 +15,14 @@ SessionDTO DTOSessionParser::getSessionDTO() const
     return sessionDTO;
 }
 
-std::list<SnapshotDTO> DTOSessionParser::getSnapshotDTOs() const
+std::list<DBSnapshot> DTOSessionParser::getSnapshotDTOs() const
 {
     return snapshotDTOs;
 }
 
 void DTOSessionParser::decomposeSnapshot(const Snapshot &snapshot)
 {
-    SnapshotDTO snapshotDTO;
+    DBSnapshot snapshotDTO;
 
     snapshotDTO.sessionId = sessionDTO.id;
     decomposeCard(snapshotDTO, snapshot.getCard());
@@ -33,7 +33,7 @@ void DTOSessionParser::decomposeSnapshot(const Snapshot &snapshot)
     snapshotDTOs.push_back(snapshotDTO);
 }
 
-void DTOSessionParser::decomposeCard(SnapshotDTO &dst, const Card &card)
+void DTOSessionParser::decomposeCard(DBSnapshot &dst, const Card &card)
 {
     dst.cardId = card.getId();
     dst.cardSymbol = card.getSymbol();

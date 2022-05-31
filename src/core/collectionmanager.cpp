@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include "tools/logger.hpp"
 #include "collectionmanager.hpp"
 
 CollectionManager::CollectionManager(ICollectionRepository *collectionRepository)
@@ -6,28 +7,34 @@ CollectionManager::CollectionManager(ICollectionRepository *collectionRepository
 {
 }
 
-Collection CollectionManager::getActiveCollection()
+DeckCollection CollectionManager::getActiveCollection()
 {
     auto collections = collectionRepository->getCollections();
+    if (collections.empty())
+    {
+        ERROR_METHOD("collection is empty");
+        throw std::runtime_error("collection is empty");
+    }
+
     return collections.front();
 }
 
-void CollectionManager::saveCollection(const Collection &collection)
+void CollectionManager::saveCollection(const DeckCollection &collection)
 {
     collectionRepository->saveCollection(collection);
 }
 
-Collection CollectionManager::getCollectionById(size_t id)
+DeckCollection CollectionManager::getCollectionById(UUID id)
 {
     return collectionRepository->getCollectionById(id);
 }
 
-void CollectionManager::deleteCollection(size_t id)
+void CollectionManager::deleteCollection(UUID id)
 {
     collectionRepository->removeCollection(id);
 }
 
-Deck CollectionManager::getDeckById(size_t deckId)
+Deck CollectionManager::getDeckById(UUID deckId)
 {
     for (auto collection : collectionRepository->getCollections())
         for (auto deck : collection)
@@ -37,7 +44,7 @@ Deck CollectionManager::getDeckById(size_t deckId)
     throw std::runtime_error("invalid deck id");
 }
 
-Card CollectionManager::getCardById(size_t cardId)
+Card CollectionManager::getCardById(UUID cardId)
 {
     for (auto collection : collectionRepository->getCollections())
         for (auto deck : collection)

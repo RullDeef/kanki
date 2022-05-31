@@ -1,11 +1,9 @@
-#pragma once
-
 #include "fileimporter.hpp"
 #include "filereader.hpp"
 #include "tools/logger.hpp"
-#include "dto/collectionbuilder.hpp"
+#include "db/model/collectionbuilder.hpp"
 
-Collection FileImporter::importCollection(const std::string &filename)
+DeckCollection FileImporter::importCollection(const std::string &filename)
 {
     LOG_METHOD();
 

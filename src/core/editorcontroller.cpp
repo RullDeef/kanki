@@ -24,7 +24,7 @@ void EditorController::addCollection()
     LOG_METHOD();
 
     delete activeCollection;
-    activeCollection = new Collection(idGenerator());
+    activeCollection = new DeckCollection(idGenerator(), L"new collection"); // TODO: collection builder
 
     if (view != nullptr)
         view->showCollection(*activeCollection);
@@ -35,18 +35,18 @@ void EditorController::editCollection()
     LOG_METHOD();
 
     delete activeCollection;
-    activeCollection = new Collection(collectionManager->getActiveCollection());
+    activeCollection = new DeckCollection(collectionManager->getActiveCollection());
 
     if (view != nullptr)
         view->showCollection(*activeCollection);
 }
 
-void EditorController::editCollection(size_t id)
+void EditorController::editCollection(UUID id)
 {
     LOG_METHOD();
 
     delete activeCollection;
-    activeCollection = new Collection(collectionManager->getCollectionById(id));
+    activeCollection = new DeckCollection(collectionManager->getCollectionById(id));
 
     if (view != nullptr)
         view->showCollection(*activeCollection);
@@ -72,13 +72,13 @@ void EditorController::addDeck()
     LOG_METHOD();
 
     delete activeDeck;
-    activeDeck = new Deck(idGenerator());
+    activeDeck = new Deck(idGenerator(), L"new deck"); // TODO: deck builder
 
     if (view != nullptr)
         view->showDeck(*activeDeck);
 }
 
-void EditorController::editDeck(size_t deckId)
+void EditorController::editDeck(UUID deckId)
 {
     LOG_METHOD();
 
@@ -103,13 +103,13 @@ void EditorController::addCard()
     LOG_METHOD();
 
     delete activeCard;
-    activeCard = new Card(idGenerator());
+    activeCard = new Card(idGenerator(), L"symbol", L"reading", L"description"); // TODO: add card builder
 
     if (view != nullptr)
         view->showCard(*activeCard);
 }
 
-void EditorController::editCard(size_t cardId)
+void EditorController::editCard(UUID cardId)
 {
     LOG_METHOD();
 
@@ -151,7 +151,7 @@ void EditorController::rejectActiveDeck()
         view->showCollection(*activeCollection);
 }
 
-void EditorController::removeDeck(size_t deckId)
+void EditorController::removeDeck(UUID deckId)
 {
     LOG_METHOD();
 
@@ -161,7 +161,7 @@ void EditorController::removeDeck(size_t deckId)
         view->showCollection(*activeCollection);
 }
 
-void EditorController::removeCard(size_t cardId)
+void EditorController::removeCard(UUID cardId)
 {
     LOG_METHOD();
 

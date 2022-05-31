@@ -20,8 +20,8 @@
     #include "ui/main_window.hpp"
 #endif
 
-constexpr auto collectionFilename = "collection.txt";
-constexpr auto sessionsFilename = "sessions.txt";
+constexpr auto collectionFilename = "./assets/collection.txt";
+constexpr auto sessionsFilename = "./assets/sessions.txt";
 
 int ui_solution(int argc, char *argv[],
                 EditorController &editorController,

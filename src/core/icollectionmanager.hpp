@@ -1,20 +1,21 @@
 #pragma once
 
+#include "tools/uuid.hpp"
 #include "model/card.hpp"
 #include "model/deck.hpp"
-#include "model/collection.hpp"
+#include "model/deckcollection.hpp"
 
 class ICollectionManager
 {
 public:
     virtual ~ICollectionManager() = default;
 
-    virtual Collection getActiveCollection() = 0;
+    virtual DeckCollection getActiveCollection() = 0;
 
-    virtual void saveCollection(const Collection& collection) = 0;
-    virtual Collection getCollectionById(size_t id) = 0;
-    virtual void deleteCollection(size_t id) = 0;
+    virtual void saveCollection(const DeckCollection& collection) = 0;
+    virtual DeckCollection getCollectionById(UUID id) = 0;
+    virtual void deleteCollection(UUID id) = 0;
 
-    virtual Deck getDeckById(size_t deckId) = 0;
-    virtual Card getCardById(size_t cardId) = 0;
+    virtual Deck getDeckById(UUID deckId) = 0;
+    virtual Card getCardById(UUID cardId) = 0;
 };

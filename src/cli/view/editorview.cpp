@@ -10,18 +10,21 @@ void cli::EditorView::setEditorController(EditorController &newController)
 
 void cli::EditorView::showCollection(const CollectionParams &collection)
 {
+    updateDeckIdMapping(collection);
+
     cli::Menu menu("=== Редактирование коллекции ===");
 
     std::cout << "Коллекция:\n";
-    for (auto deck : collection.decks)
-        std::cout << deck.id << ": " << Convert::toString(deck.name) << std::endl;
+    for (size_t index = 1; auto deck : collection.decks)
+        std::cout << index++ << ": "
+                  << Convert::toString(deck.name) << std::endl;
 
-    auto getDeckIdFunc = []() -> size_t
+    auto getDeckIdFunc = [this]() -> UUID
     {
         size_t deckId;
-        std::cout << "Введите идентификатор колоды: ";
+        std::cout << "Введите номер колоды: ";
         std::cin >> deckId;
-        return deckId;
+        return deckIdMapping[deckId];
     };
 
     menu.addOption("Добавить колоду", [this]()
@@ -47,34 +50,39 @@ void cli::EditorView::showCollection(const CollectionParams &collection)
 
 void cli::EditorView::showDeck(const DeckParams &deck)
 {
+    updateCardIdMapping(deck);
+
     cli::Menu menu("=== Редактирование колоды ===");
 
     std::cout << "Колода '" << Convert::toString(deck.name) << "'\n";
-    for (auto card : deck.cards)
-        std::cout << card.id << ": "
+    for (size_t index = 1; auto card : deck.cards)
+        std::cout << index++ << ": "
                   << Convert::toString(card.symbol) << " - "
                   << Convert::toString(card.reading) << std::endl;
 
-    auto getCardIdFunc = []() -> size_t
+    auto getCardIdFunc = [this]() -> UUID
     {
         size_t cardId;
-        std::cout << "Введите идентификатор карточки: ";
+        std::cout << "Введите номер карточки: ";
         std::cin >> cardId;
-        return cardId;
+        return cardIdMapping[cardId];
     };
 
     menu.addOption("Добавить карточку", [this]()
                    { controller->addCard(); });
 
     menu.addOption("Изменить карточку", [this, getCardIdFunc]()
-                   {
-        auto cardId = getCardIdFunc();
-        controller->editCard(cardId); });
+                   { controller->editCard(getCardIdFunc()); });
 
     menu.addOption("Удалить карточку", [this, getCardIdFunc]()
-                   {
-        auto cardId = getCardIdFunc();
-        controller->removeCard(cardId); });
+                   { controller->removeCard(getCardIdFunc()); });
+    
+    menu.addOption("Изменить название колоды", [this]() {
+        std::string name;
+        std::cout << "Введите новое название: ";
+        std::getline(std::cin, name);
+        controller->setDeckName(Convert::toWString(name));
+    });
 
     menu.addOption("Сохранить изменения", [this]()
                    { controller->saveActiveDeck(); });
@@ -88,7 +96,7 @@ void cli::EditorView::showCard(const CardParams &card)
 {
     cli::Menu menu("=== Редактирование карточки ===");
 
-    std::cout << "card #" << card.id << std::endl;
+    std::cout << "card id: " << card.id << std::endl;
     std::cout << "symbol: " << Convert::toString(card.symbol) << std::endl;
     std::cout << "reading: " << Convert::toString(card.reading) << std::endl;
     std::cout << "description: " << Convert::toString(card.description) << std::endl;
@@ -123,4 +131,25 @@ void cli::EditorView::showCard(const CardParams &card)
                    { controller->rejectActiveCard(); });
 
     menu.run();
+}
+
+const std::map<size_t, UUID> &cli::EditorView::getDeckIdMapping() const
+{
+    return deckIdMapping;
+}
+
+void cli::EditorView::updateDeckIdMapping(const CollectionParams &collection)
+{
+    deckIdMapping.clear();
+
+    for (size_t index = 1; auto deck : collection.decks)
+        deckIdMapping[index++] = deck.id;
+}
+
+void cli::EditorView::updateCardIdMapping(const DeckParams &deck)
+{
+    cardIdMapping.clear();
+
+    for (size_t index = 1; auto card : deck.cards)
+        cardIdMapping[index++] = card.id;
 }

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
+#include "tools/uuid.hpp"
 
-class CardDTO
+class DBCard
 {
 public:
-    size_t id;
-    size_t deckId;
+    UUID id;
+    UUID deckId;
     std::wstring symbol;
     std::wstring reading;
     std::wstring description;

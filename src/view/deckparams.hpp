@@ -7,7 +7,7 @@
 class DeckParams
 {
 public:
-    size_t id;
+    UUID id;
     std::wstring name;
     std::list<CardParams> cards;
 };

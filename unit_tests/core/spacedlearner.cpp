@@ -6,19 +6,29 @@
 using ::testing::AtLeast;
 using ::testing::Return;
 
+static UUID getId(uint8_t index)
+{
+    std::array<uint8_t, 16> id10value = {
+        0x00, 0x00, 0x00, index,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    };
+    return id10value;
+}
+
 TEST(SpacedLearner_getNextForLearn, EmptyDeck)
 {
     MockCollectionManager collectionManager;
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck emptyDeck(1, L"empty deck");
+    Deck emptyDeck(getId(1), L"empty deck");
 
     EXPECT_CALL(collectionManager, getDeckById)
         .Times(1)
         .WillOnce(Return(emptyDeck));
 
-    EXPECT_ANY_THROW(learner.getNextForLearn(1));
+    EXPECT_ANY_THROW(learner.getNextForLearn(getId(1)));
 }
 
 TEST(SpacedLearner_getNextForLearn, NoNewCards)
@@ -27,15 +37,15 @@ TEST(SpacedLearner_getNextForLearn, NoNewCards)
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck oldDeck(3, L"old deck");
-    oldDeck.addCard(Card(13));
-    oldDeck.addCard(Card(14));
-    oldDeck.addCard(Card(15));
+    Deck oldDeck(getId(3), L"old deck");
+    oldDeck.addCard(Card(getId(13), L"symbol", L"reading", L"description"));
+    oldDeck.addCard(Card(getId(14), L"symbol", L"reading", L"description"));
+    oldDeck.addCard(Card(getId(15), L"symbol", L"reading", L"description"));
 
     std::list<Snapshot> snapshots = {
-        Snapshot(Card(13), Snapshot::ParamType::READING),
-        Snapshot(Card(14), Snapshot::ParamType::READING),
-        Snapshot(Card(15), Snapshot::ParamType::READING)};
+        Snapshot(Card(getId(13), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING),
+        Snapshot(Card(getId(14), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING),
+        Snapshot(Card(getId(15), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING)};
 
     EXPECT_CALL(collectionManager, getDeckById)
         .Times(1)
@@ -45,7 +55,7 @@ TEST(SpacedLearner_getNextForLearn, NoNewCards)
         .Times(3)
         .WillRepeatedly(Return(snapshots));
 
-    EXPECT_ANY_THROW(learner.getNextForLearn(3));
+    EXPECT_ANY_THROW(learner.getNextForLearn(getId(3)));
 }
 
 TEST(SpacedLearner_getNextForLearn, AllCardsNew)
@@ -54,11 +64,11 @@ TEST(SpacedLearner_getNextForLearn, AllCardsNew)
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck newDeck(2, L"new deck");
-    Card firstCard(10, L"first symbol", L"first reading", L"first description");
+    Deck newDeck(getId(2), L"new deck");
+    Card firstCard(getId(10), L"first symbol", L"first reading", L"first description");
     newDeck.addCard(firstCard);
-    newDeck.addCard(Card(11));
-    newDeck.addCard(Card(12));
+    newDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
+    newDeck.addCard(Card(getId(12), L"symbol", L"reading", L"description"));
 
     EXPECT_CALL(collectionManager, getDeckById)
         .Times(1)
@@ -68,7 +78,7 @@ TEST(SpacedLearner_getNextForLearn, AllCardsNew)
         .Times(1)
         .WillOnce(Return(std::list<Snapshot>()));
 
-    auto card = learner.getNextForLearn(2);
+    auto card = learner.getNextForLearn(getId(2));
     EXPECT_EQ(card, firstCard);
 }
 
@@ -78,24 +88,24 @@ TEST(SpacedLearner_getNextForLearn, HasReadyForRepeat)
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck freshDeck(4, L"fresh deck");
-    Card lastCard(12);
-    freshDeck.addCard(Card(10));
-    freshDeck.addCard(Card(11));
+    Deck freshDeck(getId(4), L"fresh deck");
+    Card lastCard(getId(12), L"last symbol", L"last reading", L"last description");
+    freshDeck.addCard(Card(getId(10), L"symbol", L"reading", L"description"));
+    freshDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
     freshDeck.addCard(lastCard);
 
     auto tme = [](time_t t)
     { return clock_spec::from_time_t(t); };
 
     std::list<Snapshot> snapshots1 = {
-        Snapshot(Card(10), Snapshot::ParamType::NONE, 0, tme(100)),
-        Snapshot(Card(10), Snapshot::ParamType::READING, 1, tme(120)),
-        Snapshot(Card(10), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
+        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(100)),
+        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(120)),
+        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
 
     std::list<Snapshot> snapshots2 = {
-        Snapshot(Card(11), Snapshot::ParamType::NONE, 0, tme(200)),
-        Snapshot(Card(11), Snapshot::ParamType::READING, 1, tme(280)),
-        Snapshot(Card(11), Snapshot::ParamType::READING, 3, tme(320))};
+        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(200)),
+        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(280)),
+        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 3, tme(320))};
 
     std::list<Snapshot> snapshots3 = {};
 
@@ -107,7 +117,7 @@ TEST(SpacedLearner_getNextForLearn, HasReadyForRepeat)
         .WillOnce(Return(snapshots2))
         .WillOnce(Return(snapshots3));
 
-    auto card = learner.getNextForLearn(4);
+    auto card = learner.getNextForLearn(getId(4));
     EXPECT_EQ(card, lastCard);
 }
 
@@ -117,12 +127,12 @@ TEST(SpacedLearner_getNextForRepeat, EmptyDeck)
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck emptyDeck(1, L"deck name");
+    Deck emptyDeck(getId(1), L"deck name");
 
     EXPECT_CALL(collectionManager, getDeckById)
         .WillOnce(Return(emptyDeck));
 
-    EXPECT_ANY_THROW(learner.getNextForRepeat(1, Snapshot::ParamType::READING));
+    EXPECT_ANY_THROW(learner.getNextForRepeat(getId(1), Snapshot::ParamType::READING));
 }
 
 TEST(SpacedLearner_getNextForRepeat, AllNewCards)
@@ -131,10 +141,10 @@ TEST(SpacedLearner_getNextForRepeat, AllNewCards)
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck newDeck(2, L"new deck");
-    newDeck.addCard(Card(10));
-    newDeck.addCard(Card(11));
-    newDeck.addCard(Card(12));
+    Deck newDeck(getId(2), L"new deck");
+    newDeck.addCard(Card(getId(10), L"symbol", L"reading", L"description"));
+    newDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
+    newDeck.addCard(Card(getId(12), L"symbol", L"reading", L"description"));
 
     EXPECT_CALL(collectionManager, getDeckById)
         .WillOnce(Return(newDeck));
@@ -143,7 +153,7 @@ TEST(SpacedLearner_getNextForRepeat, AllNewCards)
         .Times(3)
         .WillRepeatedly(Return(std::list<Snapshot>()));
 
-    EXPECT_ANY_THROW(learner.getNextForRepeat(2, Snapshot::ParamType::READING));
+    EXPECT_ANY_THROW(learner.getNextForRepeat(getId(2), Snapshot::ParamType::READING));
 }
 
 TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
@@ -152,28 +162,28 @@ TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
     MockSessionManager sessionManager;
     SpacedLearner learner(&collectionManager, &sessionManager);
 
-    Deck freshDeck(4, L"fresh deck");
-    freshDeck.addCard(Card(10));
-    freshDeck.addCard(Card(11));
-    freshDeck.addCard(Card(12));
+    Deck freshDeck(getId(4), L"fresh deck");
+    freshDeck.addCard(Card(getId(10), L"symbol", L"reading", L"description"));
+    freshDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
+    freshDeck.addCard(Card(getId(12), L"symbol", L"reading", L"description"));
 
     auto tme = [](time_t t)
     { return clock_spec::from_time_t(t); };
 
     std::list<Snapshot> snapshots1 = {
-        Snapshot(Card(10), Snapshot::ParamType::NONE, 0, tme(100)),
-        Snapshot(Card(10), Snapshot::ParamType::READING, 1, tme(120)),
-        Snapshot(Card(10), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
+        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(100)),
+        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(120)),
+        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
 
     std::list<Snapshot> snapshots2 = {
-        Snapshot(Card(11), Snapshot::ParamType::NONE, 0, tme(200)),
-        Snapshot(Card(11), Snapshot::ParamType::READING, 1, tme(280)),
-        Snapshot(Card(11), Snapshot::ParamType::READING, 3, tme(320))};
+        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(200)),
+        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(280)),
+        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 3, tme(320))};
 
     std::list<Snapshot> snapshots3 = {
-        Snapshot(Card(12), Snapshot::ParamType::NONE, 0, tme(400)),
-        Snapshot(Card(12), Snapshot::ParamType::TRANSLATION, 2, tme(425)),
-        Snapshot(Card(12), Snapshot::ParamType::TRANSLATION, 3, tme(480))};
+        Snapshot(Card(getId(12), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(400)),
+        Snapshot(Card(getId(12), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 2, tme(425)),
+        Snapshot(Card(getId(12), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 3, tme(480))};
 
     EXPECT_CALL(collectionManager, getDeckById)
         .WillOnce(Return(freshDeck));
@@ -183,6 +193,6 @@ TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
         .WillOnce(Return(snapshots2))
         .WillOnce(Return(snapshots3));
 
-    auto card = learner.getNextForRepeat(4, Snapshot::ParamType::READING);
-    EXPECT_EQ(card, Card(10));
+    auto card = learner.getNextForRepeat(getId(4), Snapshot::ParamType::READING);
+    EXPECT_EQ(card, Card(getId(10), L"symbol", L"reading", L"description"));
 }

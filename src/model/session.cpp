@@ -1,11 +1,11 @@
 #include "session.hpp"
 
-Session::Session(size_t id, time_point startTime, time_point endTime)
+Session::Session(UUID id, time_point startTime, time_point endTime)
     : id(id), startTime(startTime), endTime(endTime)
 {
 }
 
-size_t Session::getId() const
+UUID Session::getId() const
 {
     return id;
 }

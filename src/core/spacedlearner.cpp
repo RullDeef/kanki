@@ -8,7 +8,7 @@ SpacedLearner::SpacedLearner(ICollectionManager *collectionManager, ISessionMana
 {
 }
 
-Card SpacedLearner::getNextForLearn(size_t deckId)
+Card SpacedLearner::getNextForLearn(UUID deckId)
 {
     auto deck = collectionManager->getDeckById(deckId);
 
@@ -23,7 +23,7 @@ Card SpacedLearner::getNextForLearn(size_t deckId)
     throw std::runtime_error("all cards viewed");
 }
 
-Card SpacedLearner::getNextForRepeat(size_t deckId, int paramType)
+Card SpacedLearner::getNextForRepeat(UUID deckId, int paramType)
 {
     auto targets = getTargets(deckId, paramType);
 
@@ -39,7 +39,7 @@ Card SpacedLearner::getNextForRepeat(size_t deckId, int paramType)
     throw std::runtime_error("no cards for review");
 }
 
-std::list<Snapshot> SpacedLearner::getTargets(size_t deckId, int paramType)
+std::list<Snapshot> SpacedLearner::getTargets(UUID deckId, int paramType)
 {
     std::list<Snapshot> result;
     auto deck = collectionManager->getDeckById(deckId);

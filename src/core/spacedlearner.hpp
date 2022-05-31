@@ -9,11 +9,11 @@ class SpacedLearner : public ILearner
 public:
     SpacedLearner(ICollectionManager *collectionManager, ISessionManager *sessionManager);
 
-    virtual Card getNextForLearn(size_t deckId) override;
-    virtual Card getNextForRepeat(size_t deckId, int paramType) override;
+    virtual Card getNextForLearn(UUID deckId) override;
+    virtual Card getNextForRepeat(UUID deckId, int paramType) override;
 
 private:
-    std::list<Snapshot> getTargets(size_t deckId, int paramType);
+    std::list<Snapshot> getTargets(UUID deckId, int paramType);
 
     static time_t learningPeriod(int knowledgeDegree);
 

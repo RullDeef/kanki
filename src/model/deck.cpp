@@ -1,12 +1,19 @@
 #include <algorithm>
+#include <stdexcept>
+#include "tools/logger.hpp"
 #include "deck.hpp"
 
-Deck::Deck(size_t id, const std::wstring &name)
+Deck::Deck(UUID id, const std::wstring &name)
     : id(id), name(name)
 {
+    if (id.is_nil())
+    {
+        ERROR_METHOD("nil as deck id is not valid");
+        throw std::runtime_error("nil as deck id is not valid");
+    }
 }
 
-size_t Deck::getId() const
+UUID Deck::getId() const
 {
     return id;
 }
@@ -28,7 +35,7 @@ size_t Deck::size() const
 
 void Deck::addCard(const Card &card)
 {
-    size_t id = card.getId();
+    auto id = card.getId();
     auto iter = std::find_if(cards.begin(), cards.end(), [id](const Card &card)
                              { return card.getId() == id; });
 
@@ -38,7 +45,7 @@ void Deck::addCard(const Card &card)
         cards.push_back(card);
 }
 
-const Card *Deck::getCardById(size_t id) const
+const Card *Deck::getCardById(UUID id) const
 {
     auto iter = std::find_if(cards.begin(), cards.end(), [id](const Card &card)
                              { return card.getId() == id; });
@@ -49,7 +56,7 @@ const Card *Deck::getCardById(size_t id) const
         return nullptr;
 }
 
-void Deck::removeCardById(size_t id)
+void Deck::removeCardById(UUID id)
 {
     cards.erase(
         std::remove_if(cards.begin(), cards.end(), [id](const Card &card)

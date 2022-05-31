@@ -9,11 +9,11 @@ class FileReader : public IDTOReader
 public:
     FileReader(const std::string &filename);
 
-    virtual CardDTO readCardDTO() override;
-    virtual DeckDTO readDeckDTO() override;
-    virtual CollectionDTO readCollectionDTO() override;
+    virtual DBCard readCardDTO() override;
+    virtual DBDeck readDeckDTO() override;
+    virtual DBDeckCollection readCollectionDTO() override;
 
-    virtual SnapshotDTO readSnapshotDTO() override;
+    virtual DBSnapshot readSnapshotDTO() override;
     virtual SessionDTO readSessionDTO() override;
 
     virtual size_t readCount() override;

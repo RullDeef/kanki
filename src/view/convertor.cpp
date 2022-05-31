@@ -25,7 +25,7 @@ DeckParams ParamsConvertor::toDeckParams(const Deck &deck)
     return params;
 }
 
-CollectionParams ParamsConvertor::toCollectionParams(const Collection &collection)
+CollectionParams ParamsConvertor::toCollectionParams(const DeckCollection &collection)
 {
     CollectionParams params;
 

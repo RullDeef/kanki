@@ -1,15 +1,16 @@
 #pragma once
 
 #include <string>
+#include "tools/uuid.hpp"
 
-class DeckDTO
+class DBDeck
 {
 public:
-    size_t id;
-    size_t collectionId;
+    UUID id;
+    UUID collectionId;
     std::wstring name;
 
-    bool operator==(const DeckDTO &other) const
+    bool operator==(const DBDeck &other) const
     {
         return id == other.id && collectionId == other.collectionId && name == other.name;
     }

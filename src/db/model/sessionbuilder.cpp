@@ -1,11 +1,11 @@
-#include "dto/sessionbuilder.hpp"
+#include "db/model/sessionbuilder.hpp"
 
 DTOSessionBuilder::DTOSessionBuilder(const SessionDTO &sessionDTO)
     : sessionDTO(sessionDTO)
 {
 }
 
-void DTOSessionBuilder::addSnapshotDTO(const SnapshotDTO &snapshotDTO)
+void DTOSessionBuilder::addSnapshotDTO(const DBSnapshot &snapshotDTO)
 {
     snapshotDTOs.push_back(snapshotDTO);
 }
@@ -22,7 +22,7 @@ Session DTOSessionBuilder::build()
     return session;
 }
 
-Snapshot DTOSessionBuilder::buildSnapshot(const SnapshotDTO &snapshotDTO)
+Snapshot DTOSessionBuilder::buildSnapshot(const DBSnapshot &snapshotDTO)
 {
     Card card(snapshotDTO.cardId,
               snapshotDTO.cardSymbol,

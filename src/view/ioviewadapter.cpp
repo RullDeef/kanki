@@ -6,7 +6,7 @@ IOViewAdapter::IOViewAdapter(UIIOView &adaptee)
 {
 }
 
-void IOViewAdapter::showImportedCollection(const Collection &collection)
+void IOViewAdapter::showImportedCollection(const DeckCollection &collection)
 {
     auto params = ParamsConvertor().toCollectionParams(collection);
     adaptee.showImportedCollection(params);

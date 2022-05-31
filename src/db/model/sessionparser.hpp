@@ -3,8 +3,8 @@
 #include <list>
 #include "model/snapshot.hpp"
 #include "model/session.hpp"
-#include "dto/snapshot.hpp"
-#include "dto/session.hpp"
+#include "db/model/snapshot.hpp"
+#include "db/model/session.hpp"
 
 class DTOSessionParser
 {
@@ -12,12 +12,12 @@ public:
     DTOSessionParser(const Session &session);
 
     SessionDTO getSessionDTO() const;
-    std::list<SnapshotDTO> getSnapshotDTOs() const;
+    std::list<DBSnapshot> getSnapshotDTOs() const;
 
 private:
     void decomposeSnapshot(const Snapshot &snapshot);
-    void decomposeCard(SnapshotDTO &dst, const Card &card);
+    void decomposeCard(DBSnapshot &dst, const Card &card);
 
     SessionDTO sessionDTO;
-    std::list<SnapshotDTO> snapshotDTOs;
+    std::list<DBSnapshot> snapshotDTOs;
 };

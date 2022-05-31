@@ -1,29 +1,33 @@
 #include <stdexcept>
-#include "dto/collectionbuilder.hpp"
+#include "tools/logger.hpp"
+#include "db/model/collectionbuilder.hpp"
 
-DTOCollectionBuilder::DTOCollectionBuilder(const CollectionDTO &collectionDTO)
+DTOCollectionBuilder::DTOCollectionBuilder(const DBDeckCollection &collectionDTO)
     : collectionDTO(collectionDTO)
 {
 }
 
-void DTOCollectionBuilder::addDeckDTO(const DeckDTO &deckDTO)
+void DTOCollectionBuilder::addDeckDTO(const DBDeck &deckDTO)
 {
     deckDTOs.push_back(deckDTO);
 }
 
-void DTOCollectionBuilder::addCardDTO(const CardDTO &cardDTO)
+void DTOCollectionBuilder::addCardDTO(const DBCard &cardDTO)
 {
     cardDTOs.push_back(cardDTO);
 }
 
-Collection DTOCollectionBuilder::build()
+DeckCollection DTOCollectionBuilder::build()
 {
-    Collection collection(collectionDTO.id, collectionDTO.name);
+    DeckCollection collection(collectionDTO.id, collectionDTO.name);
 
     for (auto deckDTO : deckDTOs)
     {
         if (deckDTO.collectionId != collectionDTO.id)
+        {
+            ERROR_METHOD("bad deckDTO.collectionId");
             throw std::runtime_error("bad deckDTO.collectionId");
+        }
 
         collection.addDeck(buildDeck(deckDTO));
     }
@@ -31,7 +35,7 @@ Collection DTOCollectionBuilder::build()
     return collection;
 }
 
-Deck DTOCollectionBuilder::buildDeck(const DeckDTO &deckDTO)
+Deck DTOCollectionBuilder::buildDeck(const DBDeck &deckDTO)
 {
     Deck deck(deckDTO.id, deckDTO.name);
 
@@ -42,7 +46,7 @@ Deck DTOCollectionBuilder::buildDeck(const DeckDTO &deckDTO)
     return deck;
 }
 
-Card DTOCollectionBuilder::buildCard(const CardDTO &cardDTO)
+Card DTOCollectionBuilder::buildCard(const DBCard &cardDTO)
 {
     return Card(cardDTO.id,
                 cardDTO.symbol,

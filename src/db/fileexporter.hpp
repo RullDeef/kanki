@@ -5,5 +5,5 @@
 class FileExporter : public IExporter
 {
 public:
-    virtual void exportCollection(const std::string &filename, const Collection &collection) override;
+    virtual void exportCollection(const std::string &filename, const DeckCollection &collection) override;
 };

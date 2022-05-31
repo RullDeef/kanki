@@ -10,13 +10,13 @@ public:
     void load(IDTOReader &reader);
     void dump(IDTOWriter &writer);
 
-    virtual std::list<Collection> getCollections() override;
+    virtual std::list<DeckCollection> getCollections() override;
 
-    virtual Collection getCollectionById(size_t id) override;
+    virtual DeckCollection getCollectionById(UUID id) override;
 
-    virtual void removeCollection(size_t id) override;
-    virtual void saveCollection(const Collection &collection) override;
+    virtual void removeCollection(UUID id) override;
+    virtual void saveCollection(const DeckCollection &collection) override;
 
 private:
-    std::list<Collection> collections;
+    std::list<DeckCollection> collections;
 };

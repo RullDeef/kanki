@@ -6,10 +6,10 @@
 class MockCollectionManager : public ICollectionManager
 {
 public:
-    MOCK_METHOD(Collection, getActiveCollection, (), (override));
-    MOCK_METHOD(void, saveCollection, (const Collection &collection), (override));
-    MOCK_METHOD(Collection, getCollectionById, (size_t id), (override));
-    MOCK_METHOD(void, deleteCollection, (size_t id), (override));
-    MOCK_METHOD(Deck, getDeckById, (size_t deckId), (override));
-    MOCK_METHOD(Card, getCardById, (size_t cardId), (override));
+    MOCK_METHOD(DeckCollection, getActiveCollection, (), (override));
+    MOCK_METHOD(void, saveCollection, (const DeckCollection &collection), (override));
+    MOCK_METHOD(DeckCollection, getCollectionById, (UUID id), (override));
+    MOCK_METHOD(void, deleteCollection, (UUID id), (override));
+    MOCK_METHOD(Deck, getDeckById, (UUID deckId), (override));
+    MOCK_METHOD(Card, getCardById, (UUID cardId), (override));
 };

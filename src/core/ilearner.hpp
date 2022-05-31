@@ -7,6 +7,6 @@ class ILearner
 public:
     virtual ~ILearner() = default;
 
-    virtual Card getNextForLearn(size_t deckId) = 0;
-    virtual Card getNextForRepeat(size_t deckId, int paramType) = 0;
+    virtual Card getNextForLearn(UUID deckId) = 0;
+    virtual Card getNextForRepeat(UUID deckId, int paramType) = 0;
 };

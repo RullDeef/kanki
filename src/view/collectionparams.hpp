@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include "tools/uuid.hpp"
 
 class CollectionParams
 {
@@ -9,7 +10,7 @@ public:
     class DeckInfo
     {
     public:
-        size_t id;
+        UUID id;
         std::wstring name;
     };
 

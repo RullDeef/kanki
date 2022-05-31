@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include "tools/logger.hpp"
 #include "tools/idgenerator.hpp"
-#include "dto/sessionbuilder.hpp"
-#include "dto/sessionparser.hpp"
+#include "db/model/sessionbuilder.hpp"
+#include "db/model/sessionparser.hpp"
 #include "db/filereader.hpp"
 #include "db/filewriter.hpp"
 #include "filesessionrepo.hpp"
@@ -14,7 +14,7 @@ std::list<Session> FileSessionRepository::getSessions()
     return sessions;
 }
 
-Session FileSessionRepository::getSession(size_t id)
+Session FileSessionRepository::getSession(UUID id)
 {
     auto iter = std::find_if(sessions.begin(), sessions.end(),
                              [id](const Session &session)
@@ -25,7 +25,7 @@ Session FileSessionRepository::getSession(size_t id)
     return *iter;
 }
 
-void FileSessionRepository::removeSession(size_t id)
+void FileSessionRepository::removeSession(UUID id)
 {
     sessions.erase(
         std::remove_if(sessions.begin(), sessions.end(),
@@ -36,7 +36,7 @@ void FileSessionRepository::removeSession(size_t id)
 
 void FileSessionRepository::saveSession(const Session &session)
 {
-    size_t id = session.getId();
+    auto id = session.getId();
     auto iter = std::find_if(sessions.begin(), sessions.end(),
                              [id](const Session &session)
                              { return session.getId() == id; });
