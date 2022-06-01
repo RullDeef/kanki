@@ -7,7 +7,7 @@ FileWriter::FileWriter(const std::string &filename)
         throw std::runtime_error("bad file for writer");
 }
 
-void FileWriter::writeCardDTO(const DBCard &card)
+void FileWriter::writeDBCard(const DBCard &card)
 {
     stream << card.id << std::endl;
     stream << card.deckId << std::endl;
@@ -18,20 +18,20 @@ void FileWriter::writeCardDTO(const DBCard &card)
     stream << card.description << std::endl;
 }
 
-void FileWriter::writeDeckDTO(const DBDeck &deck)
+void FileWriter::writeDBDeck(const DBDeck &deck)
 {
     stream << deck.id << std::endl;
     stream << deck.collectionId << std::endl;
     stream << deck.name << std::endl;
 }
 
-void FileWriter::writeCollectionDTO(const DBDeckCollection &collection)
+void FileWriter::writeDBCollection(const DBDeckCollection &collection)
 {
     stream << collection.id << std::endl;
     stream << collection.name << std::endl;
 }
 
-void FileWriter::writeSnapshotDTO(const DBSnapshot &snapshot)
+void FileWriter::writeDBSnapshot(const DBSnapshot &snapshot)
 {
     stream << snapshot.sessionId << std::endl;
     stream << snapshot.cardId << std::endl;
@@ -43,7 +43,7 @@ void FileWriter::writeSnapshotDTO(const DBSnapshot &snapshot)
     stream << snapshot.timePoint << std::endl;
 }
 
-void FileWriter::writeSessionDTO(const DBSession &session)
+void FileWriter::writeDBSession(const DBSession &session)
 {
     stream << session.id << std::endl;
     stream << session.startTime << std::endl;

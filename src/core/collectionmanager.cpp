@@ -21,21 +21,29 @@ DeckCollection CollectionManager::getActiveCollection()
 
 void CollectionManager::saveCollection(const DeckCollection &collection)
 {
+    LOG_METHOD("collectionId=" + uuids::to_string(collection.getId()));
+
     collectionRepository->saveCollection(collection);
 }
 
 DeckCollection CollectionManager::getCollectionById(UUID id)
 {
+    LOG_METHOD("id=" + uuids::to_string(id));
+
     return collectionRepository->getCollectionById(id);
 }
 
 void CollectionManager::deleteCollection(UUID id)
 {
+    LOG_METHOD("id=" + uuids::to_string(id));
+
     collectionRepository->removeCollection(id);
 }
 
 Deck CollectionManager::getDeckById(UUID deckId)
 {
+    LOG_METHOD("deckId=" + uuids::to_string(deckId));
+
     for (auto collection : collectionRepository->getCollections())
         for (auto deck : collection)
             if (deck.getId() == deckId)
@@ -46,6 +54,8 @@ Deck CollectionManager::getDeckById(UUID deckId)
 
 Card CollectionManager::getCardById(UUID cardId)
 {
+    LOG_METHOD("cardId=" + uuids::to_string(cardId));
+
     for (auto collection : collectionRepository->getCollections())
         for (auto deck : collection)
             for (auto card : deck)

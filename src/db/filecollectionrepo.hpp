@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "core/icollectionrepository.hpp"
-#include "db/idtoiofactory.hpp"
+#include "db/idbiofactory.hpp"
 
 class FileCollectionRepository : public ICollectionRepository
 {
@@ -11,10 +11,10 @@ public:
     ~FileCollectionRepository();
 
     void load();
-    void load(IDTOReader &reader);
+    void load(IDBReader &reader);
 
     void dump();
-    void dump(IDTOWriter &writer);
+    void dump(IDBWriter &writer);
 
     virtual std::list<DeckCollection> getCollections() override;
 

@@ -24,7 +24,7 @@ void QtLearnerView::noCardsForLearn()
 void QtLearnerView::noCardsForRepeat()
 {
     InfoWindow window("Нет карточек<br>для повторения");
-    window.show();
+    window.exec();
 }
 
 void QtLearnerView::setController(std::shared_ptr<LearnerController> newController)

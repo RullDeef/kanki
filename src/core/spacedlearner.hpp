@@ -17,6 +17,7 @@ public:
 private:
     std::list<Snapshot> getTargets(UUID deckId, int paramType);
 
+    static time_point calcRepeatingTime(const Snapshot& snapshot);
     static time_t learningPeriod(int knowledgeDegree);
 
     std::shared_ptr<ICollectionManager> collectionManager;

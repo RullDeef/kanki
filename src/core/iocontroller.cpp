@@ -23,7 +23,7 @@ void IOController::setExporter(std::shared_ptr<IExporter> newExporter)
 
 void IOController::exportCollection(const std::string &filename)
 {
-    LOG_METHOD();
+    LOG_METHOD("filename=" + filename);
 
     if (exporter == nullptr)
     {
@@ -51,7 +51,7 @@ void IOController::exportCollection(const std::string &filename)
 
 void IOController::importCollection(const std::string &filename)
 {
-    LOG_METHOD();
+    LOG_METHOD("filename=" + filename);
 
     if (exporter == nullptr)
     {

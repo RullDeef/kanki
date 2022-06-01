@@ -27,7 +27,7 @@ const Session &SessionManager::getActiveSession()
 
 void SessionManager::addSnapshot(const Snapshot &snapshot)
 {
-    LOG_METHOD();
+    LOG_METHOD("cardId=" + uuids::to_string(snapshot.getCard().getId()));
 
     activeSession.addSnapshot(snapshot);
     sessionRepository->saveSession(activeSession);
@@ -35,7 +35,7 @@ void SessionManager::addSnapshot(const Snapshot &snapshot)
 
 std::list<Snapshot> SessionManager::getAllCardSnapshots(const Card &card)
 {
-    LOG_METHOD();
+    LOG_METHOD("cardId=" + uuids::to_string(card.getId()));
 
     std::list<Snapshot> result;
 

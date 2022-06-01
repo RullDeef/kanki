@@ -14,4 +14,7 @@ public:
     int param;
     int knowledgeDegree;
     time_t timePoint;
+
+    DBSnapshot() = default;
+    DBSnapshot(const DBSnapshot &) = default;
 };

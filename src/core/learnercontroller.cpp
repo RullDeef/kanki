@@ -24,7 +24,7 @@ void LearnerController::setEstimator(std::shared_ptr<IEstimator> newEstimator)
 
 void LearnerController::learnNext(UUID deckId)
 {
-    LOG_METHOD();
+    LOG_METHOD("deckId=" + uuids::to_string(deckId));
 
     try
     {
@@ -45,7 +45,7 @@ void LearnerController::learnNext(UUID deckId)
 
 void LearnerController::repeatNext(UUID deckId)
 {
-    LOG_METHOD();
+    LOG_METHOD("deckId=" + uuids::to_string(deckId));
 
     auto readingCard = getNextCardFor(deckId, Snapshot::ParamType::READING);
     auto translatingCard = getNextCardFor(deckId, Snapshot::ParamType::TRANSLATION);
@@ -73,7 +73,7 @@ void LearnerController::repeatNext(UUID deckId)
 
 void LearnerController::confirmLearned(UUID cardId)
 {
-    LOG_METHOD();
+    LOG_METHOD("cardId=" + uuids::to_string(cardId));
 
     Card card = collectionManager->getCardById(cardId);
     Snapshot snapshot(card);
@@ -83,7 +83,7 @@ void LearnerController::confirmLearned(UUID cardId)
 
 void LearnerController::markEasy(UUID cardId, int paramType)
 {
-    LOG_METHOD();
+    LOG_METHOD("cardId=" + uuids::to_string(cardId) + ", paramType=" + std::to_string(paramType));
 
     Card card = collectionManager->getCardById(cardId);
     Snapshot snapshot(card, Snapshot::ParamType(paramType));
@@ -94,7 +94,7 @@ void LearnerController::markEasy(UUID cardId, int paramType)
 
 void LearnerController::markGood(UUID cardId, int paramType)
 {
-    LOG_METHOD();
+    LOG_METHOD("cardId=" + uuids::to_string(cardId) + ", paramType=" + std::to_string(paramType));
 
     Card card = collectionManager->getCardById(cardId);
     Snapshot snapshot(card, Snapshot::ParamType(paramType));
@@ -105,7 +105,7 @@ void LearnerController::markGood(UUID cardId, int paramType)
 
 void LearnerController::markAgain(UUID cardId, int paramType)
 {
-    LOG_METHOD();
+    LOG_METHOD("cardId=" + uuids::to_string(cardId) + ", paramType=" + std::to_string(paramType));
 
     Card card = collectionManager->getCardById(cardId);
     Snapshot snapshot(card, Snapshot::ParamType(paramType));
@@ -116,6 +116,8 @@ void LearnerController::markAgain(UUID cardId, int paramType)
 
 std::unique_ptr<Card> LearnerController::getNextCardFor(UUID deckId, int paramType)
 {
+    LOG_METHOD("deckId=" + uuids::to_string(deckId) + ", paramType=" + std::to_string(paramType));
+
     try
     {
         learner->useCollectionManager(collectionManager);

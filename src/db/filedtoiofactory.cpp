@@ -7,12 +7,12 @@ FileDTOIOFactory::FileDTOIOFactory(const std::string &filename)
 {
 }
 
-std::unique_ptr<IDTOReader> FileDTOIOFactory::createReader()
+std::unique_ptr<IDBReader> FileDTOIOFactory::createReader()
 {
-    return std::unique_ptr<IDTOReader>(new FileReader(filename));
+    return std::unique_ptr<IDBReader>(new FileReader(filename));
 }
 
-std::unique_ptr<IDTOWriter> FileDTOIOFactory::createWriter()
+std::unique_ptr<IDBWriter> FileDTOIOFactory::createWriter()
 {
-    return std::unique_ptr<IDTOWriter>(new FileWriter(filename));
+    return std::unique_ptr<IDBWriter>(new FileWriter(filename));
 }

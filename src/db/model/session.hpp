@@ -8,4 +8,7 @@ public:
     UUID id;
     time_t startTime;
     time_t endTime;
+
+    DBSession() = default;
+    DBSession(const DBSession &) = default;
 };

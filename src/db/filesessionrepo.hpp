@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include "core/isessionrepository.hpp"
-#include "db/idtoiofactory.hpp"
+#include "db/idbiofactory.hpp"
 
 class FileSessionRepository : public ISessionRepository
 {
@@ -13,10 +13,10 @@ public:
     ~FileSessionRepository();
 
     void load();
-    void load(IDTOReader &reader);
+    void load(IDBReader &reader);
 
     void dump();
-    void dump(IDTOWriter &writer);
+    void dump(IDBWriter &writer);
 
     virtual std::list<Session> getSessions() override;
     virtual Session getSession(UUID id) override;
