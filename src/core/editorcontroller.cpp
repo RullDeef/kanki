@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "tools/logger.hpp"
+#include "tools/convertor.hpp"
 #include "editorcontroller.hpp"
 
 EditorController::EditorController(std::shared_ptr<ICollectionManager> collectionManager)
@@ -32,7 +33,7 @@ void EditorController::addCollection()
 
 void EditorController::editCollection()
 {
-    LOG_METHOD();
+    LOG_METHOD("editing active collection");
 
     delete activeCollection;
     activeCollection = new DeckCollection(collectionManager->getActiveCollection());
@@ -43,7 +44,7 @@ void EditorController::editCollection()
 
 void EditorController::editCollection(UUID id)
 {
-    LOG_METHOD();
+    LOG_METHOD("id=" + uuids::to_string(id));
 
     delete activeCollection;
     activeCollection = new DeckCollection(collectionManager->getCollectionById(id));
@@ -80,7 +81,7 @@ void EditorController::addDeck()
 
 void EditorController::editDeck(UUID deckId)
 {
-    LOG_METHOD();
+    LOG_METHOD("id=" + uuids::to_string(deckId));
 
     try
     {
@@ -111,7 +112,7 @@ void EditorController::addCard()
 
 void EditorController::editCard(UUID cardId)
 {
-    LOG_METHOD();
+    LOG_METHOD("id=" + uuids::to_string(cardId));
 
     try
     {
@@ -153,7 +154,7 @@ void EditorController::rejectActiveDeck()
 
 void EditorController::removeDeck(UUID deckId)
 {
-    LOG_METHOD();
+    LOG_METHOD("id=" + uuids::to_string(deckId));
 
     activeCollection->removeDeckById(deckId);
 
@@ -163,7 +164,7 @@ void EditorController::removeDeck(UUID deckId)
 
 void EditorController::removeCard(UUID cardId)
 {
-    LOG_METHOD();
+    LOG_METHOD("id=" + uuids::to_string(cardId));
 
     activeDeck->removeCardById(cardId);
 
@@ -173,7 +174,7 @@ void EditorController::removeCard(UUID cardId)
 
 void EditorController::setDeckName(const std::wstring &newName)
 {
-    LOG_METHOD();
+    LOG_METHOD("newName=" + Convert::toString(newName));
 
     if (activeDeck != nullptr)
     {
@@ -186,7 +187,7 @@ void EditorController::setDeckName(const std::wstring &newName)
 
 void EditorController::setCardSymbol(const std::wstring &value)
 {
-    LOG_METHOD();
+    LOG_METHOD("value=" + Convert::toString(value));
 
     if (activeCard != nullptr)
     {
@@ -199,7 +200,7 @@ void EditorController::setCardSymbol(const std::wstring &value)
 
 void EditorController::setCardReading(const std::wstring &value)
 {
-    LOG_METHOD();
+    LOG_METHOD("value=" + Convert::toString(value));
 
     if (activeCard != nullptr)
     {
@@ -212,7 +213,7 @@ void EditorController::setCardReading(const std::wstring &value)
 
 void EditorController::setCardDescription(const std::wstring &value)
 {
-    LOG_METHOD();
+    LOG_METHOD("value=" + Convert::toString(value));
 
     if (activeCard != nullptr)
     {

@@ -51,8 +51,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::onShowCollection(const CollectionParams &collection)
 {
-    LOG_METHOD();
-
     ui->decksList->clear();
     for (auto deck : collection.decks)
     {
@@ -69,8 +67,6 @@ void MainWindow::onShowCollection(const CollectionParams &collection)
 
 void MainWindow::onAddDeckButtonPressed()
 {
-    LOG_METHOD();
-
     auto deckWindow = DeckWindow(editorController, editorView);
     editorController->addDeck();
     deckWindow.exec();
@@ -80,8 +76,6 @@ void MainWindow::onAddDeckButtonPressed()
 
 void MainWindow::onEditDeckButtonPressed()
 {
-    LOG_METHOD();
-
     auto selected = ui->decksList->selectionModel()->selectedIndexes();
     if (selected.empty())
         WARN_METHOD("selected empty");
@@ -99,8 +93,6 @@ void MainWindow::onEditDeckButtonPressed()
 
 void MainWindow::onDeleteDeckButtonPressed()
 {
-    LOG_METHOD();
-
     auto selected = ui->decksList->selectionModel()->selectedIndexes();
     if (selected.empty())
         WARN_METHOD("selected empty");
@@ -115,8 +107,6 @@ void MainWindow::onDeleteDeckButtonPressed()
 
 void MainWindow::onLearnDeckButtonPressed()
 {
-    LOG_METHOD();
-
     auto selected = ui->decksList->selectionModel()->selectedIndexes();
     if (selected.empty())
         WARN_METHOD("selected empty");
@@ -130,8 +120,6 @@ void MainWindow::onLearnDeckButtonPressed()
 
 void MainWindow::onRepeatDeckButtonPressed()
 {
-    LOG_METHOD();
-
     auto selected = ui->decksList->selectionModel()->selectedIndexes();
     if (selected.empty())
         WARN_METHOD("selected empty");
