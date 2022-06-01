@@ -3,7 +3,7 @@
 #include "db/model/collectionbuilder.hpp"
 
 DBCollectionBuilder::DBCollectionBuilder(const DBDeckCollection &collection)
-    : dbCollection(dbCollection)
+    : dbCollection(collection)
 {
 }
 

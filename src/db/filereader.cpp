@@ -9,7 +9,7 @@ FileReader::FileReader(const std::string &filename)
         throw std::runtime_error("bad file for reader");
 }
 
-DBCard FileReader::readCardDTO()
+DBCard FileReader::readDBCard()
 {
     DBCard card;
 
@@ -22,7 +22,7 @@ DBCard FileReader::readCardDTO()
     return card;
 }
 
-DBDeck FileReader::readDeckDTO()
+DBDeck FileReader::readDBDeck()
 {
     DBDeck deck;
 
@@ -33,17 +33,18 @@ DBDeck FileReader::readDeckDTO()
     return deck;
 }
 
-DBDeckCollection FileReader::readCollectionDTO()
+DBDeckCollection FileReader::readDBCollection()
 {
-    DBDeckCollection collection;
+    DBDeckCollection collection{};
 
     stream >> collection.id >> std::ws;
+
     std::getline(stream, collection.name);
 
     return collection;
 }
 
-DBSnapshot FileReader::readSnapshotDTO()
+DBSnapshot FileReader::readDBSnapshot()
 {
     DBSnapshot snapshot;
 
@@ -59,7 +60,7 @@ DBSnapshot FileReader::readSnapshotDTO()
     return snapshot;
 }
 
-DBSession FileReader::readSessionDTO()
+DBSession FileReader::readDBSession()
 {
     DBSession session;
 

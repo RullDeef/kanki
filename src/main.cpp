@@ -2,6 +2,8 @@
 #include "core/sessionmanager.hpp"
 #include "solution/cfgsolution.hpp"
 
+// TODO: separate SNapshot param type into its own file
+
 int main(int argc, char *argv[])
 {
     ConfigFileSolution solution("./assets/kanki.cfg");

@@ -1,5 +1,6 @@
 #include <cmath>
 #include <stdexcept>
+#include <optional>
 #include "tools/time.hpp"
 #include "spacedlearner.hpp"
 
@@ -32,16 +33,23 @@ Card SpacedLearner::getNextForRepeat(UUID deckId, int paramType)
 {
     auto targets = getTargets(deckId, paramType);
 
-    for (const auto snapshot : targets)
-    {
-        time_t periodValue = learningPeriod(snapshot.getKnowledgeDegree());
-        auto timeDelta = clock_spec::from_time_t(periodValue).time_since_epoch();
+    if (targets.empty())
+        throw std::runtime_error("no cards for review");
 
-        if (snapshot.getTimeDelta() > timeDelta)
-            return snapshot.getCard();
+    std::optional<Snapshot> bestSnapshot;
+    time_point bestRepeatingTime;
+    for (auto snapshot : targets)
+    {
+        auto repeatingTime = calcRepeatingTime(snapshot);
+
+        if (!bestSnapshot.has_value() || repeatingTime < bestRepeatingTime)
+        {
+            bestSnapshot.emplace(snapshot);
+            bestRepeatingTime = repeatingTime;
+        }
     }
 
-    throw std::runtime_error("no cards for review");
+    return bestSnapshot->getCard();
 }
 
 std::list<Snapshot> SpacedLearner::getTargets(UUID deckId, int paramType)
@@ -66,6 +74,12 @@ std::list<Snapshot> SpacedLearner::getTargets(UUID deckId, int paramType)
     }
 
     return result;
+}
+
+time_point SpacedLearner::calcRepeatingTime(const Snapshot& snapshot)
+{
+    auto periodValue = learningPeriod(snapshot.getKnowledgeDegree());
+    return snapshot.getTimePoint() + clock_spec::duration(periodValue);
 }
 
 time_t SpacedLearner::learningPeriod(int knowledgeDegree)

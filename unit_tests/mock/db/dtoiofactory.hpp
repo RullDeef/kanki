@@ -1,23 +1,23 @@
 #pragma once
 
 #include <gmock/gmock.h>
-#include "db/idtoiofactory.hpp"
+#include "db/idbiofactory.hpp"
 
 class MockDTOIOFactory : public IDTOIOFactory
 {
 public:
-    virtual std::unique_ptr<IDTOReader> createReader() override
+    virtual std::unique_ptr<IDBReader> createReader() override
     {
         auto reader = createReaderProxy();
-        return std::unique_ptr<IDTOReader>(reader);
+        return std::unique_ptr<IDBReader>(reader);
     }
 
-    virtual std::unique_ptr<IDTOWriter> createWriter() override
+    virtual std::unique_ptr<IDBWriter> createWriter() override
     {
         auto writer = createWriterProxy();
-        return std::unique_ptr<IDTOWriter>(writer);
+        return std::unique_ptr<IDBWriter>(writer);
     }
 
-    MOCK_METHOD0(createReaderProxy, IDTOReader *());
-    MOCK_METHOD0(createWriterProxy, IDTOWriter *());
+    MOCK_METHOD0(createReaderProxy, IDBReader *());
+    MOCK_METHOD0(createWriterProxy, IDBWriter *());
 };

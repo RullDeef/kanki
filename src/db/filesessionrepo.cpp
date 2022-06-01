@@ -34,20 +34,20 @@ void FileSessionRepository::load()
     load(*reader);
 }
 
-void FileSessionRepository::load(IDTOReader &reader)
+void FileSessionRepository::load(IDBReader &reader)
 {
     sessions.clear();
 
     size_t sessionsCount = reader.readCount();
     for (size_t i = 0; i < sessionsCount; i++)
     {
-        auto dbSession = reader.readSessionDTO();
+        auto dbSession = reader.readDBSession();
         DBSessionBuilder builder(dbSession);
 
         size_t snapshotsCount = reader.readCount();
         for (size_t j = 0; j < snapshotsCount; j++)
         {
-            auto snapshotDTO = reader.readSnapshotDTO();
+            auto snapshotDTO = reader.readDBSnapshot();
             builder.addSnapshotDTO(snapshotDTO);
         }
 
@@ -61,19 +61,19 @@ void FileSessionRepository::dump()
     dump(*writer);
 }
 
-void FileSessionRepository::dump(IDTOWriter &writer)
+void FileSessionRepository::dump(IDBWriter &writer)
 {
     writer.writeCount(sessions.size());
     for (auto session : sessions)
     {
         DBSessionParser parser(session);
-        writer.writeSessionDTO(parser.getSession());
+        writer.writeDBSession(parser.getSession());
 
         auto dbSnapshots = parser.getSnapshots();
         writer.writeCount(dbSnapshots.size());
 
         for (auto snapshotDTO : dbSnapshots)
-            writer.writeSnapshotDTO(snapshotDTO);
+            writer.writeDBSnapshot(snapshotDTO);
     }
 }
 

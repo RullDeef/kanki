@@ -2,19 +2,19 @@
 
 #include <string>
 #include <fstream>
-#include "db/idtoreader.hpp"
+#include "db/idbreader.hpp"
 
-class FileReader : public IDTOReader
+class FileReader : public IDBReader
 {
 public:
     FileReader(const std::string &filename);
 
-    virtual DBCard readCardDTO() override;
-    virtual DBDeck readDeckDTO() override;
-    virtual DBDeckCollection readCollectionDTO() override;
+    virtual DBCard readDBCard() override;
+    virtual DBDeck readDBDeck() override;
+    virtual DBDeckCollection readDBCollection() override;
 
-    virtual DBSnapshot readSnapshotDTO() override;
-    virtual DBSession readSessionDTO() override;
+    virtual DBSnapshot readDBSnapshot() override;
+    virtual DBSession readDBSession() override;
 
     virtual size_t readCount() override;
 

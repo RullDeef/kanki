@@ -32,7 +32,7 @@ void FileCollectionRepository::load()
     load(*reader);
 }
 
-void FileCollectionRepository::load(IDTOReader &reader)
+void FileCollectionRepository::load(IDBReader &reader)
 {
     LOG_METHOD();
 
@@ -41,19 +41,19 @@ void FileCollectionRepository::load(IDTOReader &reader)
     size_t collectionsCount = reader.readCount();
     for (size_t i = 0; i < collectionsCount; i++)
     {
-        auto dbCollection = reader.readCollectionDTO();
+        auto dbCollection = reader.readDBCollection();
         size_t decksCount = reader.readCount();
         DBCollectionBuilder collector(dbCollection);
 
         for (size_t j = 0; j < decksCount; j++)
         {
-            auto deckDTO = reader.readDeckDTO();
+            auto deckDTO = reader.readDBDeck();
             size_t cardsCount = reader.readCount();
             collector.addDeck(deckDTO);
 
             for (size_t k = 0; k < cardsCount; k++)
             {
-                auto cardDTO = reader.readCardDTO();
+                auto cardDTO = reader.readDBCard();
                 collector.addCard(cardDTO);
             }
         }
@@ -68,7 +68,7 @@ void FileCollectionRepository::dump()
     dump(*writer);
 }
 
-void FileCollectionRepository::dump(IDTOWriter &writer)
+void FileCollectionRepository::dump(IDBWriter &writer)
 {
     LOG_METHOD();
 
@@ -76,7 +76,7 @@ void FileCollectionRepository::dump(IDTOWriter &writer)
     for (auto collection : collections)
     {
         DBCollectionParser parser(collection);
-        writer.writeCollectionDTO(parser.getCollectionDTO());
+        writer.writeDBCollection(parser.getCollectionDTO());
 
         auto deckIds = parser.getDeckIds();
         writer.writeCount(deckIds.size());
@@ -84,7 +84,7 @@ void FileCollectionRepository::dump(IDTOWriter &writer)
         for (auto deckId : deckIds)
         {
             auto deckDTO = parser.getDeckDTO(deckId);
-            writer.writeDeckDTO(deckDTO);
+            writer.writeDBDeck(deckDTO);
 
             auto cardIds = parser.getCardIds(deckId);
             writer.writeCount(cardIds.size());
@@ -92,7 +92,7 @@ void FileCollectionRepository::dump(IDTOWriter &writer)
             for (auto cardId : cardIds)
             {
                 auto cardDTO = parser.getCardDTO(cardId);
-                writer.writeCardDTO(cardDTO);
+                writer.writeDBCard(cardDTO);
             }
         }
     }

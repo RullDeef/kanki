@@ -10,7 +10,7 @@ void FileExporter::exportCollection(const std::string &filename, const DeckColle
     auto writer = FileWriter(filename);
 
     DBCollectionParser parser(collection);
-    writer.writeCollectionDTO(parser.getCollectionDTO());
+    writer.writeDBCollection(parser.getCollectionDTO());
 
     auto deckIds = parser.getDeckIds();
     writer.writeCount(deckIds.size());
@@ -18,7 +18,7 @@ void FileExporter::exportCollection(const std::string &filename, const DeckColle
     for (auto deckId : deckIds)
     {
         auto deckDTO = parser.getDeckDTO(deckId);
-        writer.writeDeckDTO(deckDTO);
+        writer.writeDBDeck(deckDTO);
 
         auto cardIds = parser.getCardIds(deckId);
         writer.writeCount(cardIds.size());
@@ -26,7 +26,7 @@ void FileExporter::exportCollection(const std::string &filename, const DeckColle
         for (auto cardId : cardIds)
         {
             auto cardDTO = parser.getCardDTO(cardId);
-            writer.writeCardDTO(cardDTO);
+            writer.writeDBCard(cardDTO);
         }
     }
 }
