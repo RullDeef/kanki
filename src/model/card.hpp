@@ -1,16 +1,17 @@
 #pragma once
 
 #include <string>
+#include "tools/uuid.hpp"
 
 class Card
 {
 public:
-    Card(size_t id = 0,
-         const std::wstring &symbol = L"symbol",
-         const std::wstring &reading = L"reading",
-         const std::wstring &description = L"description");
+    Card(UUID id,
+         const std::wstring &symbol,
+         const std::wstring &reading,
+         const std::wstring &description);
 
-    const size_t getId() const;
+    UUID getId() const;
     const std::wstring &getSymbol() const;
     const std::wstring &getReading() const;
     const std::wstring &getDescription() const;
@@ -22,7 +23,7 @@ public:
     bool operator==(const Card &other) const;
 
 private:
-    size_t id;
+    UUID id;
     std::wstring symbol;
     std::wstring reading;
     std::wstring description;

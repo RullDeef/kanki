@@ -1,4 +1,5 @@
 #include <iostream>
+#include "tools/uuid.hpp"
 #include "db/filereader.hpp"
 
 FileReader::FileReader(const std::string &filename)
@@ -8,9 +9,9 @@ FileReader::FileReader(const std::string &filename)
         throw std::runtime_error("bad file for reader");
 }
 
-CardDTO FileReader::readCardDTO()
+DBCard FileReader::readCardDTO()
 {
-    CardDTO card;
+    DBCard card;
 
     stream >> card.id >> std::ws;
     stream >> card.deckId >> std::ws;
@@ -21,9 +22,9 @@ CardDTO FileReader::readCardDTO()
     return card;
 }
 
-DeckDTO FileReader::readDeckDTO()
+DBDeck FileReader::readDeckDTO()
 {
-    DeckDTO deck;
+    DBDeck deck;
 
     stream >> deck.id >> std::ws;
     stream >> deck.collectionId >> std::ws;
@@ -32,9 +33,9 @@ DeckDTO FileReader::readDeckDTO()
     return deck;
 }
 
-CollectionDTO FileReader::readCollectionDTO()
+DBDeckCollection FileReader::readCollectionDTO()
 {
-    CollectionDTO collection;
+    DBDeckCollection collection;
 
     stream >> collection.id >> std::ws;
     std::getline(stream, collection.name);
@@ -42,13 +43,12 @@ CollectionDTO FileReader::readCollectionDTO()
     return collection;
 }
 
-SnapshotDTO FileReader::readSnapshotDTO()
+DBSnapshot FileReader::readSnapshotDTO()
 {
-    SnapshotDTO snapshot;
+    DBSnapshot snapshot;
 
     stream >> snapshot.sessionId >> std::ws;
     stream >> snapshot.cardId >> std::ws;
-    stream >> snapshot.deckId >> std::ws;
     std::getline(stream, snapshot.cardSymbol);
     std::getline(stream, snapshot.cardReading);
     std::getline(stream, snapshot.cardDescription);
@@ -59,9 +59,9 @@ SnapshotDTO FileReader::readSnapshotDTO()
     return snapshot;
 }
 
-SessionDTO FileReader::readSessionDTO()
+DBSession FileReader::readSessionDTO()
 {
-    SessionDTO session;
+    DBSession session;
 
     stream >> session.id >> std::ws;
     stream >> session.startTime >> std::ws;

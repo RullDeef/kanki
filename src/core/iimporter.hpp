@@ -1,12 +1,12 @@
 #pragma once
 
 #include <string>
-#include "model/collection.hpp"
+#include "model/deckcollection.hpp"
 
 class IImporter
 {
 public:
     virtual ~IImporter() = default;
 
-    virtual Collection importCollection(const std::string &filename) = 0;
+    virtual DeckCollection importCollection(const std::string &filename) = 0;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "core/ilearner.hpp"
 #include "core/icollectionmanager.hpp"
 #include "core/isessionmanager.hpp"
@@ -7,16 +8,17 @@
 class SpacedLearner : public ILearner
 {
 public:
-    SpacedLearner(ICollectionManager *collectionManager, ISessionManager *sessionManager);
+    virtual void useCollectionManager(std::shared_ptr<ICollectionManager> manager) override;
+    virtual void useSessionManager(std::shared_ptr<ISessionManager> manager) override;
 
-    virtual Card getNextForLearn(size_t deckId) override;
-    virtual Card getNextForRepeat(size_t deckId, int paramType) override;
+    virtual Card getNextForLearn(UUID deckId) override;
+    virtual Card getNextForRepeat(UUID deckId, int paramType) override;
 
 private:
-    std::list<Snapshot> getTargets(size_t deckId, int paramType);
+    std::list<Snapshot> getTargets(UUID deckId, int paramType);
 
     static time_t learningPeriod(int knowledgeDegree);
 
-    ICollectionManager *collectionManager;
-    ISessionManager *sessionManager;
+    std::shared_ptr<ICollectionManager> collectionManager;
+    std::shared_ptr<ISessionManager> sessionManager;
 };

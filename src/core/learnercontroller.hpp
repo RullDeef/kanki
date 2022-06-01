@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "tools/idgenerator.hpp"
 #include "model/session.hpp"
 #include "model/snapshot.hpp"
@@ -12,31 +13,31 @@
 class LearnerController
 {
 public:
-    LearnerController(ICollectionManager *collectionManager, ISessionManager *sessionManager);
+    LearnerController(std::shared_ptr<ICollectionManager> collectionManager, std::shared_ptr<ISessionManager> sessionManager);
 
     void setView(ILearnerView *newView);
-    void setLearner(ILearner *newLearner);
-    void setEstimator(IEstimator *newEstimator);
+    void setLearner(std::shared_ptr<ILearner> newLearner);
+    void setEstimator(std::shared_ptr<IEstimator> newEstimator);
 
-    void learnNext(size_t deckId);
-    void repeatNext(size_t deckId);
+    void learnNext(UUID deckId);
+    void repeatNext(UUID deckId);
 
-    void confirmLearned(size_t cardId);
+    void confirmLearned(UUID cardId);
 
-    void markEasy(size_t cardId, int paramType);
-    void markGood(size_t cardId, int paramType);
-    void markAgain(size_t cardId, int paramType);
+    void markEasy(UUID cardId, int paramType);
+    void markGood(UUID cardId, int paramType);
+    void markAgain(UUID cardId, int paramType);
 
 private:
-    bool getNextCardFor(size_t deckId, Card& card, int paramType);
+    std::unique_ptr<Card> getNextCardFor(UUID deckId, int paramType);
 
     ILearnerView *view = nullptr;
-    ILearner *learner = nullptr;
-    IEstimator *estimator = nullptr;
+    std::shared_ptr<ILearner> learner;
+    std::shared_ptr<IEstimator> estimator;
 
     IdGenerator idGenerator;
     int cardParam = Snapshot::ParamType::READING;
 
-    ICollectionManager *collectionManager;
-    ISessionManager *sessionManager;
+    std::shared_ptr<ICollectionManager> collectionManager;
+    std::shared_ptr<ISessionManager> sessionManager;
 };

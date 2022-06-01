@@ -3,48 +3,35 @@
 #include <stdexcept>
 #include "tools/logger.hpp"
 #include "tools/idgenerator.hpp"
-#include "dto/sessionbuilder.hpp"
-#include "dto/sessionparser.hpp"
+#include "db/model/sessionbuilder.hpp"
+#include "db/model/sessionparser.hpp"
 #include "db/filereader.hpp"
 #include "db/filewriter.hpp"
 #include "filesessionrepo.hpp"
 
-std::list<Session> FileSessionRepository::getSessions()
+FileSessionRepository::FileSessionRepository(std::shared_ptr<IDTOIOFactory> ioFactory)
+    : ioFactory(ioFactory)
 {
-    return sessions;
+    if (ioFactory)
+        load();
 }
 
-Session FileSessionRepository::getSession(size_t id)
+FileSessionRepository::~FileSessionRepository()
 {
-    auto iter = std::find_if(sessions.begin(), sessions.end(),
-                             [id](const Session &session)
-                             { return session.getId() == id; });
-
-    if (iter == sessions.end())
-        throw std::runtime_error("invalid id");
-    return *iter;
+    try
+    {
+        dump();
+    }
+    catch (const std::exception &e)
+    {
+        ERROR_METHOD(e.what());
+    }
 }
 
-void FileSessionRepository::removeSession(size_t id)
+void FileSessionRepository::load()
 {
-    sessions.erase(
-        std::remove_if(sessions.begin(), sessions.end(),
-                       [id](const Session &session)
-                       { return session.getId() == id; }),
-        sessions.end());
-}
-
-void FileSessionRepository::saveSession(const Session &session)
-{
-    size_t id = session.getId();
-    auto iter = std::find_if(sessions.begin(), sessions.end(),
-                             [id](const Session &session)
-                             { return session.getId() == id; });
-
-    if (iter != sessions.end())
-        *iter = session;
-    else
-        sessions.push_back(session);
+    auto reader = ioFactory->createReader();
+    load(*reader);
 }
 
 void FileSessionRepository::load(IDTOReader &reader)
@@ -54,8 +41,8 @@ void FileSessionRepository::load(IDTOReader &reader)
     size_t sessionsCount = reader.readCount();
     for (size_t i = 0; i < sessionsCount; i++)
     {
-        auto sessionDTO = reader.readSessionDTO();
-        DTOSessionBuilder builder(sessionDTO);
+        auto dbSession = reader.readSessionDTO();
+        DBSessionBuilder builder(dbSession);
 
         size_t snapshotsCount = reader.readCount();
         for (size_t j = 0; j < snapshotsCount; j++)
@@ -68,18 +55,62 @@ void FileSessionRepository::load(IDTOReader &reader)
     }
 }
 
+void FileSessionRepository::dump()
+{
+    auto writer = ioFactory->createWriter();
+    dump(*writer);
+}
+
 void FileSessionRepository::dump(IDTOWriter &writer)
 {
     writer.writeCount(sessions.size());
     for (auto session : sessions)
     {
-        DTOSessionParser parser(session);
-        writer.writeSessionDTO(parser.getSessionDTO());
+        DBSessionParser parser(session);
+        writer.writeSessionDTO(parser.getSession());
 
-        auto snapshotDTOs = parser.getSnapshotDTOs();
-        writer.writeCount(snapshotDTOs.size());
+        auto dbSnapshots = parser.getSnapshots();
+        writer.writeCount(dbSnapshots.size());
 
-        for (auto snapshotDTO : snapshotDTOs)
+        for (auto snapshotDTO : dbSnapshots)
             writer.writeSnapshotDTO(snapshotDTO);
     }
+}
+
+std::list<Session> FileSessionRepository::getSessions()
+{
+    return sessions;
+}
+
+Session FileSessionRepository::getSession(UUID id)
+{
+    auto iter = std::find_if(sessions.begin(), sessions.end(),
+                             [id](const Session &session)
+                             { return session.getId() == id; });
+
+    if (iter == sessions.end())
+        throw std::runtime_error("invalid id");
+    return *iter;
+}
+
+void FileSessionRepository::removeSession(UUID id)
+{
+    sessions.erase(
+        std::remove_if(sessions.begin(), sessions.end(),
+                       [id](const Session &session)
+                       { return session.getId() == id; }),
+        sessions.end());
+}
+
+void FileSessionRepository::saveSession(const Session &session)
+{
+    auto id = session.getId();
+    auto iter = std::find_if(sessions.begin(), sessions.end(),
+                             [id](const Session &session)
+                             { return session.getId() == id; });
+
+    if (iter != sessions.end())
+        *iter = session;
+    else
+        sessions.push_back(session);
 }

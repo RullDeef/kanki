@@ -9,12 +9,12 @@ class FileWriter : public IDTOWriter
 public:
     FileWriter(const std::string &filename);
 
-    virtual void writeCardDTO(const CardDTO &card) override;
-    virtual void writeDeckDTO(const DeckDTO &deck) override;
-    virtual void writeCollectionDTO(const CollectionDTO &collection) override;
+    virtual void writeCardDTO(const DBCard &card) override;
+    virtual void writeDeckDTO(const DBDeck &deck) override;
+    virtual void writeCollectionDTO(const DBDeckCollection &collection) override;
 
-    virtual void writeSnapshotDTO(const SnapshotDTO &snapshot) override;
-    virtual void writeSessionDTO(const SessionDTO &session) override;
+    virtual void writeSnapshotDTO(const DBSnapshot &snapshot) override;
+    virtual void writeSessionDTO(const DBSession &session) override;
 
     virtual void writeCount(size_t count) override;
 

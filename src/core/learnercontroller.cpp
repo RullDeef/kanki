@@ -1,7 +1,8 @@
 #include "tools/logger.hpp"
 #include "learnercontroller.hpp"
 
-LearnerController::LearnerController(ICollectionManager *collectionManager, ISessionManager *sessionManager)
+LearnerController::LearnerController(std::shared_ptr<ICollectionManager> collectionManager,
+                                     std::shared_ptr<ISessionManager> sessionManager)
     : collectionManager(collectionManager), sessionManager(sessionManager)
 {
 }
@@ -11,22 +12,25 @@ void LearnerController::setView(ILearnerView *newView)
     view = newView;
 }
 
-void LearnerController::setLearner(ILearner *newLearner)
+void LearnerController::setLearner(std::shared_ptr<ILearner> newLearner)
 {
     learner = newLearner;
 }
 
-void LearnerController::setEstimator(IEstimator *newEstimator)
+void LearnerController::setEstimator(std::shared_ptr<IEstimator> newEstimator)
 {
     estimator = newEstimator;
 }
 
-void LearnerController::learnNext(size_t deckId)
+void LearnerController::learnNext(UUID deckId)
 {
     LOG_METHOD();
 
     try
     {
+        learner->useCollectionManager(collectionManager);
+        learner->useSessionManager(sessionManager);
+
         auto card = learner->getNextForLearn(deckId);
 
         if (view != nullptr)
@@ -39,37 +43,35 @@ void LearnerController::learnNext(size_t deckId)
     }
 }
 
-void LearnerController::repeatNext(size_t deckId)
+void LearnerController::repeatNext(UUID deckId)
 {
     LOG_METHOD();
 
-    Card readingCard, translatingCard;
+    auto readingCard = getNextCardFor(deckId, Snapshot::ParamType::READING);
+    auto translatingCard = getNextCardFor(deckId, Snapshot::ParamType::TRANSLATION);
 
-    bool hasReading = getNextCardFor(deckId, readingCard, Snapshot::ParamType::READING);
-    bool hasTranslating = getNextCardFor(deckId, translatingCard, Snapshot::ParamType::TRANSLATION);
-
-    if (hasReading && cardParam == Snapshot::ParamType::READING)
+    if (readingCard && cardParam == Snapshot::ParamType::READING)
     {
-        if (view != nullptr)
-            view->askCard(readingCard, cardParam);
+        if (view)
+            view->askCard(*readingCard, cardParam);
         cardParam = Snapshot::ParamType::TRANSLATION;
     }
-    else if (hasTranslating)
+    else if (translatingCard)
     {
-        if (view != nullptr)
-            view->askCard(translatingCard, Snapshot::ParamType::TRANSLATION);
+        if (view)
+            view->askCard(*translatingCard, Snapshot::ParamType::TRANSLATION);
         cardParam = Snapshot::ParamType::READING;
     }
-    else if (hasReading)
+    else if (readingCard)
     {
-        if (view != nullptr)
-            view->askCard(readingCard, Snapshot::ParamType::READING);
+        if (view)
+            view->askCard(*readingCard, Snapshot::ParamType::READING);
     }
-    else if (view != nullptr)
+    else if (view)
         view->noCardsForRepeat();
 }
 
-void LearnerController::confirmLearned(size_t cardId)
+void LearnerController::confirmLearned(UUID cardId)
 {
     LOG_METHOD();
 
@@ -79,7 +81,7 @@ void LearnerController::confirmLearned(size_t cardId)
     sessionManager->addSnapshot(snapshot);
 }
 
-void LearnerController::markEasy(size_t cardId, int paramType)
+void LearnerController::markEasy(UUID cardId, int paramType)
 {
     LOG_METHOD();
 
@@ -90,7 +92,7 @@ void LearnerController::markEasy(size_t cardId, int paramType)
     sessionManager->addSnapshot(snapshot);
 }
 
-void LearnerController::markGood(size_t cardId, int paramType)
+void LearnerController::markGood(UUID cardId, int paramType)
 {
     LOG_METHOD();
 
@@ -101,7 +103,7 @@ void LearnerController::markGood(size_t cardId, int paramType)
     sessionManager->addSnapshot(snapshot);
 }
 
-void LearnerController::markAgain(size_t cardId, int paramType)
+void LearnerController::markAgain(UUID cardId, int paramType)
 {
     LOG_METHOD();
 
@@ -112,15 +114,18 @@ void LearnerController::markAgain(size_t cardId, int paramType)
     sessionManager->addSnapshot(snapshot);
 }
 
-bool LearnerController::getNextCardFor(size_t deckId, Card &card, int paramType)
+std::unique_ptr<Card> LearnerController::getNextCardFor(UUID deckId, int paramType)
 {
     try
     {
-        card = learner->getNextForRepeat(deckId, paramType);
-        return true;
+        learner->useCollectionManager(collectionManager);
+        learner->useSessionManager(sessionManager);
+
+        /// TODO: change method signature to return unique_ptr
+        return std::make_unique<Card>(learner->getNextForRepeat(deckId, paramType));
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
-        return false;
-    }    
+        return nullptr;
+    }
 }

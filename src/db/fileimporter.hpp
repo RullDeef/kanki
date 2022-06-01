@@ -5,5 +5,5 @@
 class FileImporter : public IImporter
 {
 public:
-    virtual Collection importCollection(const std::string &filename) override;
+    virtual DeckCollection importCollection(const std::string &filename) override;
 };

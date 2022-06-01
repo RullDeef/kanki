@@ -1,3 +1,6 @@
 [submodule "vendor/gtest"]
 	path = vendor/gtest
 	url = https://github.com/google/googletest
+[submodule "vendor/stduuid"]
+	path = vendor/stduuid
+	url = git@github.com:mariusbancila/stduuid.git

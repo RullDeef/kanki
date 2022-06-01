@@ -1,9 +1,20 @@
 cmake_minimum_required(VERSION 3.10.0)
 
+option(UUID_SYSTEM_GENERATOR ON)
+add_subdirectory(vendor/stduuid)
+
 project(kanki VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+set(AUTOUIC_SEARCH_PATHS src/ui/qt)
 
 set(TOOLS_SOURCE
     src/tools/convertor.cpp
@@ -13,7 +24,7 @@ set(TOOLS_SOURCE
 set(MODEL_SOURCE
     src/model/card.cpp
     src/model/deck.cpp
-    src/model/collection.cpp
+    src/model/deckcollection.cpp
     src/model/snapshot.cpp
     src/model/session.cpp
 
@@ -27,10 +38,10 @@ set(MODEL_SOURCE
 )
 
 set(REPO_SOURCE
-    src/dto/collectionparser.cpp
-    src/dto/collectionbuilder.cpp
-    src/dto/sessionparser.cpp
-    src/dto/sessionbuilder.cpp
+    src/db/model/collectionparser.cpp
+    src/db/model/collectionbuilder.cpp
+    src/db/model/sessionparser.cpp
+    src/db/model/sessionbuilder.cpp
     
     src/db/filereader.cpp
     src/db/filewriter.cpp
@@ -42,18 +53,42 @@ set(REPO_SOURCE
 )
 
 set(VIEW_SOURCE
-    src/view/convertor.cpp
-    src/view/editoradapter.cpp
-    src/view/learneradapter.cpp
-    src/view/ioviewadapter.cpp
+    src/ui/model/convertor.cpp
+    src/ui/model/editoradapter.cpp
+    src/ui/model/learneradapter.cpp
+    src/ui/model/ioviewadapter.cpp
+    
+    src/ui/iuifactory.cpp
 )
 
 set(CLI_SOURCE
-    src/cli/view/editorview.cpp
-    src/cli/view/learnerview.cpp
-    src/cli/view/ioview.cpp
-    src/cli/menu.cpp
-    src/cli/application.cpp
+    src/ui/cli/editorview.cpp
+    src/ui/cli/learnerview.cpp
+    src/ui/cli/ioview.cpp
+    src/ui/cli/menu.cpp
+    src/ui/cli/application.cpp
+    src/ui/cli/uifactory.cpp
+)
+
+set(QT_SOURCE
+    src/ui/qt/qtuifactory.cpp
+    src/ui/qt/main_window.cpp
+    src/ui/qt/qtioview.cpp
+
+    src/ui/qt/editor/card_window.cpp
+    src/ui/qt/editor/cardview_widget.cpp
+    src/ui/qt/editor/deck_window.cpp
+    src/ui/qt/editor/qteditorview.cpp
+
+    src/ui/qt/learn/info_window.cpp
+    src/ui/qt/learn/learn_window.cpp
+    src/ui/qt/learn/repeat_window.cpp
+    src/ui/qt/learn/qtlearnerview.cpp
+)
+
+set(SOLUTION_SOURCE
+    src/solution/solution.cpp
+    src/solution/cfgsolution.cpp
 )
 
 subdirs(vendor/gtest)
@@ -69,6 +104,7 @@ set(UNIT_SOURCE
 
 add_executable(unit_tests)
 target_include_directories(unit_tests
+    PRIVATE vendor/stduuid/include
     PRIVATE src
     PRIVATE unit_tests)
 target_sources(unit_tests
@@ -76,16 +112,21 @@ target_sources(unit_tests
     PRIVATE ${MODEL_SOURCE}
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${UNIT_SOURCE})
-target_link_libraries(unit_tests gtest_main gmock_main)
+target_link_libraries(unit_tests gtest_main gmock_main stduuid)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
-add_executable(kanki_cli src/main.cpp)
-target_include_directories(kanki_cli PRIVATE src)
-target_sources(kanki_cli
+add_executable(kanki src/main.cpp)
+target_link_libraries(kanki stduuid Qt5::Core Qt5::Widgets)
+target_include_directories(kanki
+    PRIVATE vendor/stduuid/include
+    PRIVATE src)
+target_sources(kanki
     PRIVATE ${TOOLS_SOURCE}
     PRIVATE ${MODEL_SOURCE}
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${VIEW_SOURCE}
     PRIVATE ${CLI_SOURCE}
+    PRIVATE ${QT_SOURCE}
+    PRIVATE ${SOLUTION_SOURCE}
 )

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <memory>
 #include "model/card.hpp"
 #include "model/snapshot.hpp"
 #include "model/session.hpp"
@@ -10,7 +11,7 @@
 class SessionManager : public ISessionManager
 {
 public:
-    SessionManager(ISessionRepository *sessionRepository);
+    SessionManager(std::shared_ptr<ISessionRepository> sessionRepository);
     ~SessionManager();
 
     virtual const Session &getActiveSession() override;
@@ -18,6 +19,6 @@ public:
     virtual std::list<Snapshot> getAllCardSnapshots(const Card &card) override;
 
 private:
-    ISessionRepository *sessionRepository;
+    std::shared_ptr<ISessionRepository> sessionRepository;
     Session activeSession;
 };
