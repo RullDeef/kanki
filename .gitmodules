@@ -7,3 +7,6 @@
 [submodule "vendor/redis-plus-plus"]
 	path = vendor/redis-plus-plus
 	url = git@github.com:sewenew/redis-plus-plus.git
+[submodule "vendor/hiredis"]
+	path = vendor/hiredis
+	url = git@github.com:redis/hiredis.git

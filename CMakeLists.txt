@@ -1,16 +1,19 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-option(UUID_SYSTEM_GENERATOR ON)
-add_subdirectory(vendor/stduuid)
-
-option(REDIS_PLUS_PLUS_BUILD_SHARED OFF)
-option(REDIS_PLUS_PLUS_USE_TLS ON)
-add_subdirectory(vendor/redis-plus-plus)
-
 project(kanki VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(UUID_SYSTEM_GENERATOR ON)
+add_subdirectory(vendor/stduuid)
+
+add_subdirectory(vendor/hiredis)
+
+option(REDIS_PLUS_PLUS_BUILD_SHARED OFF)
+option(REDIS_PLUS_PLUS_USE_TLS OFF)
+add_subdirectory(vendor/redis-plus-plus)
+set_target_properties(redis++_static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
@@ -120,6 +123,9 @@ set(UNIT_SOURCE
 add_executable(unit_tests)
 target_include_directories(unit_tests
     PRIVATE vendor/stduuid/include
+    PRIVATE vendor/redis-plus-plus/src/sw/redis++
+    PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
+    PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
     PRIVATE src
     PRIVATE unit_tests)
 target_sources(unit_tests
@@ -127,12 +133,13 @@ target_sources(unit_tests
     PRIVATE ${MODEL_SOURCE}
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${UNIT_SOURCE})
-target_link_libraries(unit_tests gtest_main gmock_main stduuid redis++)
+
+target_link_libraries(unit_tests hiredis_static redis++_static gtest_main gmock_main stduuid)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
 add_executable(kanki src/main.cpp)
-target_link_libraries(kanki stduuid redis++ Qt5::Core Qt5::Widgets)
+target_link_libraries(kanki stduuid hiredis_static redis++_static Qt5::Core Qt5::Widgets)
 
 target_include_directories(kanki
     PRIVATE vendor/stduuid/include
