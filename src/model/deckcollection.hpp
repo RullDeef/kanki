@@ -8,7 +8,7 @@ class DeckCollection
 public:
     using ConstIterator = std::list<Deck>::const_iterator;
 
-    DeckCollection(UUID id, const std::wstring &name);
+    DeckCollection(UUID id, const std::wstring &name, std::list<Deck> decks = {});
 
     UUID getId() const;
     size_t size() const;
@@ -25,6 +25,10 @@ public:
     const Deck *getDeckById(UUID id) const;
 
     void removeDeckById(UUID id);
+
+    bool operator==(const DeckCollection& other) const;
+
+    static DeckCollection createDefault();
 
 private:
     UUID id;

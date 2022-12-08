@@ -19,7 +19,7 @@
 #define BOLDCYAN "\033[1m\033[36m"    /* Bold Cyan */
 #define BOLDWHITE "\033[1m\033[37m"   /* Bold White */
 
-bool Logger::enabled = true;
+bool Logger::enabled = false;
 
 void Logger::info(const std::string &message)
 {
@@ -36,7 +36,12 @@ void Logger::error(const std::string &message)
     log(LogLevel::ERROR, message);
 }
 
-void Logger::disableLogger()
+void Logger::enable()
+{
+    enabled = true;
+}
+
+void Logger::disable()
 {
     enabled = false;
 }

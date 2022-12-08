@@ -4,3 +4,6 @@
 [submodule "vendor/stduuid"]
 	path = vendor/stduuid
 	url = git@github.com:mariusbancila/stduuid.git
+[submodule "vendor/redis-plus-plus"]
+	path = vendor/redis-plus-plus
+	url = git@github.com:sewenew/redis-plus-plus.git

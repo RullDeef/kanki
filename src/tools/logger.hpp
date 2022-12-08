@@ -38,7 +38,8 @@ public:
     static void warn(const std::string &message);
     static void error(const std::string &message);
 
-    static void disableLogger();
+    static void enable();
+    static void disable();
 
 private:
     enum class LogLevel

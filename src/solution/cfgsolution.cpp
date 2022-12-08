@@ -2,19 +2,15 @@
 #include <fstream>
 #include "tools/logger.hpp"
 #include "cfgsolution.hpp"
-
 #include "core/spacedlearner.hpp"
 #include "core/spacedestimator.hpp"
-
 #include "db/filecollectionrepo.hpp"
 #include "db/filesessionrepo.hpp"
 #include "db/filedtoiofactory.hpp"
-
 #include "db/fileimporter.hpp"
 #include "db/fileexporter.hpp"
-
+#include "db/redis/rediscollectionrepo.hpp"
 #include "ui/cli/uifactory.hpp"
-
 #include "ui/qt/qtuifactory.hpp"
 
 ConfigFileSolution::ConfigFileSolution(const std::string &filename)
@@ -30,7 +26,6 @@ ConfigFileSolution::ConfigFileSolution(const std::string &filename)
 
     registerImporter(std::shared_ptr<IImporter>(new FileImporter()));
     registerExporter(std::shared_ptr<IExporter>(new FileExporter()));
-
 }
 
 void ConfigFileSolution::loadCollectionRepoConfig()
@@ -43,10 +38,13 @@ void ConfigFileSolution::loadCollectionRepoConfig()
 
         if (type == "file")
         {
-            auto ioFactory = std::shared_ptr<IDTOIOFactory>(
-                new FileDTOIOFactory(value));
-            auto repo = std::shared_ptr<ICollectionRepository>(
-                new FileCollectionRepository(ioFactory));
+            auto ioFactory = std::shared_ptr<IDTOIOFactory>(new FileDTOIOFactory(value));
+            auto repo = std::shared_ptr<ICollectionRepository>(new FileCollectionRepository(ioFactory));
+            registerCollectionRepository(repo);
+        }
+        else if (type == "redis")
+        {
+            auto repo = std::shared_ptr<ICollectionRepository>(new RedisCollectionRepository(value));
             registerCollectionRepository(repo);
         }
         else
@@ -72,10 +70,8 @@ void ConfigFileSolution::loadSessionRepoConfig()
 
         if (type == "file")
         {
-            auto ioFactory = std::shared_ptr<IDTOIOFactory>(
-                new FileDTOIOFactory(value));
-            auto repo = std::shared_ptr<ISessionRepository>(
-                new FileSessionRepository(ioFactory));
+            auto ioFactory = std::shared_ptr<IDTOIOFactory>(new FileDTOIOFactory(value));
+            auto repo = std::shared_ptr<ISessionRepository>(new FileSessionRepository(ioFactory));
             registerSessionRepository(repo);
         }
         else

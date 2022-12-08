@@ -18,7 +18,8 @@ FileCollectionRepository::~FileCollectionRepository()
 {
     try
     {
-        dump();
+        if (ioFactory)
+            dump();
     }
     catch (const std::exception &e)
     {
@@ -28,8 +29,19 @@ FileCollectionRepository::~FileCollectionRepository()
 
 void FileCollectionRepository::load()
 {
-    auto reader = ioFactory->createReader();
-    load(*reader);
+    LOG_METHOD();
+
+    try
+    {
+        auto reader = ioFactory->createReader();
+        load(*reader);
+    }
+    catch(const std::exception& e)
+    {
+        ERROR_METHOD(e.what());
+        // init default collection
+        collections.push_back(DeckCollection::createDefault());
+    }
 }
 
 void FileCollectionRepository::load(IDBReader &reader)
@@ -64,8 +76,20 @@ void FileCollectionRepository::load(IDBReader &reader)
 
 void FileCollectionRepository::dump()
 {
-    auto writer = ioFactory->createWriter();
-    dump(*writer);
+    try
+    {
+        if (!ioFactory) {
+            throw std::runtime_error("ioFactory is null");
+        }
+
+        auto writer = ioFactory->createWriter();
+        dump(*writer);
+    }
+    catch(const std::exception& e)
+    {
+        ERROR_METHOD(e.what());
+        throw e;
+    }
 }
 
 void FileCollectionRepository::dump(IDBWriter &writer)

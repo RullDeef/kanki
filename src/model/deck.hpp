@@ -9,7 +9,7 @@ class Deck
 public:
     using ConstIterator = std::list<Card>::const_iterator;
 
-    Deck(UUID id, const std::wstring &name);
+    Deck(UUID id, const std::wstring &name, std::list<Card> cards = {});
 
     UUID getId() const;
     size_t size() const;
@@ -23,6 +23,8 @@ public:
 
     ConstIterator begin() const;
     ConstIterator end() const;
+
+    bool operator==(const Deck &other) const;
 
 private:
     UUID id;

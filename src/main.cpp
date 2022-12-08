@@ -1,11 +1,15 @@
+#include "tools/logger.hpp"
 #include "core/collectionmanager.hpp"
 #include "core/sessionmanager.hpp"
 #include "solution/cfgsolution.hpp"
 
-// TODO: separate SNapshot param type into its own file
+/// TODO: separate SNapshot param type into its own file
 
 int main(int argc, char *argv[])
 {
+    Logger::enable();
+
+    /// TODO: load default config if file not present...
     ConfigFileSolution solution("./assets/kanki.cfg");
 
     auto collectionManager = std::shared_ptr<ICollectionManager>(

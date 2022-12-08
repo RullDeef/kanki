@@ -2,10 +2,13 @@
 
 #include <gmock/gmock.h>
 #include "db/idbwriter.hpp"
+#include "model/deckcollection.hpp"
 
 class MockDTOWriter : public IDBWriter
 {
 public:
+    void expectWrite(const std::initializer_list<DeckCollection> &collections);
+
     MOCK_METHOD(void, writeDBCard, (const DBCard &card), (override));
     MOCK_METHOD(void, writeDBDeck, (const DBDeck &deck), (override));
     MOCK_METHOD(void, writeDBCollection, (const DBDeckCollection &collection), (override));

@@ -3,8 +3,8 @@
 #include "tools/logger.hpp"
 #include "deckcollection.hpp"
 
-DeckCollection::DeckCollection(UUID id, const std::wstring &name)
-    : id(id), name(name)
+DeckCollection::DeckCollection(UUID id, const std::wstring &name, std::list<Deck> decks)
+    : id(id), name(name), decks(std::move(decks))
 {
     if (id.is_nil())
     {
@@ -74,4 +74,16 @@ void DeckCollection::removeDeckById(UUID id)
         std::remove_if(decks.begin(), decks.end(), [id](const Deck &deck)
                        { return deck.getId() == id; }),
         decks.end());
+}
+
+bool DeckCollection::operator==(const DeckCollection &other) const
+{
+    return id == other.id && name == other.name && decks == other.decks;
+}
+
+DeckCollection DeckCollection::createDefault()
+{
+    auto gen = std::mt19937();
+    auto uuid = uuids::uuid_random_generator(gen)();
+    return std::move(DeckCollection(uuid, L"collection"));
 }

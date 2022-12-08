@@ -30,8 +30,17 @@ FileSessionRepository::~FileSessionRepository()
 
 void FileSessionRepository::load()
 {
-    auto reader = ioFactory->createReader();
-    load(*reader);
+    LOG_METHOD();
+
+    try
+    {
+        auto reader = ioFactory->createReader();
+        load(*reader);
+    }
+    catch (const std::exception& e)
+    {
+        ERROR_METHOD(e.what());
+    }
 }
 
 void FileSessionRepository::load(IDBReader &reader)

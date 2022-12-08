@@ -3,8 +3,8 @@
 #include "tools/logger.hpp"
 #include "deck.hpp"
 
-Deck::Deck(UUID id, const std::wstring &name)
-    : id(id), name(name)
+Deck::Deck(UUID id, const std::wstring &name, std::list<Card> cards)
+    : id(id), name(name), cards(std::move(cards))
 {
     if (id.is_nil())
     {
@@ -72,4 +72,9 @@ Deck::ConstIterator Deck::begin() const
 std::list<Card>::const_iterator Deck::end() const
 {
     return cards.end();
+}
+
+bool Deck::operator==(const Deck &other) const
+{
+    return id == other.id && name == other.name && cards == other.cards;
 }

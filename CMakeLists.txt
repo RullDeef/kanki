@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.10.0)
 option(UUID_SYSTEM_GENERATOR ON)
 add_subdirectory(vendor/stduuid)
 
+option(REDIS_PLUS_PLUS_BUILD_SHARED OFF)
+option(REDIS_PLUS_PLUS_USE_TLS ON)
+add_subdirectory(vendor/redis-plus-plus)
+
 project(kanki VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -50,6 +54,8 @@ set(REPO_SOURCE
     src/db/filesessionrepo.cpp
     src/db/fileexporter.cpp
     src/db/fileimporter.cpp
+
+    src/db/redis/rediscollectionrepo.cpp
 )
 
 set(VIEW_SOURCE
@@ -96,10 +102,19 @@ subdirs(vendor/gtest)
 enable_testing()
 
 set(UNIT_SOURCE
+    unit_tests/builders/builder_base.cpp
+    unit_tests/builders/cardbuilder.cpp
+    unit_tests/builders/deckbuilder.cpp
+    unit_tests/builders/collectionbuilder.cpp
+
+    unit_tests/mock/db/dtoreader.cpp
+    unit_tests/mock/db/dtowriter.cpp
+
     unit_tests/core/spacedlearner.cpp
     unit_tests/core/spacedestimator.cpp
 
     unit_tests/db/filecollectionrepo.cpp
+    unit_tests/db/redis/rediscollectionrepo.cpp
 )
 
 add_executable(unit_tests)
@@ -112,12 +127,13 @@ target_sources(unit_tests
     PRIVATE ${MODEL_SOURCE}
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${UNIT_SOURCE})
-target_link_libraries(unit_tests gtest_main gmock_main stduuid)
+target_link_libraries(unit_tests gtest_main gmock_main stduuid redis++)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
 add_executable(kanki src/main.cpp)
-target_link_libraries(kanki stduuid Qt5::Core Qt5::Widgets)
+target_link_libraries(kanki stduuid redis++ Qt5::Core Qt5::Widgets)
+
 target_include_directories(kanki
     PRIVATE vendor/stduuid/include
     PRIVATE src)
