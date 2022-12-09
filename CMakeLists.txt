@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.10.0)
 project(kanki VERSION 0.1.0 LANGUAGES CXX)
 
 # ------------------------------ project options -----------------------------
-option(BUILD_WITH_QT "Build kanki with Qt5 GUI" OFF)
+option(BUILD_WITH_QT "Build kanki with Qt5 GUI" ON)
 option(BUILD_WITH_REDIS "Build kanki with redis support" OFF)
+option(BUILD_UNIT_TESTS "Build unit_tests target" ON)
 # ----------------------------------------------------------------------------
 
 set(CMAKE_CXX_STANDARD 20)
@@ -13,98 +14,47 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(UUID_SYSTEM_GENERATOR ON)
 add_subdirectory(vendor/stduuid)
 
-set(TOOLS_SOURCE
-    src/tools/convertor.cpp
-    src/tools/logger.cpp
-)
+file(GLOB TOOLS_SOURCE src/tools/*.cpp)
+file(GLOB MODEL_SOURCE src/model/*.cpp src/core/*.cpp)
+file(GLOB REPO_SOURCE src/db/model/*.cpp src/db/file*.cpp)
+file(GLOB VIEW_SOURCE src/ui/model/*.cpp src/ui/iuifactory.cpp)
+file(GLOB CLI_SOURCE src/ui/cli/*.cpp)
+file(GLOB SOLUTION_SOURCE src/solution/*.cpp)
 
-set(MODEL_SOURCE
-    src/model/card.cpp
-    src/model/deck.cpp
-    src/model/deckcollection.cpp
-    src/model/snapshot.cpp
-    src/model/session.cpp
+if(BUILD_UNIT_TESTS)
+    subdirs(vendor/gtest)
+    enable_testing()
 
-    src/core/spacedlearner.cpp
-    src/core/spacedestimator.cpp
-    src/core/collectionmanager.cpp
-    src/core/sessionmanager.cpp
-    src/core/editorcontroller.cpp
-    src/core/learnercontroller.cpp
-    src/core/iocontroller.cpp
-)
+    set(UNIT_SOURCE
+        unit_tests/builders/builder_base.cpp
+        unit_tests/builders/cardbuilder.cpp
+        unit_tests/builders/deckbuilder.cpp
+        unit_tests/builders/collectionbuilder.cpp
 
-set(REPO_SOURCE
-    src/db/model/collectionparser.cpp
-    src/db/model/collectionbuilder.cpp
-    src/db/model/sessionparser.cpp
-    src/db/model/sessionbuilder.cpp
-    
-    src/db/filereader.cpp
-    src/db/filewriter.cpp
-    src/db/filedtoiofactory.cpp
-    src/db/filecollectionrepo.cpp
-    src/db/filesessionrepo.cpp
-    src/db/fileexporter.cpp
-    src/db/fileimporter.cpp
-)
+        unit_tests/mock/db/dtoreader.cpp
+        unit_tests/mock/db/dtowriter.cpp
 
-set(VIEW_SOURCE
-    src/ui/model/convertor.cpp
-    src/ui/model/editoradapter.cpp
-    src/ui/model/learneradapter.cpp
-    src/ui/model/ioviewadapter.cpp
-    
-    src/ui/iuifactory.cpp
-)
+        unit_tests/core/spacedlearner.cpp
+        unit_tests/core/spacedestimator.cpp
 
-set(CLI_SOURCE
-    src/ui/cli/editorview.cpp
-    src/ui/cli/learnerview.cpp
-    src/ui/cli/ioview.cpp
-    src/ui/cli/menu.cpp
-    src/ui/cli/application.cpp
-    src/ui/cli/uifactory.cpp
-)
+        unit_tests/db/filecollectionrepo.cpp
+    )
 
-set(SOLUTION_SOURCE
-    src/solution/solution.cpp
-    src/solution/cfgsolution.cpp
-)
+    add_executable(unit_tests)
+    target_include_directories(unit_tests
+        PRIVATE vendor/stduuid/include
+        PRIVATE src
+        PRIVATE unit_tests)
+    target_sources(unit_tests
+        PRIVATE ${TOOLS_SOURCE}
+        PRIVATE ${MODEL_SOURCE}
+        PRIVATE ${REPO_SOURCE}
+        PRIVATE ${UNIT_SOURCE})
 
-subdirs(vendor/gtest)
-
-enable_testing()
-
-set(UNIT_SOURCE
-    unit_tests/builders/builder_base.cpp
-    unit_tests/builders/cardbuilder.cpp
-    unit_tests/builders/deckbuilder.cpp
-    unit_tests/builders/collectionbuilder.cpp
-
-    unit_tests/mock/db/dtoreader.cpp
-    unit_tests/mock/db/dtowriter.cpp
-
-    unit_tests/core/spacedlearner.cpp
-    unit_tests/core/spacedestimator.cpp
-
-    unit_tests/db/filecollectionrepo.cpp
-)
-
-add_executable(unit_tests)
-target_include_directories(unit_tests
-    PRIVATE vendor/stduuid/include
-    PRIVATE src
-    PRIVATE unit_tests)
-target_sources(unit_tests
-    PRIVATE ${TOOLS_SOURCE}
-    PRIVATE ${MODEL_SOURCE}
-    PRIVATE ${REPO_SOURCE}
-    PRIVATE ${UNIT_SOURCE})
-
-target_link_libraries(unit_tests gtest_main gmock_main stduuid)
-include(GoogleTest)
-gtest_discover_tests(unit_tests)
+    target_link_libraries(unit_tests gtest_main gmock_main stduuid)
+    include(GoogleTest)
+    gtest_discover_tests(unit_tests)
+endif()
 
 add_executable(kanki src/main.cpp)
 target_link_libraries(kanki stduuid)
@@ -123,31 +73,28 @@ target_sources(kanki
 
 if(BUILD_WITH_QT)
     find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
-
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
     set(CMAKE_AUTOUIC ON)
 
-    set(AUTOUIC_SEARCH_PATHS src/ui/qt)
+    file(GLOB QT_SOURCE src/ui/qt/*.cpp src/ui/qt/**/*.cpp)
+    file(GLOB QT_SOURCE_UI src/ui/qt/**/*.ui)
+    qt5_wrap_ui(QT_SOURCE_UI ${QT_SOURCE_UI})
 
-    set(QT_SOURCE
-        src/ui/qt/qtuifactory.cpp
-        src/ui/qt/main_window.cpp
-        src/ui/qt/qtioview.cpp
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/main_window.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/learn/learn_window.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/learn/info_window.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/learn/repeat_window.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/editor/card_window.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/editor/cardview_widget.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/editor/deck_window.hpp)
 
-        src/ui/qt/editor/card_window.cpp
-        src/ui/qt/editor/cardview_widget.cpp
-        src/ui/qt/editor/deck_window.cpp
-        src/ui/qt/editor/qteditorview.cpp
-
-        src/ui/qt/learn/info_window.cpp
-        src/ui/qt/learn/learn_window.cpp
-        src/ui/qt/learn/repeat_window.cpp
-        src/ui/qt/learn/qtlearnerview.cpp
-    )
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/editor/qteditorview.hpp)
+    qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/learn/qtlearnerview.hpp)
 
     add_compile_definitions(USE_FEATURE_UI_QT)
-    target_sources(kanki PRIVATE ${QT_SOURCE})
+    target_sources(kanki PRIVATE ${QT_SOURCE} ${QT_SOURCE_UI} ${QT_SOURCE_MOC})
+    target_include_directories(kanki PRIVATE ${PROJECT_BINARY_DIR})
     target_link_libraries(kanki Qt5::Core Qt5::Widgets)
 endif()
 
@@ -161,19 +108,18 @@ if(BUILD_WITH_REDIS)
 
     add_compile_definitions(USE_FEATURE_DB_REDIS)
 
-    set(REDIS_SOURCE
-        src/db/redis/rediscollectionrepo.cpp
-    )
+    set(REDIS_SOURCE src/db/redis/rediscollectionrepo.cpp)
 
-    target_sources(unit_tests PRIVATE ${REDIS_SOURCE})
-    target_link_libraries(unit_tests hiredis_static redis++_static)
-
-    target_sources(kanki PRIVATE ${QT_SOURCE})
+    target_sources(kanki PRIVATE ${REDIS_SOURCE})
     target_link_libraries(kanki hiredis_static redis++_static)
 
-    target_include_directories(unit_tests
-        PRIVATE vendor/redis-plus-plus/src/sw/redis++
-        PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
-        PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
-    )
+    if(BUILD_UNIT_TESTS)
+        target_sources(unit_tests PRIVATE ${REDIS_SOURCE})
+        target_link_libraries(unit_tests hiredis_static redis++_static)
+        target_include_directories(unit_tests
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
+        )
+    endif()
 endif()

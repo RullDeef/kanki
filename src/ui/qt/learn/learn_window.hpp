@@ -7,6 +7,8 @@
 
 class LearnWindow : public QDialog
 {
+    Q_OBJECT
+
 public:
     LearnWindow(std::shared_ptr<LearnerController> controller, const CardParams &card);
     ~LearnWindow();

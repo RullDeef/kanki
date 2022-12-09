@@ -13,3 +13,9 @@
 ```shell
 docker run -it --network host --rm redis:7-alpine redis-cli
 ```
+
+### Запуск локального раннера для дебага workflow
+
+```shell
+act -P ubuntu-latest=danger89/cmake
+```
