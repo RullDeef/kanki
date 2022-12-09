@@ -34,4 +34,4 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target integration_tests
 
     - name: Run integration tests
-      run: docker compose up --no-TTY integration_tests
+      run: docker compose run --no-TTY integration_tests
