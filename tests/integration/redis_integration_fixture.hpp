@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef USE_FEATURE_DB_REDIS
-#error Integration tests must be built with USE_FEATURE_REDIS enabled
+#error Integration tests must be built with USE_FEATURE_DB_REDIS enabled
 #endif
 
 #include <gtest/gtest.h>

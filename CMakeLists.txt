@@ -114,10 +114,13 @@ if(BUILD_WITH_QT)
 endif()
 
 if(BUILD_WITH_REDIS)
+    option(DISABLE_TESTS ON)
     add_subdirectory(vendor/hiredis)
+    find_path(HIREDIS_HEADER hiredis PATHS vendor REQUIRED)
 
     option(REDIS_PLUS_PLUS_BUILD_SHARED OFF)
     option(REDIS_PLUS_PLUS_USE_TLS OFF)
+    option(REDIS_PLUS_PLUS_BUILD_TEST OFF)
     add_subdirectory(vendor/redis-plus-plus)
     set_target_properties(redis++_static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
