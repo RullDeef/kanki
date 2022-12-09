@@ -1,3 +1,4 @@
+#ifdef USE_FEATURE_REDIS
 #include <gtest/gtest.h>
 #include "db/redis/rediscollectionrepo.hpp"
 #include "redis_fixture.hpp"
@@ -74,3 +75,5 @@ TEST_F(RedisSingleEmptyCollectionFixture, RedisCollectionRepo_saveCollection_add
     auto res = repo.getCollectionById(testCollection.getId());
     ASSERT_EQ(res, testCollection);
 }
+
+#endif

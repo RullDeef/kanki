@@ -6,6 +6,7 @@ project(kanki VERSION 0.1.0 LANGUAGES CXX)
 option(BUILD_WITH_QT "Build kanki with Qt5 GUI" ON)
 option(BUILD_WITH_REDIS "Build kanki with redis support" OFF)
 option(BUILD_UNIT_TESTS "Build unit_tests target" ON)
+option(BUILD_INTEGRATION_TESTS "Build integration_tests target" ON)
 # ----------------------------------------------------------------------------
 
 set(CMAKE_CXX_STANDARD 20)
@@ -21,39 +22,53 @@ file(GLOB VIEW_SOURCE src/ui/model/*.cpp src/ui/iuifactory.cpp)
 file(GLOB CLI_SOURCE src/ui/cli/*.cpp)
 file(GLOB SOLUTION_SOURCE src/solution/*.cpp)
 
-if(BUILD_UNIT_TESTS)
+if(BUILD_UNIT_TESTS OR BUILD_INTEGRATION_TESTS)
     subdirs(vendor/gtest)
     enable_testing()
+    include(GoogleTest)
 
-    set(UNIT_SOURCE
-        unit_tests/builders/builder_base.cpp
-        unit_tests/builders/cardbuilder.cpp
-        unit_tests/builders/deckbuilder.cpp
-        unit_tests/builders/collectionbuilder.cpp
-
-        unit_tests/mock/db/dtoreader.cpp
-        unit_tests/mock/db/dtowriter.cpp
-
-        unit_tests/core/spacedlearner.cpp
-        unit_tests/core/spacedestimator.cpp
-
-        unit_tests/db/filecollectionrepo.cpp
+    file(GLOB_RECURSE TESTS_SOURCE
+        tests/builders/*.cpp
+        tests/mock/*.cpp
     )
 
-    add_executable(unit_tests)
-    target_include_directories(unit_tests
-        PRIVATE vendor/stduuid/include
-        PRIVATE src
-        PRIVATE unit_tests)
-    target_sources(unit_tests
-        PRIVATE ${TOOLS_SOURCE}
-        PRIVATE ${MODEL_SOURCE}
-        PRIVATE ${REPO_SOURCE}
-        PRIVATE ${UNIT_SOURCE})
+    list(APPEND TESTS_SOURCE
+        ${TOOLS_SOURCE}
+        ${MODEL_SOURCE}
+        ${REPO_SOURCE}
+    )
 
-    target_link_libraries(unit_tests gtest_main gmock_main stduuid)
-    include(GoogleTest)
-    gtest_discover_tests(unit_tests)
+    if(BUILD_UNIT_TESTS)
+        file(GLOB_RECURSE UNIT_TESTS_SOURCE tests/unit/*.cpp)
+
+        add_executable(unit_tests)
+        target_include_directories(unit_tests
+            PRIVATE vendor/stduuid/include
+            PRIVATE src
+            PRIVATE tests)
+        target_sources(unit_tests
+            PRIVATE ${TESTS_SOURCE}
+            PRIVATE ${UNIT_TESTS_SOURCE})
+
+        target_link_libraries(unit_tests gtest_main gmock_main stduuid)
+        gtest_discover_tests(unit_tests)
+    endif()
+
+    if(BUILD_INTEGRATION_TESTS)
+        file(GLOB_RECURSE INTEGRATION_TESTS_SOURCE tests/integration/*.cpp)
+
+        add_executable(integration_tests)
+        target_include_directories(integration_tests
+            PRIVATE vendor/stduuid/include
+            PRIVATE src
+            PRIVATE tests)
+        target_sources(integration_tests
+            PRIVATE ${TESTS_SOURCE}
+            PRIVATE ${INTEGRATION_TESTS_SOURCE})
+
+        target_link_libraries(integration_tests gtest_main gmock_main stduuid)
+        gtest_discover_tests(integration_tests)
+    endif()
 endif()
 
 add_executable(kanki src/main.cpp)
@@ -77,8 +92,8 @@ if(BUILD_WITH_QT)
     set(CMAKE_AUTORCC ON)
     set(CMAKE_AUTOUIC ON)
 
-    file(GLOB QT_SOURCE src/ui/qt/*.cpp src/ui/qt/**/*.cpp)
-    file(GLOB QT_SOURCE_UI src/ui/qt/**/*.ui)
+    file(GLOB_RECURSE QT_SOURCE src/ui/qt/*.cpp)
+    file(GLOB_RECURSE QT_SOURCE_UI src/ui/qt/*.ui)
     qt5_wrap_ui(QT_SOURCE_UI ${QT_SOURCE_UI})
 
     qt5_wrap_cpp(QT_SOURCE_MOC src/ui/qt/main_window.hpp)
