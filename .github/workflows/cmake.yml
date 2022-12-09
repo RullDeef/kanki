@@ -24,7 +24,7 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -DBUILD_WITH_QT=OFF -DBUILD_WITH_REDIS=OFF --target unit_tests
+      run: cmake -DBUILD_WITH_QT=OFF -DBUILD_WITH_REDIS=OFF --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target unit_tests
 
     - name: Test
       working-directory: ${{github.workspace}}/build
