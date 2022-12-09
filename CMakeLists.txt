@@ -2,26 +2,16 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(kanki VERSION 0.1.0 LANGUAGES CXX)
 
+# ------------------------------ project options -----------------------------
+option(BUILD_WITH_QT "Build kanki with Qt5 GUI" OFF)
+option(BUILD_WITH_REDIS "Build kanki with redis support" OFF)
+# ----------------------------------------------------------------------------
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(UUID_SYSTEM_GENERATOR ON)
 add_subdirectory(vendor/stduuid)
-
-add_subdirectory(vendor/hiredis)
-
-option(REDIS_PLUS_PLUS_BUILD_SHARED OFF)
-option(REDIS_PLUS_PLUS_USE_TLS OFF)
-add_subdirectory(vendor/redis-plus-plus)
-set_target_properties(redis++_static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-set(AUTOUIC_SEARCH_PATHS src/ui/qt)
 
 set(TOOLS_SOURCE
     src/tools/convertor.cpp
@@ -57,8 +47,6 @@ set(REPO_SOURCE
     src/db/filesessionrepo.cpp
     src/db/fileexporter.cpp
     src/db/fileimporter.cpp
-
-    src/db/redis/rediscollectionrepo.cpp
 )
 
 set(VIEW_SOURCE
@@ -77,22 +65,6 @@ set(CLI_SOURCE
     src/ui/cli/menu.cpp
     src/ui/cli/application.cpp
     src/ui/cli/uifactory.cpp
-)
-
-set(QT_SOURCE
-    src/ui/qt/qtuifactory.cpp
-    src/ui/qt/main_window.cpp
-    src/ui/qt/qtioview.cpp
-
-    src/ui/qt/editor/card_window.cpp
-    src/ui/qt/editor/cardview_widget.cpp
-    src/ui/qt/editor/deck_window.cpp
-    src/ui/qt/editor/qteditorview.cpp
-
-    src/ui/qt/learn/info_window.cpp
-    src/ui/qt/learn/learn_window.cpp
-    src/ui/qt/learn/repeat_window.cpp
-    src/ui/qt/learn/qtlearnerview.cpp
 )
 
 set(SOLUTION_SOURCE
@@ -117,15 +89,11 @@ set(UNIT_SOURCE
     unit_tests/core/spacedestimator.cpp
 
     unit_tests/db/filecollectionrepo.cpp
-    unit_tests/db/redis/rediscollectionrepo.cpp
 )
 
 add_executable(unit_tests)
 target_include_directories(unit_tests
     PRIVATE vendor/stduuid/include
-    PRIVATE vendor/redis-plus-plus/src/sw/redis++
-    PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
-    PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
     PRIVATE src
     PRIVATE unit_tests)
 target_sources(unit_tests
@@ -134,12 +102,12 @@ target_sources(unit_tests
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${UNIT_SOURCE})
 
-target_link_libraries(unit_tests hiredis_static redis++_static gtest_main gmock_main stduuid)
+target_link_libraries(unit_tests gtest_main gmock_main stduuid)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
 add_executable(kanki src/main.cpp)
-target_link_libraries(kanki stduuid hiredis_static redis++_static Qt5::Core Qt5::Widgets)
+target_link_libraries(kanki stduuid)
 
 target_include_directories(kanki
     PRIVATE vendor/stduuid/include
@@ -150,6 +118,62 @@ target_sources(kanki
     PRIVATE ${REPO_SOURCE}
     PRIVATE ${VIEW_SOURCE}
     PRIVATE ${CLI_SOURCE}
-    PRIVATE ${QT_SOURCE}
     PRIVATE ${SOLUTION_SOURCE}
 )
+
+if(BUILD_WITH_QT)
+    find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC ON)
+
+    set(AUTOUIC_SEARCH_PATHS src/ui/qt)
+
+    set(QT_SOURCE
+        src/ui/qt/qtuifactory.cpp
+        src/ui/qt/main_window.cpp
+        src/ui/qt/qtioview.cpp
+
+        src/ui/qt/editor/card_window.cpp
+        src/ui/qt/editor/cardview_widget.cpp
+        src/ui/qt/editor/deck_window.cpp
+        src/ui/qt/editor/qteditorview.cpp
+
+        src/ui/qt/learn/info_window.cpp
+        src/ui/qt/learn/learn_window.cpp
+        src/ui/qt/learn/repeat_window.cpp
+        src/ui/qt/learn/qtlearnerview.cpp
+    )
+
+    add_compile_definitions(USE_FEATURE_UI_QT)
+    target_sources(kanki PRIVATE ${QT_SOURCE})
+    target_link_libraries(kanki Qt5::Core Qt5::Widgets)
+endif()
+
+if(BUILD_WITH_REDIS)
+    add_subdirectory(vendor/hiredis)
+
+    option(REDIS_PLUS_PLUS_BUILD_SHARED OFF)
+    option(REDIS_PLUS_PLUS_USE_TLS OFF)
+    add_subdirectory(vendor/redis-plus-plus)
+    set_target_properties(redis++_static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
+    add_compile_definitions(USE_FEATURE_DB_REDIS)
+
+    set(REDIS_SOURCE
+        src/db/redis/rediscollectionrepo.cpp
+    )
+
+    target_sources(unit_tests PRIVATE ${REDIS_SOURCE})
+    target_link_libraries(unit_tests hiredis_static redis++_static)
+
+    target_sources(kanki PRIVATE ${QT_SOURCE})
+    target_link_libraries(kanki hiredis_static redis++_static)
+
+    target_include_directories(unit_tests
+        PRIVATE vendor/redis-plus-plus/src/sw/redis++
+        PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
+        PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
+    )
+endif()

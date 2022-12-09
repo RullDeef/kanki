@@ -9,9 +9,15 @@
 #include "db/filedtoiofactory.hpp"
 #include "db/fileimporter.hpp"
 #include "db/fileexporter.hpp"
-#include "db/redis/rediscollectionrepo.hpp"
 #include "ui/cli/uifactory.hpp"
+
+#ifdef USE_FEATURE_DB_REDIS
+#include "db/redis/rediscollectionrepo.hpp"
+#endif
+
+#ifdef USE_FEATURE_UI_QT
 #include "ui/qt/qtuifactory.hpp"
+#endif
 
 ConfigFileSolution::ConfigFileSolution(const std::string &filename)
 {
@@ -42,11 +48,13 @@ void ConfigFileSolution::loadCollectionRepoConfig()
             auto repo = std::shared_ptr<ICollectionRepository>(new FileCollectionRepository(ioFactory));
             registerCollectionRepository(repo);
         }
+#ifdef USE_FEATURE_DB_REDIS
         else if (type == "redis")
         {
             auto repo = std::shared_ptr<ICollectionRepository>(new RedisCollectionRepository(value));
             registerCollectionRepository(repo);
         }
+#endif
         else
         {
             ERROR_METHOD("unknown type for collection repository");
@@ -56,7 +64,11 @@ void ConfigFileSolution::loadCollectionRepoConfig()
     else
     {
         ERROR_METHOD("collection repository kind unknown");
-        throw std::runtime_error("collection repository kind unknown");
+        ERROR_METHOD("fallback to file collection.txt");
+
+        auto ioFactory = std::shared_ptr<IDTOIOFactory>(new FileDTOIOFactory("collections.txt"));
+        auto repo = std::shared_ptr<ICollectionRepository>(new FileCollectionRepository(ioFactory));
+        registerCollectionRepository(repo);
     }
 }
 
@@ -83,7 +95,11 @@ void ConfigFileSolution::loadSessionRepoConfig()
     else
     {
         ERROR_METHOD("session repository kind unknown");
-        throw std::runtime_error("session repository kind unknown");
+        ERROR_METHOD("fallback to file sessions.txt");
+
+        auto ioFactory = std::shared_ptr<IDTOIOFactory>(new FileDTOIOFactory("sessions.txt"));
+        auto repo = std::shared_ptr<ISessionRepository>(new FileSessionRepository(ioFactory));
+        registerSessionRepository(repo);
     }
 }
 
@@ -107,8 +123,10 @@ void ConfigFileSolution::loadUIFactoryConfig()
 
         if (value == "cli")
             registerUIFactory(std::shared_ptr<IUIFactory>(new cli::UIFactory()));
+#ifdef USE_FEATURE_UI_QT
         else if (value == "qt")
             registerUIFactory(std::shared_ptr<IUIFactory>(new QtUIFactory()));
+#endif
         else
         {
             ERROR_METHOD("unknown type for ui factory");
@@ -118,7 +136,9 @@ void ConfigFileSolution::loadUIFactoryConfig()
     else
     {
         ERROR_METHOD("ui factory kind unknown");
-        throw std::runtime_error("ui factory kind unknown");
+        ERROR_METHOD("fallback to CLI");
+
+        registerUIFactory(std::shared_ptr<IUIFactory>(new cli::UIFactory()));
     }
 }
 
@@ -129,7 +149,7 @@ void ConfigFileSolution::loadOptions(const std::string &filename)
     if (!file)
     {
         ERROR_METHOD("config file not found");
-        throw std::runtime_error("config file not found");
+        return;
     }
 
     while (true)
