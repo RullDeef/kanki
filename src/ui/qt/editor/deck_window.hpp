@@ -9,6 +9,8 @@
 
 class DeckWindow : public QDialog
 {
+    Q_OBJECT
+
 public:
     DeckWindow(std::shared_ptr<EditorController> controller, QtEditorView &view);
     ~DeckWindow();

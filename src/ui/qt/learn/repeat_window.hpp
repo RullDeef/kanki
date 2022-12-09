@@ -8,6 +8,8 @@
 
 class RepeatWindow : public QDialog
 {
+    Q_OBJECT
+
 public:
     RepeatWindow(std::shared_ptr<LearnerController> controller,
                  QtLearnerView &view, const CardParams &card, int paramType);

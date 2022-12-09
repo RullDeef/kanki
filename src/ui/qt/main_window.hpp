@@ -14,6 +14,8 @@
 
 class MainWindow : public QMainWindow
 {
+    Q_OBJECT
+
 public:
     MainWindow(std::shared_ptr<EditorController> editorController,
         std::shared_ptr<LearnerController> learnerController,

@@ -9,6 +9,8 @@
 
 class CardWindow : public QDialog
 {
+    Q_OBJECT
+
 public:
     CardWindow(std::shared_ptr<EditorController> controller, QtEditorView &view);
     ~CardWindow();
