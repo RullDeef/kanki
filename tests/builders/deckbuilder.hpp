@@ -7,7 +7,7 @@ class DeckBuilder
 public:
     DeckBuilder() = default;
 
-    static DeckBuilder random(size_t cardsCount);
+    static DeckBuilder random(size_t cardsCount = 0);
 
     DeckBuilder &withId(UUID newId);
     DeckBuilder &withName(std::wstring newName);

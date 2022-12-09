@@ -19,3 +19,13 @@ std::wstring gen_random_string(size_t len)
 
     return tmp_s;
 }
+
+time_point gen_random_time_point(long min_days, long max_days)
+{
+    long days = min_days + rand() % (max_days - min_days);
+    long hours = rand() % 24;
+    long minutes = rand() % 60;
+
+    auto delta = std::chrono::minutes((days * 24 + hours) * 60 + minutes);
+    return clock_spec::now() + delta;
+}

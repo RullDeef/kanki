@@ -1,197 +1,230 @@
 #include <gtest/gtest.h>
-#include "mock/core/collectionmanager.hpp"
-#include "mock/core/sessionmanager.hpp"
-#include "core/spacedlearner.hpp"
+#include "spacedlearner_fixture.hpp"
+#include "builders/builder_base.hpp"
+#include "builders/cardbuilder.hpp"
+#include "builders/deckbuilder.hpp"
+#include "builders/snapshotbuilder.hpp"
 
-using ::testing::AtLeast;
 using ::testing::Return;
 
-#define INIT_LEARNER() \
-    auto collectionManager = std::shared_ptr<ICollectionManager>(new MockCollectionManager()); \
-    auto sessionManager = std::shared_ptr<ISessionManager>(new MockSessionManager()); \
-    SpacedLearner learner; \
-    learner.useCollectionManager(collectionManager); \
-    learner.useSessionManager(sessionManager)
-
-#define CAST_COLLECTION_MANAGER \
-    *dynamic_cast<MockCollectionManager*>(collectionManager.get())
-
-#define CAST_SESSION_MANAGER \
-    *dynamic_cast<MockSessionManager*>(sessionManager.get())
-
-static UUID getId(uint8_t index)
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForLearn_emptyDeck)
 {
-    std::array<uint8_t, 16> id10value = {
-        0x00, 0x00, 0x00, index,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    auto deck = DeckBuilder::random(0).build();
+
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
+
+    EXPECT_ANY_THROW(learner.getNextForLearn(deck.getId()));
+}
+
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForLearn_noNewCards)
+{
+    Card cards[] = {
+        CardBuilder::random().build(),
+        CardBuilder::random().build(),
+        CardBuilder::random().build(),
     };
-    return id10value;
-}
 
-TEST(SpacedLearner_getNextForLearn, EmptyDeck)
-{
-    INIT_LEARNER();
-
-    Deck emptyDeck(getId(1), L"empty deck");
-
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .Times(1)
-        .WillOnce(Return(emptyDeck));
-
-    EXPECT_ANY_THROW(learner.getNextForLearn(getId(1)));
-}
-
-TEST(SpacedLearner_getNextForLearn, NoNewCards)
-{
-    INIT_LEARNER();
-
-    Deck oldDeck(getId(3), L"old deck");
-    oldDeck.addCard(Card(getId(13), L"symbol", L"reading", L"description"));
-    oldDeck.addCard(Card(getId(14), L"symbol", L"reading", L"description"));
-    oldDeck.addCard(Card(getId(15), L"symbol", L"reading", L"description"));
+    auto deck = DeckBuilder::random(0)
+                    .withCards({cards[0], cards[1], cards[2]})
+                    .build();
 
     std::list<Snapshot> snapshots = {
-        Snapshot(Card(getId(13), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING),
-        Snapshot(Card(getId(14), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING),
-        Snapshot(Card(getId(15), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING)};
+        SnapshotBuilder::random(cards[0]).withParamTypeReading().build(),
+        SnapshotBuilder::random(cards[1]).withParamTypeReading().build(),
+        SnapshotBuilder::random(cards[2]).withParamTypeReading().build(),
+    };
 
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .Times(1)
-        .WillOnce(Return(oldDeck));
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
 
-    EXPECT_CALL(CAST_SESSION_MANAGER, getAllCardSnapshots)
+    EXPECT_CALL(*sessionManager, getAllCardSnapshots)
         .Times(3)
         .WillRepeatedly(Return(snapshots));
 
-    EXPECT_ANY_THROW(learner.getNextForLearn(getId(3)));
+    EXPECT_ANY_THROW(learner.getNextForLearn(deck.getId()));
 }
 
-TEST(SpacedLearner_getNextForLearn, AllCardsNew)
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForLearn_allCardsNew)
 {
-    INIT_LEARNER();
+    auto firstCard = CardBuilder::random().build();
+    auto deck = DeckBuilder::random()
+                    .withCards({
+                        firstCard,
+                        CardBuilder::random().build(),
+                        CardBuilder::random().build(),
+                    })
+                    .build();
 
-    Deck newDeck(getId(2), L"new deck");
-    Card firstCard(getId(10), L"first symbol", L"first reading", L"first description");
-    newDeck.addCard(firstCard);
-    newDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
-    newDeck.addCard(Card(getId(12), L"symbol", L"reading", L"description"));
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
 
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .Times(1)
-        .WillOnce(Return(newDeck));
-
-    EXPECT_CALL(CAST_SESSION_MANAGER, getAllCardSnapshots)
-        .Times(1)
+    EXPECT_CALL(*sessionManager, getAllCardSnapshots)
         .WillOnce(Return(std::list<Snapshot>()));
 
-    auto card = learner.getNextForLearn(getId(2));
+    auto card = learner.getNextForLearn(deck.getId());
     EXPECT_EQ(card, firstCard);
 }
 
-TEST(SpacedLearner_getNextForLearn, HasReadyForRepeat)
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForLearn_hasReadyForRepeat)
 {
-    INIT_LEARNER();
+    Card cards[] = {
+        CardBuilder::random().build(),
+        CardBuilder::random().build(),
+        CardBuilder::random().build(),
+    };
 
-    Deck freshDeck(getId(4), L"fresh deck");
-    Card lastCard(getId(12), L"last symbol", L"last reading", L"last description");
-    freshDeck.addCard(Card(getId(10), L"symbol", L"reading", L"description"));
-    freshDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
-    freshDeck.addCard(lastCard);
+    auto deck = DeckBuilder::random()
+                    .withCards({cards[0], cards[1], cards[2]})
+                    .build();
 
-    auto tme = [](time_t t)
-    { return clock_spec::from_time_t(t); };
+    auto snapshots_1 = std::list{
+        SnapshotBuilder::random(cards[0])
+            .withTimePoint(gen_random_time_point(-3, -2))
+            .withParamTypeNone()
+            .withKnowledgeDegree(0)
+            .build(),
+        SnapshotBuilder::random(cards[0])
+            .withTimePoint(gen_random_time_point(-2, -1))
+            .withParamTypeReading()
+            .withKnowledgeDegree(1)
+            .build(),
+        SnapshotBuilder::random(cards[0])
+            .withTimePoint(gen_random_time_point(-1, 0))
+            .withParamTypeTranslation()
+            .withKnowledgeDegree(1)
+            .build(),
+    };
 
-    std::list<Snapshot> snapshots1 = {
-        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(100)),
-        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(120)),
-        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
+    auto snapshots_2 = std::list{
+        SnapshotBuilder::random(cards[1])
+            .withTimePoint(gen_random_time_point(-3, -2))
+            .withParamTypeNone()
+            .withKnowledgeDegree(0)
+            .build(),
+        SnapshotBuilder::random(cards[1])
+            .withTimePoint(gen_random_time_point(-2, -1))
+            .withParamTypeReading()
+            .withKnowledgeDegree(1)
+            .build(),
+        SnapshotBuilder::random(cards[1])
+            .withTimePoint(gen_random_time_point(-1, 0))
+            .withParamTypeReading()
+            .withKnowledgeDegree(3)
+            .build(),
+    };
 
-    std::list<Snapshot> snapshots2 = {
-        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(200)),
-        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(280)),
-        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 3, tme(320))};
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
 
-    std::list<Snapshot> snapshots3 = {};
+    EXPECT_CALL(*sessionManager, getAllCardSnapshots)
+        .WillOnce(Return(snapshots_1))
+        .WillOnce(Return(snapshots_2))
+        .WillOnce(Return(std::list<Snapshot>()));
 
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .WillOnce(Return(freshDeck));
-
-    EXPECT_CALL(CAST_SESSION_MANAGER, getAllCardSnapshots)
-        .WillOnce(Return(snapshots1))
-        .WillOnce(Return(snapshots2))
-        .WillOnce(Return(snapshots3));
-
-    auto card = learner.getNextForLearn(getId(4));
-    EXPECT_EQ(card, lastCard);
+    auto card = learner.getNextForLearn(deck.getId());
+    EXPECT_EQ(card, cards[2]);
 }
 
-TEST(SpacedLearner_getNextForRepeat, EmptyDeck)
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForRepeat_emptyDeck)
 {
-    INIT_LEARNER();
+    auto deck = DeckBuilder::random().build();
 
-    Deck emptyDeck(getId(1), L"deck name");
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
 
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .WillOnce(Return(emptyDeck));
-
-    EXPECT_ANY_THROW(learner.getNextForRepeat(getId(1), Snapshot::ParamType::READING));
+    EXPECT_ANY_THROW(learner.getNextForRepeat(deck.getId(), Snapshot::ParamType::READING));
 }
 
-TEST(SpacedLearner_getNextForRepeat, AllNewCards)
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForRepeat_allNewCards)
 {
-    INIT_LEARNER();
+    auto deck = DeckBuilder::random(3).build();
 
-    Deck newDeck(getId(2), L"new deck");
-    newDeck.addCard(Card(getId(10), L"symbol", L"reading", L"description"));
-    newDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
-    newDeck.addCard(Card(getId(12), L"symbol", L"reading", L"description"));
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
 
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .WillOnce(Return(newDeck));
-
-    EXPECT_CALL(CAST_SESSION_MANAGER, getAllCardSnapshots)
+    EXPECT_CALL(*sessionManager, getAllCardSnapshots)
         .Times(3)
         .WillRepeatedly(Return(std::list<Snapshot>()));
 
-    EXPECT_ANY_THROW(learner.getNextForRepeat(getId(2), Snapshot::ParamType::READING));
+    EXPECT_ANY_THROW(learner.getNextForRepeat(deck.getId(), Snapshot::ParamType::READING));
 }
 
-TEST(SpacedLearner_getNextForRepeat, AllReadyCards)
+TEST_F(SpacedLearnerFixture, SpacedLearner_getNextForRepeat_allReadyCards)
 {
-    INIT_LEARNER();
+    Card cards[] = {
+        CardBuilder::random().build(),
+        CardBuilder::random().build(),
+        CardBuilder::random().build(),
+    };
 
-    Deck freshDeck(getId(4), L"fresh deck");
-    freshDeck.addCard(Card(getId(10), L"symbol", L"reading", L"description"));
-    freshDeck.addCard(Card(getId(11), L"symbol", L"reading", L"description"));
-    freshDeck.addCard(Card(getId(12), L"symbol", L"reading", L"description"));
+    auto deck = DeckBuilder::random()
+                    .withCards({cards[0], cards[1], cards[2]})
+                    .build();
 
-    auto tme = [](time_t t)
-    { return clock_spec::from_time_t(t); };
+    auto snapshots_1 = std::list{
+        SnapshotBuilder::random(cards[0])
+            .withParamTypeNone()
+            .withKnowledgeDegree(0)
+            .withTimePoint(gen_random_time_point(-10, -9))
+            .build(),
+        SnapshotBuilder::random(cards[0])
+            .withParamTypeReading()
+            .withKnowledgeDegree(1)
+            .withTimePoint(gen_random_time_point(-9, -8))
+            .build(),
+        SnapshotBuilder::random(cards[0])
+            .withParamTypeTranslation()
+            .withKnowledgeDegree(1)
+            .withTimePoint(gen_random_time_point(-8, -7))
+            .build(),
+    };
 
-    std::list<Snapshot> snapshots1 = {
-        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(100)),
-        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(120)),
-        Snapshot(Card(getId(10), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 1, tme(150))};
+    auto snapshots_2 = std::list{
+        SnapshotBuilder::random(cards[1])
+            .withParamTypeNone()
+            .withKnowledgeDegree(0)
+            .withTimePoint(gen_random_time_point(-7, -6))
+            .build(),
+        SnapshotBuilder::random(cards[1])
+            .withParamTypeReading()
+            .withKnowledgeDegree(1)
+            .withTimePoint(gen_random_time_point(-6, -5))
+            .build(),
+        SnapshotBuilder::random(cards[1])
+            .withParamTypeReading()
+            .withKnowledgeDegree(3)
+            .withTimePoint(gen_random_time_point(-5, -4))
+            .build(),
+    };
 
-    std::list<Snapshot> snapshots2 = {
-        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(200)),
-        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 1, tme(280)),
-        Snapshot(Card(getId(11), L"symbol", L"reading", L"description"), Snapshot::ParamType::READING, 3, tme(320))};
+    auto snapshots_3 = std::list{
+        SnapshotBuilder::random(cards[2])
+            .withParamTypeNone()
+            .withKnowledgeDegree(0)
+            .withTimePoint(gen_random_time_point(-4, -3))
+            .build(),
+        SnapshotBuilder::random(cards[2])
+            .withParamTypeTranslation()
+            .withKnowledgeDegree(2)
+            .withTimePoint(gen_random_time_point(-3, -2))
+            .build(),
+        SnapshotBuilder::random(cards[2])
+            .withParamTypeTranslation()
+            .withKnowledgeDegree(3)
+            .withTimePoint(gen_random_time_point(-2, -1))
+            .build(),
+    };
 
-    std::list<Snapshot> snapshots3 = {
-        Snapshot(Card(getId(12), L"symbol", L"reading", L"description"), Snapshot::ParamType::NONE, 0, tme(400)),
-        Snapshot(Card(getId(12), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 2, tme(425)),
-        Snapshot(Card(getId(12), L"symbol", L"reading", L"description"), Snapshot::ParamType::TRANSLATION, 3, tme(480))};
+    EXPECT_CALL(*collectionManager, getDeckById)
+        .WillOnce(Return(deck));
 
-    EXPECT_CALL(CAST_COLLECTION_MANAGER, getDeckById)
-        .WillOnce(Return(freshDeck));
+    EXPECT_CALL(*sessionManager, getAllCardSnapshots)
+        .WillOnce(Return(snapshots_1))
+        .WillOnce(Return(snapshots_2))
+        .WillOnce(Return(snapshots_3));
 
-    EXPECT_CALL(CAST_SESSION_MANAGER, getAllCardSnapshots)
-        .WillOnce(Return(snapshots1))
-        .WillOnce(Return(snapshots2))
-        .WillOnce(Return(snapshots3));
+    auto card = learner.getNextForRepeat(deck.getId(), Snapshot::ParamType::READING);
 
-    auto card = learner.getNextForRepeat(getId(4), Snapshot::ParamType::READING);
-    EXPECT_EQ(card, Card(getId(10), L"symbol", L"reading", L"description"));
+    EXPECT_EQ(card, cards[0]);
 }

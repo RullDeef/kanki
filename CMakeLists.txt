@@ -137,4 +137,14 @@ if(BUILD_WITH_REDIS)
             PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
         )
     endif()
+
+    if(BUILD_INTEGRATION_TESTS)
+        target_sources(integration_tests PRIVATE ${REDIS_SOURCE})
+        target_link_libraries(integration_tests hiredis_static redis++_static)
+        target_include_directories(integration_tests
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
+        )
+    endif()
 endif()

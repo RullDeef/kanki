@@ -8,7 +8,24 @@ services:
     volumes:
       - ./assets/redis_data:/data
     network_mode: host
+
   redis_test:
     image: redis:7-alpine
+    command: --port 6380
     ports:
-      - 6380:6379
+      - 6380:6380
+    networks:
+      - testing_net
+
+  integration_tests:
+    image: ubuntu:latest
+    volumes:
+      - ./build:/app:ro
+    command: [ "./app/integration_tests" ]
+    depends_on: [ redis_test ]
+    networks:
+      - testing_net
+
+networks:
+  testing_net:
+    driver: bridge

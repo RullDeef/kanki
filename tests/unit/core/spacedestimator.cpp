@@ -1,23 +1,15 @@
 #include <gtest/gtest.h>
 #include "core/spacedestimator.hpp"
-
-static UUID getId(uint8_t index)
-{
-    std::array<uint8_t, 16> id10value = {
-        0x00, 0x00, 0x00, index,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    };
-    return id10value;
-}
+#include "builders/cardbuilder.hpp"
+#include "builders/snapshotbuilder.hpp"
 
 TEST(SpacedEstimator_markEasy, baseCase)
 {
-    UUID id10 = getId(10);
+    auto snapshot = SnapshotBuilder::random()
+                        .withKnowledgeDegree(3)
+                        .build();
 
     SpacedEstimator estimator;
-    Card card(id10, L"symbol", L"reading", L"description");
-    Snapshot snapshot(card, Snapshot::ParamType::READING, 3);
 
     estimator.markEasy(snapshot);
 
@@ -26,11 +18,11 @@ TEST(SpacedEstimator_markEasy, baseCase)
 
 TEST(SpacedEstimator_markGood, baseCase)
 {
-    UUID id10 = getId(10);
+    auto snapshot = SnapshotBuilder::random()
+                        .withKnowledgeDegree(3)
+                        .build();
 
     SpacedEstimator estimator;
-    Card card(id10, L"symbol", L"reading", L"description");
-    Snapshot snapshot(card, Snapshot::ParamType::READING, 3);
 
     estimator.markGood(snapshot);
 
@@ -39,11 +31,11 @@ TEST(SpacedEstimator_markGood, baseCase)
 
 TEST(SpacedEstimator_markAgain, baseCase)
 {
-    UUID id10 = getId(10);
+    auto snapshot = SnapshotBuilder::random()
+                        .withKnowledgeDegree(3)
+                        .build();
 
     SpacedEstimator estimator;
-    Card card(id10, L"symbol", L"reading", L"description");
-    Snapshot snapshot(card, Snapshot::ParamType::READING, 3);
 
     estimator.markAgain(snapshot);
 
