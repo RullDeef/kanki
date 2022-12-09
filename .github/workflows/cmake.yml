@@ -1,0 +1,31 @@
+name: CMake
+
+on:
+  push:
+    branches: [ "master", "unit_tests" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -DBUILD_WITH_QT=OFF -DBUILD_WITH_REDIS=OFF --target unit_tests
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ./unit_tests
