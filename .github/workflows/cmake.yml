@@ -32,8 +32,6 @@ jobs:
 
     - name: Build integration tests
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target integration_tests
-    
+
     - name: Run integration tests
-      uses: isbang/compose-action@v1.4.1
-      with:
-        services: integration_tests
+      run: docker compose up --no-TTY integration_tests
