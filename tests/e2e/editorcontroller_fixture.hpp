@@ -5,7 +5,7 @@
 #include "core/editorcontroller.hpp"
 #include "core/collectionmanager.hpp"
 
-constexpr auto REDIS_TEST_URL = "tcp://localhost:6380";
+constexpr auto REDIS_TEST_URL = "tcp://redis_test:6380";
 
 class EditorControllerFixture : public ::testing::Test
 {
