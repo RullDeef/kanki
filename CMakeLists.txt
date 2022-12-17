@@ -7,6 +7,7 @@ option(BUILD_WITH_QT "Build kanki with Qt5 GUI" ON)
 option(BUILD_WITH_REDIS "Build kanki with redis support" OFF)
 option(BUILD_UNIT_TESTS "Build unit_tests target" ON)
 option(BUILD_INTEGRATION_TESTS "Build integration_tests target" ON)
+option(BUILD_E2E_TESTS "Build e2e_tests target" ON)
 # ----------------------------------------------------------------------------
 
 set(CMAKE_CXX_STANDARD 20)
@@ -22,7 +23,7 @@ file(GLOB VIEW_SOURCE src/ui/model/*.cpp src/ui/iuifactory.cpp)
 file(GLOB CLI_SOURCE src/ui/cli/*.cpp)
 file(GLOB SOLUTION_SOURCE src/solution/*.cpp)
 
-if(BUILD_UNIT_TESTS OR BUILD_INTEGRATION_TESTS)
+if(BUILD_UNIT_TESTS OR BUILD_INTEGRATION_TESTS OR BUILD_E2E_TESTS)
     subdirs(vendor/gtest)
     enable_testing()
     include(GoogleTest)
@@ -68,6 +69,22 @@ if(BUILD_UNIT_TESTS OR BUILD_INTEGRATION_TESTS)
 
         target_link_libraries(integration_tests gtest_main gmock_main stduuid)
         gtest_discover_tests(integration_tests)
+    endif()
+
+    if(BUILD_E2E_TESTS)
+        file(GLOB_RECURSE E2E_TESTS_SOURCE tests/e2e/*.cpp)
+
+        add_executable(e2e_tests)
+        target_include_directories(e2e_tests
+            PRIVATE vendor/stduuid/include
+            PRIVATE src
+            PRIVATE tests)
+        target_sources(e2e_tests
+            PRIVATE ${TESTS_SOURCE}
+            PRIVATE ${E2E_TESTS_SOURCE})
+
+        target_link_libraries(e2e_tests gtest_main gmock_main stduuid)
+        gtest_discover_tests(e2e_tests)
     endif()
 endif()
 
@@ -145,6 +162,16 @@ if(BUILD_WITH_REDIS)
         target_sources(integration_tests PRIVATE ${REDIS_SOURCE})
         target_link_libraries(integration_tests hiredis_static redis++_static)
         target_include_directories(integration_tests
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
+            PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
+        )
+    endif()
+
+    if(BUILD_E2E_TESTS)
+        target_sources(e2e_tests PRIVATE ${REDIS_SOURCE})
+        target_link_libraries(e2e_tests hiredis_static redis++_static)
+        target_include_directories(e2e_tests
             PRIVATE vendor/redis-plus-plus/src/sw/redis++
             PRIVATE vendor/redis-plus-plus/src/sw/redis++/cxx17
             PRIVATE vendor/redis-plus-plus/src/sw/redis++/no_tls
